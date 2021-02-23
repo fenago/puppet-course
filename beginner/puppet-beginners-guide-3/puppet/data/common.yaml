@@ -12,10 +12,10 @@
   cobbler_config:
     manage_dhcp: true
     pxe_just_once: true
-  domain: 'bitfieldconsulting.com'
-  servername: 'www.bitfieldconsulting.com'
+  domain: 'fenago.com'
+  servername: 'www.fenago.com'
   port: 80
-  docroot: '/var/www/bitfieldconsulting.com'
+  docroot: '/var/www/fenago.com'
   dns_allow_query: true
   backup_retention_days: 10
   backup_path: "/backup/%{facts.hostname}"
