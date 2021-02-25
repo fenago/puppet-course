@@ -1,9 +1,9 @@
-service {'httpd':
+service {'apache2':
   ensure  => 'running',
-  require => Package['httpd'],
+  require => Package['apache2'],
 }
 
-package {'httpd':
+package {'apache2':
   ensure => 'installed',
 }
 
@@ -13,10 +13,10 @@ $cookbook = @(COOKBOOK)
     DocumentRoot /var/www/cookbook
   </VirtualHost>
   | COOKBOOK
-file {'/etc/httpd/conf.d/cookbook.conf':
+file {'/etc/apache2/conf.d/cookbook.conf':
   content => $cookbook,
-  require => Package['httpd'],
-  notify  => Service['httpd'],
+  require => Package['apache2'],
+  notify  => Service['apache2'],
 }
 
 $index = @(INDEX)
@@ -29,7 +29,7 @@ $index = @(INDEX)
 
 file {'/var/www/cookbook':
   ensure  => directory,
-  require => Package['httpd'],
+  require => Package['apache2'],
 }
 file {'/var/www/cookbook/index.html':
   content => $index,

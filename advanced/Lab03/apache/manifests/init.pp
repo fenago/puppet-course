@@ -4,7 +4,7 @@ class apache {
     group => 'apache',
     mode  => 0644,
   }
-  package {'httpd': ensure => 'installed' }
+  package {'apache2': ensure => 'installed' }
 
   $index = @(INDEX)
     <html>

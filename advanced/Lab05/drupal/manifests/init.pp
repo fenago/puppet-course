@@ -1,12 +1,12 @@
 class drupal {
-  #package {'httpd':
+  #package {'apache2':
   #  ensure => 'installed',
   #}
-  #service {'httpd':
+  #service {'apache2':
   #  ensure => 'running',
   #  enable => true,
   #}
   include virtual
-  realize(Package['httpd'])
-  realize(Service['httpd'])
+  realize(Package['apache2'])
+  realize(Service['apache2'])
 }

@@ -1,8 +1,8 @@
 class virtual {
-  @package {'httpd': ensure => installed }
-  @service {'httpd': 
+  @package {'apache2': ensure => installed }
+  @service {'apache2': 
     ensure  => running,
     enable  => true,
-    require => Package['httpd']
+    require => Package['apache2']
   }
 }

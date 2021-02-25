@@ -1,6 +1,6 @@
 class profiles::apache {
   $apache = $::osfamily ? { 
-    'RedHat' => 'httpd',
+    'RedHat' => 'apache2',
     'Debian' => 'apache2',
     }
   service { "$apache":
