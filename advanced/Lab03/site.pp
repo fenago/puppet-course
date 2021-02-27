@@ -1,58 +1,104 @@
-stage {'yumrepos': }
+node webserver {
+  #  class {'apache': }
+  #apache::vhost { 'navajo.example.com':
+  #  port    => '8080',
+  #  docroot => '/var/www/navajo',
+  #}
+  #$navajo = @(NAVAJO)
+  #  <html>
+  #    <head>
+  #      <title>navajo.example.com</title>
+  #    </head>
+  #    <body>http://en.wikipedia. org/wiki/Navajo_people
+  #    </body>
+  #  </html>
+  #  | NAVAJO
+  #file {'/var/www/navajo/index.html':
+  #  content => $navajo,
+  #  mode => '0644',
+  #  require => Apache::Vhost['navajo.example.com']
+  #}
+  service {'apache2': ensure => false }
+  class {'nginx': }
+  nginx::resource::server{ 'mescalero.example.com':
+    www_root => '/var/www/mescalero',
+  }
+  file {'/var/www/mescalero':
+    ensure  => 'directory',
+    mode    => '0755',
+    require => Nginx::Resource::Server['mescalero.example.com'],
+  }
+  $mescalero = @(MESCALERO)
+    <html>
+      <head>
+        <title>mescalero.example.com</title>
+      </head>
+      <body>
+        http:// en.wikipedia.org/wiki/Mescalero
+      </body>
+    </html>
+    | MESCALERO
+  file {'/var/www/mescalero/index.html':
+    content => $mescalero,
+    mode    => '0644',
+    require => File['/var/www/mescalero'],
+  }
+}
 
-Stage['yumrepos']->Stage['main']
+node dbserver {
+  class { 'mysql::server':
+    root_password    => 'PacktPub',
+    override_options => {
+      'mysqld' => {
+        'max_connections' => '1024'
+      }
+    }
+  }
+  mysql::db { 'drupal':
+    host     => 'localhost',
+    user     => 'drupal',
+    password => 'Cookbook',
+    sql      => '/root/drupal.sql',
+    require  => File['/root/drupal.sql']
+  }
+  $drupal = @(DRUPAL)
+    CREATE TABLE users (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      title VARCHAR(255),
+      body TEXT);
+    INSERT INTO users (id, title, body) VALUES (1,'First Node','Contents of first Node');
+    INSERT INTO users (id, title, body) VALUES (2,'Second Node','Contents of second Node');
+    | DRUPAL
+  file { '/root/drupal.sql':
+    ensure => present,
+    content => $drupal,
+  }
+  mysql_grant { 'drupal@localhost/drupal.nodes':
+    ensure     => 'present',
+    options    => ['GRANT'],
+    privileges => ['ALL'],
+    table      => 'drupal.nodes',
+    user       => 'drupal@localhost',
+  }
+}
+
+node shipyard {
+  class {'docker': }
+  docker::image {'phusion/baseimage': }
+  docker::run {'cookbook':
+    image   => 'alpine',
+    expose  => '8080',
+    ports   => '8080',
+    command => 'nc -k -l 8080',
+  }
+}
 
 node default {
-  #class {'mysql': }
-  #  include base
+  #include base
   #include puppet
-  #include apache
-  #class {'yums':
-  #  stage => 'yumrepos',
-  #}
-  notify { "This is $::operatingsystem version $::operatingsystemrelease, on $::architecture architecture, kernel version $::kernelversion": }
+  #$headline = lookup('headline')
+  notify {"message is $::message":} 
 }
 
-class yums {
-  notify {'always before the rest': }
-  yumrepo {'test':
-    baseurl => 'file:///var/www',
-    ensure  => 'present',
-  }
-}
-node 'packt_server' {
-}
 
-node 'cookbook' {
-  tag('tagging')
-  class {'tag_test': }
-  class {'another_class': }
 
-  if tagged('cookbook') {
-    notify { 'tagged cookbook': }
-  }
-  if tagged('packt_server') {
-    notify { 'tagged packt_server': }
-  }
-}
-
-#node cookbook {
-#  class {'first_class': }
-#  class {'second_class': }
-#  include admin::stages
-#}
-class first_class {
-    notify { 'First Class': }
-}
-class second_class {
-    notify {'Second Class': }
-}
-
-class tag_test {
-  if tagged('tagging') {
-    notify { 'containing node/class was tagged.': }
-  }
-}
-class another_class {
-  notify {'another class': }
-}
