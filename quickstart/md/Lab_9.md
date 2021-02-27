@@ -1,26 +1,11 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Lab 9. Managing files with templates
 -------------------------------------------------
 
-
-
- 
-
-
-
-
-
-
-
-
-[*Simplicity does not precede complexity, but follows it.*]
-
- 
-
- 
-
-\--[[*Alan Perlis*]]{.attribution}
 
 In this lab, we\'ll learn about an important and powerful feature of
 Puppet: the **template**. We\'ll see how to use a simple
@@ -192,8 +177,7 @@ tar cvzf /backup/backup.tar.gz <%= $data_dir %>
 
 
 You can use the `epp()` function anywhere a string is
-expected, but it\'s most common to use it to manage a file, as []{#id410
-.indexterm}shown in the example.
+expected, but it\'s most common to use it to manage a file, as shown in the example.
 
 To reference a template file from within a module (for example, in our
 NTP module from [Lab
@@ -389,8 +373,7 @@ Otherwise, this part of the template will be omitted. This is a very
 useful way of conditionally including blocks in a configuration file.
 
 Just as with `if` statements in manifest
-files, you can also use `else` to include an []{#id420
-.indexterm}alternative block instead, if the conditional statement is
+files, you can also use `else` to include an alternative block instead, if the conditional statement is
 false.
 
 
@@ -699,8 +682,7 @@ the parameters and their types.
 
 Note, however, that even templates with a parameter list can still
 access any Puppet variable or fact in the template body; Puppet does not
-prevent the template from using variables which have not been []{#id432
-.indexterm}declared as parameters, or getting data directly from Hiera.
+prevent the template from using variables which have not been declared as parameters, or getting data directly from Hiera.
 It should be clear by now, though, that bypassing the parameter checking
 machinery in this way is a bad idea.
 

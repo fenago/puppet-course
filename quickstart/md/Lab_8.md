@@ -1,26 +1,11 @@
 
+<img align="right" src="./images/logo.png">
+
 
 Lab 8. Classes, roles, and profiles
 ------------------------------------------------
 
 
-
- 
-
-
-
-
-
-
-
-
-[*Our life is frittered away by detail. Simplify, simplify!*]
-
- 
-
- 
-
-\--[[*Henry David Thoreau*]]{.attribution}
 
 In this lab you will explore the details of Puppet classes, the
 distinction between defining a class and including the class, how to
@@ -294,8 +279,7 @@ parameters or values are being supplied to the class. If you\'re using a
 String parameter, for example, if possible, make it an Enum parameter
 with an exact list of the values your class accepts. If you can\'t
 restrict it to a set of allowed values, specify a minimum length with
-`String[x]`. (If you need to specify a maximum []{#id378
-.indexterm}length too, the syntax is `String[min, max]`.)
+`String[x]`. (If you need to specify a maximum length too, the syntax is `String[min, max]`.)
 
 
 
@@ -558,8 +542,7 @@ there will only ever be one instance, it should be a class.
 ### Type aliases
 
 
-It\'s straightforward to define new  []{#id388
-.indexterm} **type aliases**, using the `type`
+It\'s straightforward to define new   **type aliases**, using the `type`
 keyword (`type_alias.pp`):
 
 ``` 
@@ -786,8 +769,7 @@ classes:
 
 
 The class names give some clues as to what this node might be doing. It
-looks like it\'s probably an app server running a []{#id397
-.indexterm}Java app named `my_app` served by Tomcat behind
+looks like it\'s probably an app server running a Java app named `my_app` served by Tomcat behind
 Apache, and backed by a PostgreSQL database. That\'s a good start, but
 we can do even better than this, and we\'ll see how in the next section.
 
@@ -842,8 +824,7 @@ Looking at the Hiera data, it\'s now very easy to see what the node\'s
 job is---what its [*role*] is---and all app servers now just
 need to include `role::app_server`. When or if the list of
 classes required for app servers changes, you
-don\'t need to find and update the Hiera `classes` []{#id400
-.indexterm}value for every app server; you just need to edit the
+don\'t need to find and update the Hiera `classes` value for every app server; you just need to edit the
 `role::app_server` class.
 
 
@@ -965,8 +946,7 @@ specific configuration of Java should include that Java profile. You can
 include a profile from multiple other profiles without any conflicts.
 
 Using profile classes in this way both makes your role classes neater,
-tidier, and easier to maintain, but it also allows you to []{#id403
-.indexterm}reuse the profiles for different roles. The
+tidier, and easier to maintain, but it also allows you to reuse the profiles for different roles. The
 `app_server` role includes these profiles, and other roles can
 include them as well. This way, our code is organized to reduce
 duplication and encourage re-use. The second rule of thumb is, **roles

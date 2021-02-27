@@ -1,3 +1,6 @@
+<img align="right" src="./images/logo.png">
+
+
 
 
 Lab 4. Managing Applications
@@ -423,8 +426,7 @@ first starts, it reads through its configuration directory and starts
 executing files in alphabetical order. Files that begin with numbers are
 read before files that start with letters. In this way, the
 `Apache` module ensures that the virtual hosts are read in a
-specific order, which can be specified when you define[]{#id325450972
-.indexterm} the virtual host. The contents of this file are as follows:
+specific order, which can be specified when you define the virtual host. The contents of this file are as follows:
 
 ``` 
 # ************************************
@@ -823,8 +825,7 @@ Bye
 ### How it works\...
 
 
-The MySQL module installs the MariaDB server and ensures[]{#id325451031
-.indexterm} that the server is running. It then configures the root
+The MySQL module installs the MariaDB server and ensures that the server is running. It then configures the root
 password for MariaDB. The module does a lot of other things for you as
 well. It creates a `.my.cnf` file with the root user password.
 When we run the `mysql client`, the `.my.cnf` file
@@ -999,8 +1000,7 @@ mysql::db { 'drupal':
 We specify that we\'ll connect from `localhost` using the
 `drupal` user. We give the password for the
 user and specify a SQL file that will be
-applied to the database after the database has been[]{#id325453767
-.indexterm} created. We require that the SQL file exists before we
+applied to the database after the database has been created. We require that the SQL file exists before we
 create the user; that way, the `CREATE TABLE` in the SQL file
 can be executed:
 

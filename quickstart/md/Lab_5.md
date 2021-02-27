@@ -1,27 +1,11 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Lab 5. Variables, expressions, and facts
 -----------------------------------------------------
 
-
-
- 
-
-
-
-
-
-
-
-
-[*It is impossible to begin to learn that which one thinks one already
-knows.*]
-
- 
-
- 
-
-\--[[*Epictetus*]]{.attribution}
 
 In this lab, you will learn about Puppet variables and data types,
 expressions, and conditional statements. You will also learn how Puppet
@@ -98,8 +82,7 @@ this lab.
 
 You might be wondering what type the value `running` is in the
 previous example. It\'s actually a string, but a special, unquoted kind
-of string called a **bare word**. Although []{#id178
-.indexterm}it would be exactly the same to Puppet if you used a normal
+of string called a **bare word**. Although it would be exactly the same to Puppet if you used a normal
 quoted string `'running'` here, it\'s considered good style to
 use bare words for attribute values which can only be one of a small
 number of words (for example, the `ensure` attribute on
@@ -239,8 +222,7 @@ creating resources from data in [Lab
 
 Why did we run `sudo apt-get update` before applying the
 manifest? This is the Ubuntu command to update the system\'s local
-package catalog from the upstream servers. It\'s []{#id186
-.indexterm}always a good idea to run this before installing any package
+package catalog from the upstream servers. It\'s always a good idea to run this before installing any package
 to make sure you\'re installing the latest version. In your production
 Puppet code, of course, you can run this via an `exec`
 resource.
@@ -251,8 +233,7 @@ resource.
 
 
 A **hash**, also known as a dictionary
-in some programming languages, is like an array, but []{#id188
-.indexterm}instead of just being a sequence of values, each value has a
+in some programming languages, is like an array, but instead of just being a sequence of values, each value has a
 name (`variable_hash.pp`):
 
 ``` 
@@ -314,8 +295,7 @@ file { '/tmp/test':
 
 The `*` character, cheerfully named the
 **attribute splat operator**, tells Puppet to treat the
-specified hash as a list of attribute-value pairs to []{#id192
-.indexterm}apply to the resource. This is exactly equivalent to
+specified hash as a list of attribute-value pairs to apply to the resource. This is exactly equivalent to
 specifying the same attributes directly, as in the following example:
 
 ``` 
@@ -383,8 +363,7 @@ notice(1 != 2)
 
 All the operators in the Boolean expressions shown
 in the previous example are known as **comparison
-operators**, because they compare two []{#id197
-.indexterm}values. The result is either `true` or
+operators**, because they compare two values. The result is either `true` or
 `false`. These are the comparison operators Puppet provides:
 
 
@@ -571,8 +550,7 @@ is known as a **fact**.
 
 
 You can access Facter facts in your manifest using
-the **facts hash**. This is a Puppet []{#id211
-.indexterm}variable called `$facts` which is available
+the **facts hash**. This is a Puppet variable called `$facts` which is available
 everywhere in the manifest, and to get a particular fact, you supply the
 name of the fact you want as the key (`facts_hash.pp`):
 
@@ -633,9 +611,7 @@ facter os
 
 
 You can also use the `puppet facts` command to see what facts
-will be available to Puppet manifests. This will []{#id214
-.indexterm}also include any custom facts defined by []{#id215
-.indexterm}third-party Puppet modules (see [Lab
+will be available to Puppet manifests. This will also include any custom facts defined by third-party Puppet modules (see [Lab
 7],
 [*Mastering modules*], for more information about this).
 
@@ -785,8 +761,7 @@ $facts['hostname']
 
 While the built-in facts available to Puppet
 provide a lot of important information, you can make the
-`$facts` hash even more useful by extending it with []{#id226
-.indexterm}your own facts, known as **external facts**. For
+`$facts` hash even more useful by extending it with your own facts, known as **external facts**. For
 example, if nodes are located in different cloud providers, each of
 which requires a slightly different networking setup, you could create a
 custom fact called `cloud` to document this. You can then use

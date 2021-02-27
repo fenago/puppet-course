@@ -1,27 +1,11 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Chapter 3. Managing your Puppet code with Git
 ------------------------------------------------------
 
-
-
- 
-
-
-
-
-
-
-
-
-[*We define ourselves by our actions. With each decision, we tell
-ourselves and the world who we are.*]
-
- 
-
- 
-
-\--[[*Bill Watterson*]]{.attribution}
 
 In this lab, you\'ll learn how to use the Git version control system
 to manage your Puppet manifests. I\'ll also show you how to use Git to
@@ -173,8 +157,7 @@ steps:
 
 You can change the files in your repo as much as you
 like, but Git will not know about the changes until you make what\'s
-called a **commit**. You can think of a []{#id65
-.indexterm}commit as being like a snapshot of the repo at a particular
+called a **commit**. You can think of a commit as being like a snapshot of the repo at a particular
 moment, but it also stores information about what changed in the repo
 since the previous commit. Commits are stored forever, so you will
 always be able to roll back the repo to the state it was in at a certain

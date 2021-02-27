@@ -1,4 +1,7 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Chapter 4. Understanding Puppet resources
 --------------------------------------------------
@@ -6,22 +9,6 @@ Chapter 4. Understanding Puppet resources
 
 
  
-
-
-
-
-
-
-
-
-[*Perplexity is the beginning of knowledge.*]
-
- 
-
- 
-
-\--[[*Khalil Gibran*]]{.attribution}
-
 We\'ve already met three important types of Puppet resources:
 `package`, `file`, and `service`. In this
 lab, we\'ll learn more about these, plus other important resource
@@ -282,8 +269,7 @@ present in the source directory. Use this attribute with care.
 
 
 Another common requirement for managing files is to
-create or modify a **symbolic link** (known as []{#id103
-.indexterm}a **symlink**, for short). You can have Puppet do
+create or modify a **symbolic link** (known as a **symlink**, for short). You can have Puppet do
 this by setting `ensure => link` on the
 `file` resource and specifying the `target`
 attribute (`file_symlink.pp`):
@@ -426,8 +412,7 @@ installed, we install the `ruby` package first, then the
 `puppet-lint` gem.
 
 The `puppet-lint` tool, by the way, is a good thing to have
-installed. It will check your Puppet manifests for []{#id111
-.indexterm}common style errors and make sure they comply with the
+installed. It will check your Puppet manifests for common style errors and make sure they comply with the
 official Puppet style guide. Try it now:
 
 ``` 
@@ -437,8 +422,7 @@ WARNING: indentation of => is not properly aligned (expected in column 11, but f
 
 
 In this example, `puppet-lint` is warning you that the
-`=>` arrows are not lined up vertically, which the []{#id112
-.indexterm}style guide says they should be:
+`=>` arrows are not lined up vertically, which the style guide says they should be:
 
 ``` 
 file { '/tmp/lint.txt':
@@ -534,8 +518,7 @@ a dependent resource changes. There are a few useful attributes for
 
 
 When a `service` resource has the
-attribute `ensure => running` attribute, Puppet []{#id119
-.indexterm}needs to be able to check whether the service is, in fact,
+attribute `ensure => running` attribute, Puppet needs to be able to check whether the service is, in fact,
 running. The way it does this depends on the underlying operating
 system. On Ubuntu 16 and later, for example, it runs
 `systemctl is-active SERVICE`. If the service is packaged to
@@ -569,8 +552,7 @@ take no further action.
 
 
 Sometimes, when using
-`hasstatus => false`, the service name as defined in []{#id123
-.indexterm}Puppet doesn\'t actually appear in the process table, because
+`hasstatus => false`, the service name as defined in Puppet doesn\'t actually appear in the process table, because
 the command that provides the service has a different name. If this is
 the case, you can tell Puppet exactly what to look for using the
 `pattern` attribute.
@@ -637,9 +619,7 @@ service { 'ntp':
 
 
 To further complicate things, the default system service
-`restart` command may not work, or you may []{#id127
-.indexterm}need to take certain special actions when the []{#id128
-.indexterm}service is restarted (disabling monitoring notifications, for
+`restart` command may not work, or you may need to take certain special actions when the service is restarted (disabling monitoring notifications, for
 example). You can specify any `restart` command you like for
 the service using the `restart` attribute
 (`service_custom_restart.pp`):
@@ -890,8 +870,7 @@ Cron resources
 
 Cron is the mechanism on Unix-like systems which
 runs scheduled jobs, sometimes known as batch jobs, at specified times
-or intervals. For example, system housekeeping []{#id140
-.indexterm}tasks, such as log rotation or checking for security updates,
+or intervals. For example, system housekeeping tasks, such as log rotation or checking for security updates,
 are run from cron. The details of what to run and when to run it are
 kept in a specially formatted file called
 `crontab` (short for **cron table**).
@@ -987,8 +966,7 @@ seeded with the node\'s hostname.
 
 If you have several such jobs to run, you can also supply a further seed
 value to the `fqdn_rand()` function, which can be any string
-and which will ensure that the value is different for each []{#id144
-.indexterm}job (`fqdn_rand.pp`):
+and which will ensure that the value is different for each job (`fqdn_rand.pp`):
 
 ``` 
 cron { 'run daily backup':
@@ -1160,8 +1138,7 @@ install that package on production nodes.
 
 
 If you don\'t specify a  `user` attribute
-for an `exec` resource, Puppet will run the []{#id152
-.indexterm}command as the `root` user. This is often
+for an `exec` resource, Puppet will run the command as the `root` user. This is often
 appropriate for installing system software or making changes to the
 system configuration, but if you need the command to run as a particular
 user, specify the `user` attribute, as in the following
@@ -1187,8 +1164,7 @@ Hello, this is ubuntu
 
 
 As with the earlier example, the
-`creates` attribute prevents Puppet from []{#id154
-.indexterm}running this command more than once.
+`creates` attribute prevents Puppet from running this command more than once.
 
 
 ### The onlyif and unless attributes
@@ -1197,8 +1173,7 @@ As with the earlier example, the
 Suppose you only want an `exec` resource
 to be applied under certain conditions. For
 example, a command which processes incoming data
-files only needs to run if there are data files []{#id158
-.indexterm}waiting to be processed. In this case, it\'s no good adding a
+files only needs to run if there are data files waiting to be processed. In this case, it\'s no good adding a
 `creates` attribute; we want the existence of a certain file
 to trigger the `exec`, not prevent it.
 
@@ -1346,8 +1321,7 @@ is just to demonstrate the use of `refreshonly`.
 
 When Puppet runs shell commands via an
 `exec` resource, the output is normally hidden from us.
-However, if the command doesn\'t seem to be working []{#id167
-.indexterm}properly, it can be very useful to see what output it
+However, if the command doesn\'t seem to be working properly, it can be very useful to see what output it
 produced, as this usually tells us why it didn\'t work.
 
 The `logoutput` attribute determines whether Puppet will log
@@ -1372,8 +1346,7 @@ out what\'s going on.
 
 Sometimes, commands can take a long time to run, or
 never terminate at all. By default, Puppet allows an `exec`
-command to run for 300 seconds, at which point []{#id171
-.indexterm}Puppet will terminate it if it has not finished. If you need
+command to run for 300 seconds, at which point Puppet will terminate it if it has not finished. If you need
 to allow a little longer for the command to complete, you can use the
 `timeout` attribute to set this. The value is the maximum
 execution time for the command in seconds.
@@ -1397,8 +1370,7 @@ such a powerful tool can be misused. In theory, Puppet is a declarative
 language: the manifest specifies the way things should be, and it is up
 to Puppet to take the necessary actions to make them so. Manifests are
 therefore what computer scientists call **idempotent**: the
-system is always in the same state after the []{#id173
-.indexterm}catalog has been applied, and however many times you apply
+system is always in the same state after the catalog has been applied, and however many times you apply
 it, it will always be in that state.
 
 The `exec` resource rather spoils this theoretical picture, by

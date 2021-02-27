@@ -1,3 +1,5 @@
+<img align="right" src="./images/logo.png">
+
 
 
 Lab 1. Puppet Language and Style
@@ -42,8 +44,7 @@ Adding a resource to a node
 ---------------------------------------------
 
 
-This recipe will introduce[]{#id325440456
-.indexterm} the language and show you the basics of
+This recipe will introduce the language and show you the basics of
 writing Puppet code. Puppet code files are
 called **manifests**; manifests declare resources. A resource
 in Puppet may be a type, class, or node. A **type** is
@@ -462,8 +463,7 @@ requires files and package)
 #### Idempotency
 
 
-A key concept of Puppet is that the state of the system[]{#id325458844
-.indexterm} when a manifest is applied to a node cannot affect the
+A key concept of Puppet is that the state of the system when a manifest is applied to a node cannot affect the
 outcome of the Puppet run. In other words, at the end of the Puppet run
 (if the run was successful), the system will be in a known state and any
 further application of the manifest will result in a system that is in
@@ -481,8 +481,7 @@ Installing, configuring, and starting a service
 
 
 There are many examples of this pattern online. In our
-simple example, we will create[]{#id325440455
-.indexterm} an Apache configuration file under
+simple example, we will create an Apache configuration file under
 `/etc/httpd/conf.d/fenago.conf`. The
 `/etc/httpd/conf.d` directory will not exist until the
 `httpd` package is installed. After this file is created, we
@@ -565,8 +564,7 @@ file {'/etc/httpd/conf.d/fenago.conf':
     `index.html` file for our virtual host in
     `/var/www/fenago`. Again, we\'ll use
     `@heredoc` syntax to make this more readable. This
-    directory won\'t exist yet, so we need to create[]{#id325450948
-    .indexterm} this as well, using the following code:
+    directory won\'t exist yet, so we need to create this as well, using the following code:
 
 
 ``` 
@@ -1012,8 +1010,7 @@ Checking your manifests with puppet-lint
 ----------------------------------------------------------
 
 
-The Puppet official style guide outlines a number[]{#id325420295
-.indexterm} of style conventions for Puppet
+The Puppet official style guide outlines a number of style conventions for Puppet
 code, some of which we\'ve touched on in the preceding section. For
 example, according to the style guide, manifests:
 
@@ -1296,8 +1293,7 @@ Note that /opt/puppetlabs/bin/puppet may not be in root's path, use the full pat
 ### How it works\...
 
 
-When we created the module using Puppet\'s module[]{#id325877356
-.indexterm} generate command, we used the name
+When we created the module using Puppet\'s module generate command, we used the name
 `thomas-memcached`. The name before the hyphen is your
 username or your username on Puppet forge (an online repository of
 modules). Modules have a specific directory structure. Not all of these
@@ -1389,9 +1385,7 @@ MODULEPATH/memcached/templates/memcached.conf.epp
 
 
 Modules can also contain custom facts,
-custom functions, custom[]{#id325895066
-.indexterm} types, and providers. For more information[]{#id325895075
-.indexterm} about these, refer to [Lab
+custom functions, custom types, and providers. For more information about these, refer to [Lab
 9],
 [*External Tools and the Puppet Ecosystem*].
 

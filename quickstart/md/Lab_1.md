@@ -1,3 +1,6 @@
+<img align="right" src="./images/logo.png">
+
+
 
 Lab 1. Getting started with Puppet
 -----------------------------------------------
@@ -311,8 +314,7 @@ configured.
 
 You don\'t give commands, like \"Do this, then do that\". Rather, you
 describe how things should be, and let Puppet take care of making it
-happen. These are two quite different kinds of []{#id13
-.indexterm}programming. One kind (so-called procedural style) is the
+happen. These are two quite different kinds of programming. One kind (so-called procedural style) is the
 traditional model used by languages such as C, Python, shell, and so on.
 Puppet\'s is called declarative style because you
 declare what the end result should be, rather than specify the steps to
@@ -331,8 +333,7 @@ program in the traditional sense.
 
 
 Puppet lets you describe configuration in terms of
-**resources** (types of things that can []{#id17
-.indexterm}exist, such as users, files, or packages) and their
+**resources** (types of things that can exist, such as users, files, or packages) and their
 **attributes** (appropriate properties for the type of
 resource, such as the home directory for a user, or the owner and
 permissions for a file). You don\'t have to get into the details of how

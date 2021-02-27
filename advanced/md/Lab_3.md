@@ -1,4 +1,7 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Lab 3. Writing Better Manifests
 --------------------------------------------
@@ -112,8 +115,7 @@ have the same attributes.
 ### There\'s more\...
 
 
-Using an array, you can add or change parameters[]{#id325427965
-.indexterm} for all the resources at once. For example, you could add a
+Using an array, you can add or change parameters for all the resources at once. For example, you could add a
 `hasrestart` option with the following modification:
 
 ``` 
@@ -322,8 +324,7 @@ the resources contained in the `tmpfile` definition.
 
 In our example, the definition of `tmpfile` contains a single
 file resource whose content is `Hello world\n` and whose path
-is `/tmp/${name}`. If you declared an instance[]{#id325436369
-.indexterm} of `tmpfile` with the name `foo`, Puppet
+is `/tmp/${name}`. If you declared an instance of `tmpfile` with the name `foo`, Puppet
 will create a file with the `/tmp/foo` path:
 
 ``` 
@@ -820,15 +821,13 @@ You can define as many run stages as you like and set up any ordering
 for them. This can greatly simplify a complicated manifest that would
 otherwise require lots of explicit dependencies between resources.
 Beware of accidentally introducing dependency cycles, though; when you
-assign something to a run stage, you\'re automatically[]{#id325451031
-.indexterm} making it dependent on everything in prior stages.
+assign something to a run stage, you\'re automatically making it dependent on everything in prior stages.
 
 You may like to define your stages in the `site.pp` file
 instead so that, at the top level of the manifest, it\'s easy to see
 which stages are available.
 
-Gary Larizza has written a helpful introduction[]{#id325451047
-.indexterm} to using run stages, with some real-world examples, on his
+Gary Larizza has written a helpful introduction to using run stages, with some real-world examples, on his
 website: <http://garylarizza.com/blog/2011/03/11/using-run-stages-with-puppet/>.
 
 A caveat: many people don\'t like to use run stages, feeling that Puppet
@@ -1033,8 +1032,7 @@ Using data types in Puppet
 --------------------------------------------
 
 
-In previous releases of Puppet, variables were[]{#id325145170
-.indexterm} not typed. A variable could hold any sort of value. Although
+In previous releases of Puppet, variables were not typed. A variable could hold any sort of value. Although
 this makes writing code somewhat easier, it leads to many problems.
 Variables that expect an array could be passed a string; variables that
 expect an integer may be passed a String. Type mismatch can have very

@@ -1,15 +1,10 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Lab 2. Creating your first manifests
 -------------------------------------------------
-
-
-
- 
-
-
-
-
 
 
 
@@ -351,8 +346,7 @@ examining each resource in turn and checking its attributes on the
 server against those specified in the manifest. In this case, Puppet
 will look for the `cowsay` package to see whether it\'s
 installed. It is not, but the manifest says it should be, so Puppet
-carries out all the necessary actions to make []{#id43
-.indexterm}reality match the manifest, which here means installing the
+carries out all the necessary actions to make reality match the manifest, which here means installing the
 package.
 
 

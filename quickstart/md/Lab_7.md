@@ -1,27 +1,13 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Chapter 7. Mastering modules
 -------------------------------------
 
 
 
- 
-
-
-
-
-
-
-
-
-[*There are no big problems, there are just a lot of little
-problems.*]
-
- 
-
- 
-
-\--[[*Henry Ford*]]{.attribution}
 
 In this lab you\'ll learn about Puppet Forge, the public repository
 for Puppet modules, and you\'ll see how to install and use third-party
@@ -236,8 +222,7 @@ Notice: Scope(Class[main]): HELLO
 
 
 The `upcase` function, which converts its string argument to
-uppercase, is part of the `stdlib` module. If this []{#id315
-.indexterm}doesn\'t work, then `stdlib` has not been properly
+uppercase, is part of the `stdlib` module. If this doesn\'t work, then `stdlib` has not been properly
 installed. As in previous examples, we\'re using the
 `--environment pbg` switch to tell Puppet to look for code,
 modules, and data in the
@@ -762,8 +747,7 @@ modules use the facilities of the standard library rather than
 implementing their own utility functions which do the same thing.
 
 You should do the same in your own Puppet code: when you need a
-particular piece of functionality, check the []{#id332
-.indexterm}standard library first to see if it solves your problem
+particular piece of functionality, check the standard library first to see if it solves your problem
 rather than implementing it yourself.
 
 Before trying the examples in this section, make sure the
@@ -1293,8 +1277,7 @@ Create the file `metadata.json` with the following contents
 
 Most of these are fairly self-explanatory. `tags` is an array
 of strings which will help people find your module if it is listed on
-Puppet Forge, and it\'s usual to tag your module []{#id354
-.indexterm}with the name of the software or service it manages (in this
+Puppet Forge, and it\'s usual to tag your module with the name of the software or service it manages (in this
 case, `ntp`).
 
 If your module relies on other Puppet modules,

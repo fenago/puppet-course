@@ -1,3 +1,6 @@
+<img align="right" src="./images/logo.png">
+
+
 
 
 Lab 2. Puppet Language and Style
@@ -127,8 +130,7 @@ Iterating over multiple items
 -----------------------------------------------
 
 
-Arrays are a powerful feature in Puppet; wherever[]{#id325420295
-.indexterm} you want to perform the same operation on a list of things,
+Arrays are a powerful feature in Puppet; wherever you want to perform the same operation on a list of things,
 an array may be able to help. You can create an array just by putting
 its content in square brackets:
 
@@ -414,8 +416,7 @@ if $::mtu_eth0 <= 1500 {
 #### Combining expressions
 
 
-You can put together the kind of simple expressions[]{#id325458748
-.indexterm} described previously into more complex logical expressions,
+You can put together the kind of simple expressions described previously into more complex logical expressions,
 using `and`, `or`, and `not`:
 
 ``` 

@@ -1,3 +1,6 @@
+<img align="right" src="./images/logo.png">
+
+
 
 Lab 5. Monitoring, Reporting, and Troubleshooting
 ---------------------------------------------------------------
@@ -39,8 +42,7 @@ Noop---the don\'t-change-anything option
 -----------------------------------------------------------
 
 
-Sometimes, your Puppet manifest doesn\'t do exactly[]{#id325436476
-.indexterm} what you expected, or perhaps someone else has checked in
+Sometimes, your Puppet manifest doesn\'t do exactly what you expected, or perhaps someone else has checked in
 changes you didn\'t know about. Either way, it\'s good to know exactly
 what Puppet is going to do before it does it.
 
@@ -236,8 +238,7 @@ see the command output? You can use the `logoutput` attribute.
 ### How to do it\...
 
 
-Follow these steps in order to log the command[]{#id325145217
-.indexterm} output:
+Follow these steps in order to log the command output:
 
 
 1.  Define an exec resource with the `logoutput` parameter, as
@@ -282,8 +283,7 @@ mylaptop.example.com
 The `logoutput` attribute has three possible settings:
 
 
-- `false`: This never prints the command[]{#id325420302
-    .indexterm} output
+- `false`: This never prints the command output
 - `on_failure`: This only prints the output if the command
     fails (the default setting)
 - `true`: This always prints the output, whether the command
@@ -363,8 +363,7 @@ notice: Got this far!
 ### There\'s more\...
 
 
-In addition to simple messages, we can output variables[]{#id325436371
-.indexterm} within our notify statements. Additionally, we can treat the
+In addition to simple messages, we can output variables within our notify statements. Additionally, we can treat the
 notify calls the same as other resources, having them require or be
 required by other resources.
 
@@ -567,8 +566,7 @@ Version:
 
 Puppet can generate different types of reports with the reports option
 in the `[main]` section of `puppet.conf` on your
-Puppet master servers. There are several built-in report[]{#id325458775
-.indexterm} types, listed at
+Puppet master servers. There are several built-in report types, listed at
 <https://docs.puppetlabs.com/references/latest/report.html>. In addition
 to the built-in report types, there are some community-developed reports
 that are quite useful. The Foreman
@@ -654,8 +652,7 @@ Done installing documentation for rgen, puppet-strings after 2 seconds
 ### How to do it\...
 
 
-We\'ll use the `thing1` module we created[]{#id325445368
-.indexterm} with PDK. PDK does a great job of filling out all the
+We\'ll use the `thing1` module we created with PDK. PDK does a great job of filling out all the
 default comments that are used by puppet strings:
 
 
@@ -943,8 +940,7 @@ decide where to begin applying these resources, it can start at
 #### When Puppet looks for the dependencies
 
 
-This type of problem is known as a circular dependency[]{#id325467066
-.indexterm} problem; Puppet can\'t decide where to start because the two
+This type of problem is known as a circular dependency problem; Puppet can\'t decide where to start because the two
 resources depend on each other.
 
 To fix the circular dependency problem, all you need to do is remove one
@@ -1096,8 +1092,7 @@ the `--debug` switch, to get more useful information:
 ```
 
 
-If you check your Git history to see what was touched[]{#id325436476
-.indexterm} in the most recent change, this may be another way to
+If you check your Git history to see what was touched in the most recent change, this may be another way to
 identify what\'s upsetting Puppet:
 
 
@@ -1165,8 +1160,7 @@ Inspecting configuration settings
 ----------------------------------------------------
 
 
-You probably know that Puppet\'s configuration[]{#id325145172
-.indexterm} settings are stored in `puppet.conf`, but there
+You probably know that Puppet\'s configuration settings are stored in `puppet.conf`, but there
 are lots of parameters, and those that aren\'t listed in
 `puppet.conf` will take a default value. How can you see the
 value of any configuration parameter, regardless of whether or not it\'s

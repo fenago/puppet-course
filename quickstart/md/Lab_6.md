@@ -1,15 +1,10 @@
 
+<img align="right" src="./images/logo.png">
+
+
 
 Lab 6. Managing data with Hiera
 --------------------------------------------
-
-
-
- 
-
-
-
-
 
 
 
@@ -256,8 +251,7 @@ point.
 ### Troubleshooting Hiera
 
 
-If you don\'t get the result `This is a test` []{#id250
-.indexterm}, your Hiera setup is not working properly. If you see the
+If you don\'t get the result `This is a test` , your Hiera setup is not working properly. If you see the
 warning `Config file not found, using Hiera defaults`, check
 that your Vagrant box has an
 `/etc/puppetlabs/code/environments/pbg` directory. If not,
@@ -387,8 +381,7 @@ apache_worker_factor: 100
 
 
 You should specify Boolean values in Hiera as
-either `true` or `false`, without []{#id260
-.indexterm}surrounding quotes. However, Hiera is fairly liberal in what
+either `true` or `false`, without surrounding quotes. However, Hiera is fairly liberal in what
 it interprets as Boolean values: any of `true`,
 `on`, or `yes` (with or without quotes) are
 interpreted as a true value, and `false`, `off`, or
@@ -555,8 +548,7 @@ vpn_allow_list: "%{alias('firewall_allow_list')}"
 
 
 Don\'t be fooled by the surrounding quotes: it may look as though
-`vpn_allow_list` will be a string value, but []{#id271
-.indexterm}because we are using `alias()`, it will actually be
+`vpn_allow_list` will be a string value, but because we are using `alias()`, it will actually be
 an array, just like the value it is aliasing
 (`firewall_allow_list`).
 
@@ -672,8 +664,7 @@ this is what you\'ll usually want. However, sometimes you may want
 found, throughout the hierarchy. Hiera allows you to specify which of
 these strategies it should use when multiple values match your lookup.
 
-This is called a **merge behavior**, and []{#id277
-.indexterm}you can specify which merge behavior you want as the third
+This is called a **merge behavior**, and you can specify which merge behavior you want as the third
 argument to `lookup()`, after the key and data type
 (`lookup_merge.pp`):
 
@@ -690,8 +681,7 @@ flattened array, with duplicates removed (hence `unique`).
 If you are looking up hash data, you can use the
 `hash` merge behavior to return a merged hash containing all
 the keys and values from all matching hashes found. If Hiera finds two
-hash keys with the same name, only the value of the first will []{#id279
-.indexterm}be returned. This is known as a **shallow merge**.
+hash keys with the same name, only the value of the first will be returned. This is known as a **shallow merge**.
 If you want a deep merge (that is, one where
 matching hashes will be merged at all levels, instead of just the top
 level) use the `deep` merge behavior.
@@ -1056,8 +1046,7 @@ data using a public key which can be distributed widely, but only
 someone with the corresponding private key can decrypt the information.
 
 Hiera has a pluggable **backend** system which allows it to
-support various different ways of storing data. One such []{#id294
-.indexterm}backend is called `hiera-eyaml-gpg`, which allows
+support various different ways of storing data. One such backend is called `hiera-eyaml-gpg`, which allows
 Hiera to use a GnuPG-encrypted data store. Rather than encrypting a
 whole data file, `hiera-eyaml-gpg` lets you mix encrypted and
 plaintext data in the same YAML file. That way, even someone who
