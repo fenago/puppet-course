@@ -1,69 +1,75 @@
 
-Lab 10. Monitoring, Reporting, and Troubleshooting
----------------------------------------------------------------
+
+Lab 4. Managing Applications
+-----------------------------------------
 
 
 In this lab, we will cover the following recipes:
 
 
-- Noop---the don\'t-change-anything option
-- Logging the command output
-- Logging debug messages
-- Generating reports
-- Producing automatic HTML documentation
-- Drawing dependency graphs
-- Understanding Puppet errors
-- Inspecting configuration settings
+- Using public modules
+- Managing Apache servers
+- Creating Apache virtual hosts
+- Creating NGINX virtual hosts
+- Managing MariaDB
+- Creating databases and users
 
 
 
 Introduction
--------------------------------
+------------------------------
 
 
-Most of us had the experience of sitting in an exciting presentation
-about some new technology and then rushing home to play with it. Of
-course, once you start experimenting with it, you immediately run into
-problems. What\'s going wrong? Why doesn\'t it work? How can I see
-what\'s happening under the hood? This lab will help you answer some
-of these questions, and give you the tools to solve common Puppet
-problems.
+Without applications, a server is just a very expensive space heater. In
+this lab, I\'ll present some recipes to manage some specific
+software with Puppet: MariaDB, Apache, NGINX, and Ruby. I hope the
+recipes will be useful to you in themselves. However, the patterns and
+techniques they use are applicable to almost any software, so you can
+adapt them to your own purposes without much difficulty. One thing that
+these applications have in common is: they are common. Most Puppet
+installations will have to deal with a web server, either Apache or
+NGINX. Most, if not all, will have databases and some of those will have
+MariaDB. When everyone has to deal with a problem, community solutions
+are generally better tested and more thorough than homegrown solutions.
+We\'ll use modules from the Puppet Forge in this lab to manage these
+applications.
 
-We\'ll also see how to generate useful reports on your Puppet
-infrastructure and how Puppet can help you monitor and troubleshoot your
-network as a whole.
-
-
-
-Noop---the don\'t-change-anything option
------------------------------------------------------------
-
-
-Sometimes, your Puppet manifest doesn\'t do exactly[]{#id325436476
-.indexterm} what you expected, or perhaps someone else has checked in
-changes you didn\'t know about. Either way, it\'s good to know exactly
-what Puppet is going to do before it does it.
-
-When you are retrofitting Puppet into an existing infrastructure, you
-might not know whether Puppet is going to update a config file or
-restart a production service. Any such change could result in unplanned
-downtime. Also, sometimes, manual configuration changes are made on a
-server that Puppet would overwrite.
-
-To avoid these problems, you can use Puppet\'s `noop` mode,
-which means
+When you are writing your own `Apache` or `NGINX`
+modules from scratch, you\'ll have to pay attention to the nuances of
+the distributions you support. Some distributions call the Apache
+package `httpd`, while others use `apache2`; the
+same can be said for MySQL. In addition, Debian-based distributions use
+an enabled folder method to enable custom sites in Apache, which are
+virtual sites, whereas RPM-based distributions do not (for more
+information on virtual sites, visit
+<http://httpd.apache.org/docs/2.4/vhosts/>).
 
 
-> no operation
+Using public modules
+--------------------------------------
 
 
-or do nothing. When run with the noop option, Puppet only reports what
-it would do, but doesn\'t actually do anything. One caveat here is that
-even during a `noop` run, `pluginsync` still runs
-and any `lib` directories in modules will be synced to nodes.
-This will update external fact definitions and possibly Puppet\'s types
-and providers. If you are using PuppetDB for reporting, the fact values
-for a node are also updated on a `noop` run.
+When you write a Puppet module to manage some
+software or service, you don\'t have to start from scratch.
+Community-contributed modules are available at the Puppet Forge site for
+many popular applications. Sometimes, a community module will be exactly
+what you need, and you can download and start using it straight away. In
+most cases, you will need to make some modifications to suit your
+particular needs and environment.
+
+Like all community efforts, there are some excellent and some
+less-than-excellent modules on the Forge. You should read the
+`README` section of the module and decide whether the module
+is going to work in your installation. At the very least, ensure that
+your distribution is supported. puppetlabs has introduced a set of
+modules that are supported, that is, if you are an enterprise customer,
+they will support your use of the module in your installation.
+Additionally, most Forge modules deal with multiple operating systems,
+distributions, and a great number of use cases. In many cases, not using
+a Forge module is like reinventing the wheel. One caveat, though, is
+that Forge modules may be more complex than your local modules. You
+should read the code and get a sense of what the module is doing.
+Knowing how the module works will help you debug it later.
 
 
 
@@ -71,1155 +77,976 @@ for a node are also updated on a `noop` run.
 ### How to do it\...
 
 
-You may run the `noop` mode when running
-`puppet agent` or `puppet apply` by appending the
-`--noop` switch to the command. You may also create a
-`noop=true` line in your `puppet.conf` file within
-the `[agent]` or `[main]` sections:
+In this example, we\'ll use the `puppet module` command to
+find and install the useful `stdlib` module, which contains
+many utility functions to help you develop
+Puppet code. It is one of the aforementioned supported modules by
+puppetlabs. I\'ll download the module into my user\'s home directory and
+manually install it in the Git repository:
 
 
-1.  Create a `noop.pp` manifest that creates a file, as
-    follows:
+1.  Run the following command:
 
 
 ``` 
-file {'/tmp/noop':
-  content => 'nothing',
-  mode    => '0644',
+t@mylaptop $ puppet module search puppetlabs-stdlib 
+Notice: Searching https://forgeapi.puppet.com ... 
+NAME DESCRIPTION AUTHOR KEYWORDS
+puppetlabs-stdlib Standard libr... @puppetlabs stdlib 
+trlinkin-validate_multi Validate that... @trlinkin dsl 
+puppet-extlib extlib provid... @puppet stdlib
+```
+
+
+
+2.  We verified that we have the right module, so we\'ll install it with
+    `module install`:
+
+
+``` 
+t@mylaptop ~ $ puppet module install puppetlabs-stdlib 
+Notice: Preparing to install into
+```
+
+
+``` 
+/home/thomas/.puppetlabs/etc/code/modules ... 
+Notice: Downloading from https://forgeapi.puppet.com ... 
+Notice: Installing -- do not interrupt ... 
+/home/thomas/.puppetlabs/etc/code/modules 
+└── puppetlabs-stdlib (v4.25.0)
+```
+
+
+
+3.  The module is now ready to use in your manifests; most good modules
+    come with a `README.md` or `README` file to show
+    you how to do this.
+
+
+
+### How it works\...
+
+
+You can search for modules that match the
+package or software you\'re interested in with the
+`puppet module search` command. To install a specific module,
+use `puppet module install`. You can add the `-i`
+option to tell Puppet where to find your module directory. You can
+browse the site to see what\'s available at
+[http://forge.puppet.com](http://forge.puppet.com/){.ulink}. More
+information on supported modules is available
+at <https://forge.puppet.com/supported>. The current list of supported
+modules is available at
+[https://forge.puppetlabs.com/modules?endorsements=supported](https://forge.puppet.com/modules?endorsements=supported+partner){.ulink}.
+
+
+### There\'s more\...
+
+
+Modules on the Forge include a `metadata.json` file, which
+describes the module and which operating systems the module supports.
+This file also includes a list of modules that are required by the
+module. This file was previously named `Modulefile` and was
+not in JSON format; the old `Modulefile` format was deprecated
+in version 3.6. As we will see in our next section, when installing a
+module from the Forge, the required dependencies will automatically be
+installed as well. Not all publicly-available modules are on the Puppet
+Forge. Some other great places to look at on GitHub are as follows:
+
+
+- <https://github.com/camptocamp>
+- <https://github.com/example42>
+
+
+
+Managing Apache servers
+-----------------------------------------
+
+
+Apache is the world\'s favorite web server, so it\'s highly likely that
+part of your Puppetly duties will include
+installing and managing Apache.
+
+
+
+
+### How to do it\...
+
+
+We\'ll install and use the `puppetlabs-apache` module to
+install and start Apache. This time, when we run the
+`puppet module install` command, we\'ll use the `-i`
+option to tell Puppet to install the module in our Git repository\'s
+module\'s directory:
+
+
+1.  Install the module using `puppet module install`:
+
+
+``` 
+t@mylaptop $ puppet module install -i modules puppetlabs-apache 
+Notice: Preparing to install into /home/thomas/puppet/modules ... 
+Notice: Downloading from https://forgeapi.puppet.com ... 
+Notice: Installing -- do not interrupt ... 
+/home/thomas/puppet/modules 
+└─┬ puppetlabs-apache (v3.1.0) 
+  ├── puppetlabs-concat (v4.2.1) 
+  └── puppetlabs-stdlib (v4.25.0) 
+```
+
+
+
+2.  Add the modules to your Git repository
+    and push them out:
+
+
+``` 
+t@mylaptop $ git add modules
+t@mylaptop $ git commit -m 'adding modules to repo' 
+[production 66f2ed5] adding modules to repo 
+ 1052 files changed, 80823 insertions(+) 
+ create mode 100644 modules/apache/CHANGELOG.md
+...
+t@mylaptop $ git push origin production
+...
+remote: create mode 100644 modules/stdlib/types/windowspath.pp 
+To git.example.com:repos/puppet.git 
+ 04178ab..66f2ed5 production -> production 
+```
+
+
+
+3.  Create a web server node definition in `site.pp`:
+
+
+``` 
+node webserver {
+  class {'apache': }
 }
 ```
 
 
 
-2.  Run puppet agent with the `noop` switch:
+4.  Run Puppet to apply the default Apache module configuration:
 
 
 ``` 
-t@mylaptop.example.com $ puppet apply noop.pp --noop
-Notice: Compiled catalog for mylaptop.example.com.strangled.net in environment production in 0.02 seconds
-Notice: /Stage[main]/Main/File[/tmp/noop]/ensure: current_value 'absent', should be 'file' (noop)
-Notice: Class[Main]: Would have triggered 'refresh' from 1 event
-Notice: Stage[main]: Would have triggered 'refresh' from 1 event
-Notice: Applied catalog in 0.02 seconds
+[root@webserver ~]# puppet agent -t 
+Info: Caching certificate for webserver.example.com Info: Caching certificate for webserver.example.com 
+Info: Using configured environment 'production' Info: Retrieving pluginfacts 
+Info: Retrieving plugin Notice:
+/File[/opt/puppetlabs/puppet/cache/lib/facter/apache_version.rb]/ensure: defin
+ed content as '{md5}2562993ee2b268e532b48cffc56bdaa0' Notice: /File[/opt/puppetlabs/puppet/cache/lib/puppet/functions/apache]/ensure: created
+...
+Info: Concat[15-default.conf]: Scheduling refresh of Class[Apache::Service] 
+Info: Class[Apache::Service]: Scheduling refresh of Service[httpd] 
+Notice: /Stage[main]/Apache::Service/Service[httpd]/ensure: ensure changed 'stopped' to 'running' 
+Info: /Stage[main]/Apache::Service/Service[httpd]: Unscheduling refresh on Service[httpd] 
+Notice: Applied catalog in 3.06 seconds
 ```
 
 
 
-3.  Run it without the `noop` option to see that the file is
+5.  Verify that you can reach
+    `webserver.example.com`:
+
+
+``` 
+[root@webserver ~]# curl http://webserver.example.com 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"> 
+<html> 
+ <head> 
+  <title>Index of /</title> 
+ </head> 
+ <body> 
+<h1>Index of /</h1> 
+  <table> 
+   <tr><th valign="top"><img src="/icons/blank.gif" alt="[ICO]"></th><th><a href="?C=N;O=D">Name</a></th><th><a href="?C=M;O=A">Last modified</a></th><th><a href="?C=S;O=A">Size</a></th><th><a href="?C=D;O=A">Description</a></th></tr> 
+   <tr><th colspan="5"><hr></th></tr> 
+   <tr><th colspan="5"><hr></th></tr> 
+</table> 
+</body></html>
+```
+
+
+
+### How it works\...
+
+
+Installing the `puppetlabs-apache` module from the Forge
+causes both `puppetlabs-concat` and
+`puppetlabs-stdlib` to be installed into our modules
+directory. The `concat` module is used to stitch snippets of
+files together in a specific order. It is used by the Apache module to
+create the main Apache configuration files.
+
+We then defined a web server node and applied the `apache`
+class to that node. We used all the default values and let the Apache
+module configure our server to be an Apache web server.
+
+The Apache module then rewrote all our Apache configurations. By
+default, the module purges all the configuration files from the Apache
+directory (`/etc/apache2` or `/etc/httpd`, depending
+on the distribution). The module can configure many different
+distributions and handle the nuances of each distribution. As a user of
+the module, you don\'t need to know how your distribution deals with the
+Apache module configuration.
+
+After purging and rewriting the configuration
+files, the module ensures that the `apache2` service is
+running (`httpd` on the test box based on **Enterprise
+Linux** (**EL**)).
+
+We then tested the webserver using cURL. There was nothing returned but
+an empty index page. This is the expected behavior. Normally, when we
+install Apache on a server, there are some files that display a default
+page (`welcome.conf` on EL-based systems); since the module
+purged those configurations, we only see an empty page.
+
+In a production environment, you would modify the defaults applied by
+the Apache module; the suggested configuration from the README is as
+follows:
+
+``` 
+class { 'apache':
+  default_mods => false,
+  default_confd_files => false,
+}
+```
+
+
+
+Creating Apache virtual hosts
+-----------------------------------------------
+
+
+Apache virtual hosts are created with the
+`apache` module with the `apache::vhost` defined
+type. We will create a new `vhost` on our Apache webserver
+called `navajo`, after one of the Apache tribes. 
+
+
+
+
+### How to do it\...
+
+
+Follow these steps to create Apache virtual hosts:
+
+
+1.  Create a `navajo apache::vhost` definition as follows:
+
+
+``` 
+apache::vhost { 'navajo.example.com':
+  port => '80',
+  docroot => '/var/www/navajo',
+}
+```
+
+
+
+2.  Create an index file for the new `vhost`:
+
+
+``` 
+$navajo = @(NAVAJO)
+  <html>
+    <head>
+      <title>navajo.example.com</title>
+    </head>
+    <body>http://en.wikipedia. org/wiki/Navajo_people
+    </body>
+  </html>
+  | NAVAJO
+file {'/var/www/navajo/index.html':
+  content => $navajo,
+  mode => '0644',
+  require => Apache::Vhost['navajo.example.com']
+}
+```
+
+
+
+3.  Run Puppet to create the new
+    `vhost`:
+
+
+``` 
+[root@webserver ~]# puppet agent -t
+Info: Caching catalog for webserver.example.com
+...
+Notice: /Stage[main]/Main/Node[webserver]/Apache::Vhost[navajo.example.com]/File[/var/www/navajo]/ensure: created
+Notice: /Stage[main]/Main/Node[webserver]/Apache::Vhost[navajo.example.com]/Concat[25-navajo.example.com.conf]/File[/etc/httpd/conf.d/25-navajo.example.com.conf]/ensure: defined content as '{md5}c2c851756828cc876e0cadb159d573fa'
+Info: Concat[25-navajo.example.com.conf]: Scheduling refresh of Class[Apache::Service]
+Info: Class[Apache::Service]: Scheduling refresh of Service[httpd]
+```
+
+
+
+4.  Verify that you can reach the new virtual host:
+
+
+``` 
+[root@webserver ~]# curl http://navajo.example.com
+<html>
+ <head>
+ <title>navajo.example.com</title>
+ </head>
+ <body>http://en.wikipedia. org/wiki/Navajo_people
+ </body>
+</html>
+```
+
+
+
+#### Note
+
+You will need `navajo.example.com` to resolve to your host;
+you can create a host entry with the following
+snippet:`host { 'navajo.example.com': ip => '127.0.0.1' }`Alternatively,
+you can specify how to reach `navajo.example.com` when issuing
+the `curl` command, as
+follows:`curl -H 'Host: navajo.example.com' http://127.0.0.1`
+
+
+
+### How it works\...
+
+
+The `apache::vhost` defined type creates a virtual host
+configuration file for Apache, `25-navajo.example.com.conf`.
+The file is created with a template; `25` at the beginning of
+the filename is the priority level of this virtual host. When Apache
+first starts, it reads through its configuration directory and starts
+executing files in alphabetical order. Files that begin with numbers are
+read before files that start with letters. In this way, the
+`Apache` module ensures that the virtual hosts are read in a
+specific order, which can be specified when you define[]{#id325450972
+.indexterm} the virtual host. The contents of this file are as follows:
+
+``` 
+# ************************************
+# Vhost template in module puppetlabs-apache
+# Managed by Puppet
+# **********************************
+<VirtualHost *:80>
+ ServerName navajo.example.com
+## Vhost docroot
+ DocumentRoot "/var/www/navajo"
+## Directories, there should at least be a declaration for /var/www/navajo
+<Directory "/var/www/navajo">
+ Options Indexes FollowSymLinks MultiViews
+ AllowOverride None
+ Require all granted
+```
+
+
+``` 
+ </Directory>
+## Logging
+ ErrorLog "/var/log/httpd/navajo.example.com_error.log"
+ ServerSignature Off
+ CustomLog "/var/log/httpd/navajo.example.com_access.log" combined 
+</VirtualHost>
+```
+
+
+As you can see, the default file has created log files and set up
+directory access permissions and options, in addition to specifying the
+listen port and `DocumentRoot`.
+
+The `vhost` definition creates the `DocumentRoot`
+directory, specified as `root` to the
+`apache::virtual` definition. The directory is created before
+the virtual host configuration file; after that file has been created, a
+`notify` trigger is sent to the Apache process to restart.
+
+Our manifest included a file that required the
+`Apache::Vhost['navajo.example.com']` resource; our file was
+then created after the directory and the virtual host configuration
+file.
+
+When we run cURL on the new website, we see the contents of the index
+file that we created.
+
+
+### There\'s more\...
+
+
+Both the defined type and the template take into account a multitude of
+possible configuration scenarios for virtual hosts. It is highly
+unlikely that you will find a setting that is not covered by this
+module. You should look at the definition for
+`apache::virtual` and the sheer number of possible arguments.
+
+The module also takes care of several settings for you. For instance, if
+we change the listen port on our navajo virtual host from `80`
+to `8080`, the module will make the following changes in
+`/etc/httpd/conf.d/ports.conf`:
+
+``` 
+-Listen 80
++Listen 8080
+-NameVirtualHost *:80
++NameVirtualHost *:8080
+```
+
+
+And it will make these changes in our virtual host file:
+
+``` 
+-<VirtualHost *:80>
++<VirtualHost *:8080>
+```
+
+
+After a `puppet run` on our web server, we would now be able
+to `curl` on port `8080` and see the same results:
+
+``` 
+[root@webserver ~]# curl http://navajo.example.com:8080
+<html>
+ <head>
+ <title>navajo.example.com</title>
+ </head>
+ <body>http://en.wikipedia. org/wiki/Navajo_people
+ </body>
+</html>
+```
+
+
+And when we use `curl` to connect to
+`najavo.example.com` on `port 80,` we see the
+following:
+
+``` 
+[root@webserver ~]# curl http://navajo.example.com
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /</title>
+ </head>
+ <body>
+<h1>Index of /</h1>
+  <table>
+   <tr><th valign="top"><img src="/icons/blank.gif" alt="[ICO]"></th><th><a href="?C=N;O=D">Name</a></th><th><a href="?C=M;O=A">Last modified</a></th><th><a href="?C=S;O=A">Size</a></th><th><a href="?C=D;O=A">Description</a></th></tr>
+   <tr><th colspan="5"><hr></th></tr>
+   <tr><th colspan="5"><hr></th></tr>
+</table>
+</body></html>
+```
+
+
+As we can see, the virtual host is no longer listening on port
+`80` and we receive the default empty directory listing we saw
+in our earlier example.
+
+
+Creating NGINX virtual hosts
+----------------------------------------------
+
+
+NGINX is a fast, lightweight web server that
+is preferred over Apache in many contexts, especially where high
+performance is important. NGINX is configured slightly differently than
+Apache; like Apache though, there is a Forge module that can be used to
+configure NGINX for us. Unlike Apache, however, the module that is
+suggested for use is not supplied by puppetlabs, but by James Fryman.
+This module uses some interesting tricks to configure itself. Previous
+versions of this module used R.I. Pienaar\'s
+`module_data package`. This package is used to configure
+`hieradata` within a module. It\'s used to supply default
+values to the `nginx` module. I wouldn\'t recommend starting
+out with this module at this point, but it is a good example of where
+module configuration may be headed in the future. Giving modules the
+ability to modify hieradata may prove useful.
+
+
+
+
+### How to do it\...
+
+
+In this example, we\'ll use a Forge module to configure NGINX. We\'ll
+download the module and use it to configure `virtualhosts`:
+
+
+1.  Download the `puppet-nginx` module from the Forge:
+
+
+``` 
+t@mylaptop $ puppet module install -i modules puppet-nginx
+Notice: Preparing to install into /home/thomas/puppet/modules ...
+Notice: Created target directory /home/thomas/puppet/modules
+Notice: Downloading from https://forgeapi.puppet.com ...
+Notice: Installing -- do not interrupt ...
+/home/thomas/puppet/modules
+└─┬ puppet-nginx (v0.11.0)
+ ├── puppetlabs-concat (v4.2.1) [/home/thomas/.puppetlabs/etc/code/modules]
+ └── puppetlabs-stdlib (v4.25.0) [/home/thomas/.puppetlabs/etc/code/modules]
+```
+
+
+
+2.  Replace the definition for webserver with
+    an `nginx` configuration:
+
+
+``` 
+node webserver {
+  service {'httpd': ensure => false }
+  class {'nginx': }
+  nginx::resource::server{ 'mescalero.example.com':
+    www_root => '/var/www/mescalero',
+  }
+  file {'/var/www/mescalero':
+    ensure => 'directory',
+    mode => '0755',
+    require => Nginx::Resource::Server['mescalero.example.com'],
+  }
+  $mescalero = @(MESCALERO)
+    <html>
+      <head>
+        <title>mescalero.example.com</title>
+      </head>
+      <body>
+        http:// en.wikipedia.org/wiki/Mescalero
+      </body>
+    </html>
+    | MESCALERO
+  file {'/var/www/mescalero/index.html':
+    content => $mescalero,
+    mode => '0644',
+    require => File['/var/www/mescalero'],
+  }
+}
+```
+
+
+
+3.  Run `puppet agent` on your `webserver` node:
+
+
+``` 
+[root@webserver ~]# puppet agent -t
+...
+Info: Caching catalog for webserver.example.com [87/1835]
+Info: Applying configuration version '1522256325' 
+Notice: /Stage[main]/Main/Node[webserver]/Service[httpd]/ensure: ensure changed 'running' to 'stopped' 
+Notice: /Stage[main]/Nginx::Package::Redhat/Yumrepo[nginx-release]/ensure: created 
+Info: Yumrepo[nginx-release](provider=inifile): changing mode of /etc/yum.repos.d/nginx-release.repo from 600 to 6$
+4 
+Notice: /Stage[main]/Nginx::Package::Redhat/Package[nginx]/ensure: created 
+Info: Class[Nginx::Package]: Scheduling refresh of Class[Nginx::Service] 
+Notice: /Stage[main]/Nginx::Config/File[/etc/nginx/conf.stream.d]/ensure: created 
+Notice: /Stage[main]/Nginx::Config/File[/etc/nginx/conf.mail.d]/ensure: created 
+...
+Notice: /Stage[main]/Nginx::Config/File[/etc/nginx/nginx.conf]/content:
+--- /etc/nginx/nginx.conf 2017-10-17 13:21:13.000000000 +0000
++++ /tmp/puppet-file20180328-19387-1bx1j5k 2018-03-28 17:00:01.290886282 +0000
+@@ -1,32 +1,64 @@
++# MANAGED BY PUPPET
++user nginx;
+...
+Notice: /Stage[main]/Main/Node[webserver]/Nginx::Resource::Server[mescalero.example.com]/Concat[/etc/nginx/sites-av
+ailable/mescalero.example.com.conf]/File[/etc/nginx/sites-available/mescalero.example.com.conf]/ensure: defined con
+tent as '{md5}69f8354a0f61a5175e3c2e6ee195262a'
+Info: Concat[/etc/nginx/sites-available/mescalero.example.com.conf]: Scheduling refresh of Class[Nginx::Service]
+Notice: /Stage[main]/Main/Node[webserver]/Nginx::Resource::Server[mescalero.example.com]/File[mescalero.example.com
+.conf symlink]/ensure: created
+Info: /Stage[main]/Main/Node[webserver]/Nginx::Resource::Server[mescalero.example.com]/File[mescalero.example.com.c
+onf symlink]: Scheduling refresh of Class[Nginx::Service]
+Info: Class[Nginx::Service]: Scheduling refresh of Service[nginx]
+Notice: /Stage[main]/Nginx::Service/Service[nginx]/ensure: ensure changed 'stopped' to 'running'
+Info: /Stage[main]/Nginx::Service/Service[nginx]: Unscheduling refresh on Service[nginx]
+Notice: /Stage[main]/Main/Node[webserver]/File[/var/www/mescalero]/ensure: created
+Notice: /Stage[main]/Main/Node[webserver]/File[/var/www/mescalero/index.html]/ensu
+```
+
+
+``` 
+re: defined content as '{md5}cb3f
+6427eb6923b58fa159916ef296f6'
+Notice: Applied catalog in 18.53 seconds
+```
+
+
+
+4.  Verify that you can reach the new `virtualhost`:
+
+
+``` 
+[root@webserver ~]# curl -H 'Host: mescalero.example.com' http://127.0.0.1
+<html>
+ <head>
+ <title>mescalero.example.com</title>
+ </head>
+ <body>
+ http:// en.wikipedia.org/wiki/Mescalero
+ </body>
+</html>
+```
+
+
+
+### How it works\...
+
+
+Installing the `puppet-nginx` module causes the
+`concat` and `stdlib` modules to be installed (we
+already had a copy of `stdlib`, so all this did was verify we
+had it). We run Puppet on our master to have
+the plugins created by these modules added to our running master. The
+`stdlib` and `concat` have facter and Puppet plugins
+that need to be installed for the NGINX module to work properly.
+
+With the plugins synchronized, we can then run the Puppet agent on our
+web server. As a precaution, we add a resource to stop Apache if it was
+previously started (we can\'t have NGINX and Apache both listening on
+port `80`). After the puppet agent runs, we verified that
+NGINX was running and the virtual host was configured.
+
+
+### There\'s more\...
+
+
+This module had a lot of interesting things like the `apache`
+modules, the `NGINX` module can be used to create very complex
+configurations. One interesting option is the ability to configured
+`NGINX` as a proxy server in only a few lines of code. I
+suggest looking at the `README.md` of the module or the module
+page on the forge at <https://forge.puppet.com/puppet/nginx>
+
+In the next section, we\'ll use a supported module to configure and
+manage MySQL installations.
+
+
+
+Managing MariaDB
+----------------------------------
+
+
+MySQL is a very widely used database server,
+and you\'ll probably need to install and configure a MySQL server at
+some point. On January 27, 2010, Oracle bought Sun Microsystems. Sun
+Microsystems originally developed MySQL. When Oracle took over, the
+project was forked into MariaDB. MariaDB was made to keep the MySQL
+server open source and maintained. When we use the
+`puppetlabs-mysql` module, we will actually be installing
+MariaDB. The `puppetlabs-mysql` module can simplify your
+MariaDB deployments.
+
+
+
+
+### How to do it\...
+
+
+Follow these steps to create the example:
+
+
+1.  Install the `puppetlabs-mysql` module:
+
+
+``` 
+t@burnaby $ puppet module install -i modules puppetlabs-mysql
+Notice: Preparing to install into /home/thomas/puppet/modules ...
+Notice: Downloading from https://forgeapi.puppet.com ...
+Notice: Installing -- do not interrupt ...
+/home/thomas/puppet/modules
+└─┬ puppetlabs-mysql (v5.3.0)
+ ├── puppet-staging (v3.1.0)
+ ├── puppetlabs-stdlib (v4.25.0)
+ └── puppetlabs-translate (v1.1.0)
+```
+
+
+
+2.  Create a new node definition for your MySQL server:
+
+
+``` 
+node dbserver {
+  class { 'mysql::server':
+       root_password => 'fenago',
+    override_options => {
+            'mysqld' => {
+   'max_connections' => '1024'
+      }
+    }
+  }
+}
+```
+
+
+
+3.  Run Puppet to install the database server
+    and apply the new root password:
+
+
+``` 
+Info: Applying configuration version '1522263661' 
+Notice: /Stage[main]/Mysql::Server::Config/File[mysql-config-file]/ensure: defined content as '{md5}15d890f0648fc49e43fcffc6ed7bd2d8' 
+Notice: /Stage[main]/Mysql::Server::Install/Package[mysql-server]/ensure: created 
+Notice: /Stage[main]/Mysql::Server::Installdb/Mysql_datadir[/var/lib/mysql]/ensure: created 
+Notice: /Stage[main]/Mysql::Server::Service/Service[mysqld]/ensure: ensure changed 'stopped' to 'running' 
+Info: /Stage[main]/Mysql::Server::Service/Service[mysqld]: Unscheduling refresh on Service[mysqld] 
+Notice: /Stage[main]/Mysql::Server::Root_password/Mysql_user[root@localhost]/password_hash: defined 'password_hash' as '*6ABB0D4A7D1381BAEE4D078354557D495ACFC059' 
+Notice: /Stage[main]/Mysql::Server::Root_password/File[/root/.my.cnf]/ensure: defined content as '{md5}a65d0eb64218eebf5eeed997de0e72a8' 
+Info: Creating state file /opt/puppetlabs/puppet/cache/state/state.yaml 
+Notice: Applied catalog in 16.42 seconds
+```
+
+
+
+4.  Verify that you can connect to the database:
+
+
+``` 
+[root@dbserver ~]# mysql 
+Welcome to the MariaDB monitor. Commands end with ; or \g.
+Your MariaDB connection id is 10
+Server version: 5.5.56-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> \q
+Bye
+```
+
+
+
+### How it works\...
+
+
+The MySQL module installs the MariaDB server and ensures[]{#id325451031
+.indexterm} that the server is running. It then configures the root
+password for MariaDB. The module does a lot of other things for you as
+well. It creates a `.my.cnf` file with the root user password.
+When we run the `mysql client`, the `.my.cnf` file
+sets all the defaults, so we do not need to supply any arguments.
+
+
+### There\'s more\...
+
+
+In the next section, we\'ll show you how to create databases and users.
+
+
+
+Creating databases and users
+----------------------------------------------
+
+
+Managing a database means more than ensuring
+the service is running; a database server is
+nothing without databases. Databases need users and privileges.
+Privileges are handled with `GRANT` statements. We will use
+the `puppetlabs-mysql` package to create a database and a user
+with access to that database. We\'ll create a MariaDB
+user, `drupal`, and a database, called `drupal`.
+We\'ll create a `nodes` table within the `drupal`
+database and place data into that table.
+
+
+
+
+### How to do it\...
+
+
+Follow these steps to create the databases
+and users:
+
+
+1.  Create a database definition within your `dbserver` class:
+
+
+``` 
+mysql::db { 'drupal':
+  host     => 'localhost',
+  user     => 'drupal',
+  password => 'fenago',
+  sql      => '/root/drupal.sql',
+  require  => File['/root/drupal.sql']
+}
+$drupal = @(DRUPAL)
+  CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT, 
+    title VARCHAR(255),
+    body TEXT);
+  INSERT INTO users (id, title, body) VALUES (1,'First Node','Contents of first Node');
+  INSERT INTO users (id, title, body) VALUES (2,'Second Node','Contents of second Node');
+  | DRUPAL
+file { '/root/drupal.sql':
+  ensure  => present,
+  content => $drupal,
+}
+```
+
+
+
+2.  Allow the Drupal user to modify the nodes table:
+
+
+``` 
+mysql_grant { 'drupal@localhost/drupal.nodes':
+  ensure     => 'present',
+  options    => ['GRANT'],
+  privileges => ['ALL'],
+  table      => 'drupal.nodes',
+  user       => 'drupal@localhost',
+}
+```
+
+
+
+3.  Run Puppet to have the user, database, and `GRANT`
     created:
 
 
 ``` 
-t@mylaptop.example.com $ puppet apply noop.pp
-Notice: Compiled catalog for mylaptop.example.com.strangled.net in environment production in 0.01 seconds
-Notice: /Stage[main]/Main/File[/tmp/noop]/ensure: defined content as '{md5}3e47b75000b0924b6c9ba5759a7cf15d'
-Notice: Applied catalog in 0.02 seconds
-```
-
-
-
-### How it works\...
-
-
-In the `noop` mode, Puppet does
-everything it would normally, with the exception of actually making any
-changes to the machine (the exec resources, for example, won\'t run). It
-tells you what it would have done, and you can compare this with what
-you expected to happen. If there are any differences, double-check the
-manifest or the current state of the machine.
-
-Note that when we ran with `--noop`, Puppet warned us that it
-would have created the `/tmp/noop` file. This may or may not
-be what we want, but it\'s useful to know in advance. If you are making
-changes to the code applied to your production servers, it\'s useful to
-run puppet agent with the `--noop` option to ensure that your
-changes will not affect the production services.
-
-
-### There\'s more\...
-
-
-You can also use noop mode as a simple
-auditing tool. It will tell you whether any changes have been made to
-the machine since Puppet last applied its manifest. Some organizations
-require all config changes to be made with Puppet, which is one way of
-implementing a change-control process. Unauthorized changes to the
-resources managed by Puppet can be detected using Puppet in noop mode
-and you can then decide whether to merge the changes back into the
-Puppet manifest or undo them.
-
-You can also use the `--debug` switch in Puppet to see the
-details of every resource Puppet considers in the manifest. This can be
-helpful when trying to figure out whether Puppet is loading a particular
-class, or to see in which order things are happening.
-
-If you are running a master, you can compile the catalog for a node on
-the master with the `--trace` option in addition to
-`--debug`. If the catalog is failing to compile, this method
-will also fail to compile the catalog (if you have an old definition for
-the fenago node that is failing, try commenting it out before running
-this test). This produces a lot of debugging output. For example, to
-compile the catalog for our fenago, host on our master and place the
-results in `/tmp/fenago.log`:
-
-``` 
-[root@puppet ~]# puppet master --compile fenago.example.com --debug --trace --logdest /tmp/fenago.log
-{
- "tags": [
- "settings",
- "fenago",
- "node"
- ],
- "name": "fenago.example.com",
- "version": 1526923109,
- "code_id": null,
- "catalog_uuid": "f0efb635-8711-4c28-b5d6-245e813f1425",
-...
-```
-
-
-After compiling the catalog, Puppet will print out the catalog to the
-command line. The log file (`/tmp/fenago.log`) will have a
-lot of information on how the catalog was compiled.
-
-
-### See also
-
-
-
-- The [*Auditing resources*] recipe in [Lab
-    5],
-    [*Users and Virtual Resources*]
-- The [*Automatic syntax-checking with Git hooks*] recipe
-    in [Lab
-    2],
-    [*Puppet Infrastructure*]
-- The [*Generating reports*] recipe in this lab
-- The [*Testing your Puppet manifests with rspec-puppet*]
-    recipe in [Lab
-    9],
-    [*External Tools and the Puppet Ecosystem*]
-
-
-
-Logging the command output
----------------------------------------------
-
-
-When you use the exec resources to run commands on the node,
-Puppet will give you an error message such as
-the following if a command returns a non-zero exit status:
-
-``` 
-Notice: /Stage[main]/Main/Exec[/bin/cat /tmp/missing]/returns: /bin/cat: /tmp/missing: No such file or directory
-Error: /bin/cat /tmp/missing returned 1 instead of one of [0]
-Error: /Stage[main]/Main/Exec[/bin/cat /tmp/missing]/returns: change from notrun to 0 failed: /bin/cat /tmp/missing returned 1 instead of one of [0]
-```
-
-
-As you can see, Puppet not only reports that the command failed, but
-shows its output:
-
-``` 
-/bin/cat: /tmp/missing: No such file or directory
-```
-
-
-This is useful for figuring out why the command didn\'t work, but
-sometimes the command actually succeeds (in that it returns a zero exit
-status) but still doesn\'t do what we wanted. In that case, how can you
-see the command output? You can use the `logoutput` attribute.
-
-
-
-
-### How to do it\...
-
-
-Follow these steps in order to log the command[]{#id325145217
-.indexterm} output:
-
-
-1.  Define an exec resource with the `logoutput` parameter, as
-    shown in the following code snippet:
-
-
-``` 
-exec { 'exec with output':
-  command   => '/bin/cat /etc/hostname',
-  logoutput => true,
-}
-```
-
-
-
-2.  Run Puppet:
-
-
-``` 
-t@mylaptop $ puppet apply exec.pp
-Notice: Compiled catalog for mylaptop.example.com in environment production in 0.05 seconds
-Notice: /Stage[main]/Main/Exec[exec with output]/returns: mylaptop.example.com
-Notice: /Stage[main]/Main/Exec[exec with output]/returns: executed successfully
-Notice: Applied catalog in 0.02 seconds
-```
-
-
-
-3.  As you can see, even though the command succeeds, Puppet prints the
-    output:
-
-
-``` 
-mylaptop.example.com
-```
-
-
-
-### How it works\...
-
-
-The `logoutput` attribute has three possible settings:
-
-
-- `false`: This never prints the command[]{#id325420302
-    .indexterm} output
-- `on_failure`: This only prints the output if the command
-    fails (the default setting)
-- `true`: This always prints the output, whether the command
-    succeeds or fails
-
-
-
-### There\'s more\...
-
-
-You can set the default value of `logoutput` to always display
-the command output for all exec resources by defining the following in
-your `site.pp` file:
-
-``` 
-Exec { logoutput => true, }
-```
-
-
-What\'s this Exec syntax? It looks like an exec resource, but it\'s not.
-When you use `Exec` with a capital E, you\'re setting the
-resource default for exec. You may set the resource default for any
-resource by capitalizing the first letter of the resource type. Anywhere
-that Puppet sees that resource within the current scope or a nested
-subscope, it will apply the defaults you define.
-
-If you never want to see the command output, whether it succeeds or
-fails, use:
-
-``` 
-logoutput => false,
-```
-
-
-More information is available at
-<https://docs.puppetlabs.com/references/latest/type.html#exec>.
-
-
-
-Logging debug messages
------------------------------------------
-
-
-It can be very helpful when debugging
-problems if you can print out information at a certain point in the
-manifest. This is a good way to tell, for example, whether a variable
-isn\'t defined or has an unexpected value. Sometimes, it\'s useful just
-to know that a particular piece of code has been run. Puppet\'s notify
-resource lets you print out such messages.
-
-
-
-
-### How to do it\...
-
-
-Define a `notify` resource in your manifest at the point you
-want to investigate:
-
-``` 
-notify { 'Got this far!': }
-```
-
-
-
-### How it works\...
-
-
-When this resource is applied, Puppet will print out the message:
-
-``` 
-notice: Got this far!
-```
-
-
-
-### There\'s more\...
-
-
-In addition to simple messages, we can output variables[]{#id325436371
-.indexterm} within our notify statements. Additionally, we can treat the
-notify calls the same as other resources, having them require or be
-required by other resources.
-
-By printing out variable values, you can refer to variables in the
-message:
-
-``` 
-notify {"operating system is ${facts['os']['name']}": }
-```
-
-
-Puppet will interpolate the values in the printout:
-
-``` 
-Notice: operating system is Fedora
-```
-
-
-#### Resource ordering
-
-
-Puppet compiles your manifests into a catalog. The order in which
-resources are executed on the client (node)
-may not be the same as the order of the resources within your source
-files. When you are using a notify resource for debugging, you should
-use resource chaining to ensure that the notify resource is executed
-before or after your failing resource.
-
-For example, if the `exec failing exec` is failing, you can
-chain a notify resource to run directly before the failed exec resource,
-as shown here:
-
-``` 
-notify{"failed exec on ${hostname}": }
-  -> exec {'failing exec':
-       command   => "/bin/grep ${hostname} /etc/hosts",
-       logoutput => true,
-     }
-```
-
-
-If you don\'t chain the resource or use a metaparameter, such as
-`before` or `require`, there is no guarantee that
-your `notify` statement will be executed near the other
-resources you are interested in debugging. More information on
-resource ordering can be found at
-<https://docs.puppetlabs.com/puppet/latest/reference/lang_relationships.html>.
-
-For example, to have your notify resource run after
-`failing exec` in the preceding code snippet, use:
-
-``` 
-notify { 'Resource X has been applied':
-  require => Exec['failing exec'],
-}
-```
-
-
-Note, however, that in this case the notify resource will fail to
-execute, since the exec failed. When a resource fails, all the resources
-that depended on that resource are skipped:
-
-``` 
-notify {'failed exec failed': require => Exec['failing exec'] }
-```
-
-
-When we run Puppet, we see that the notify resource is skipped:
-
-``` 
-t@mylaptop ~/puppet/manifests $ puppet apply fail.pp
-...
-Error: /bin/grepmylaptop /etc/hosts returned 1 instead of one of [0]
-Error: /Stage[main]/Main/Exec[failing exec]/returns: change from notrun to 0 failed: /bin/grepmylaptop /etc/hosts returned 1 instead of one of [0]
-Notice: /Stage[main]/Main/Notify[failed exec failed]: Dependency Exec[failing exec] has failures: true
-Warning: /Stage[main]/Main/Notify[failed exec failed]: Skipping because of failed dependencies
-Notice: Finished catalog run in 0.06 seconds
-```
-
-
-
-Generating reports
--------------------------------------
-
-
-If you\'re managing a lot of machines, Puppet\'s
-reporting facility can give you some valuable
-information on what\'s actually happening out there.
-
-
-
-
-### How to do it\...
-
-
-To enable reports, just add this to a client\'s `puppet.conf`,
-within the `[main]` or `[agent]` sections:
-
-``` 
-report = true
-```
-
-
-
-#### Note
-
-In recent versions of Puppet, `report = true` is the default
-setting.
-
-
-
-### How it works\...
-
-
-With reporting enabled, Puppet will generate a report file, containing
-data such as:
-
-
-- Date and time of the run
-- Total time for the run
-- Log messages output during the run
-- List of all the resources in the client\'s manifest
-- Whether Puppet changed any resources, and how many
-- Whether the run succeeded or failed
-
-
-By default, these reports are stored on the
-node at `/opt/puppetlabs/puppet/cache/reports/` in a directory
-named after the certname of the node (the FQDN), but you can specify a
-different destination using the `reportdir` option in
-`puppet.conf`. You can create your own scripts to process
-these reports (which are in YAML format). When we run puppet agent on
-`fenago.example.com`, the following file is created on the
-master:
-
-``` 
-/opt/puppetlabs/server/data/puppetserver/reports/201805140434.yaml
-```
-
-
-
-### There\'s more\...
-
-
-If you have more than one master server, you can have all your reports
-sent to the same server by specifying `report_server` in the
-`[agent]` section of `puppet.conf`.
-
-If you just want one report, or you don\'t want to enable reporting all
-the time, you can disable reporting by specifying
-`report = false` in `puppet.conf` and then add the
-`--report` switch to the command line when you run Puppet
-manually:
-
-``` 
-[root@fenago ~]# puppet agent -t --report
-Notice: Finished catalog run in 0.34 seconds
-```
-
-
-You won\'t see any output, but a report file will be generated in the
-report directory.
-
-You can also see some overall statistics about a Puppet run by supplying
-the `--summarize` switch:
-
-``` 
-[root@fenago ~]# puppet agent -t --report --summarize
+[root@dbserver ~]# puppet agent -t
 Info: Using configured environment 'production'
 Info: Retrieving pluginfacts
 Info: Retrieving plugin
 Info: Loading facts
-Info: Caching catalog for fenago.example.com
-Info: Applying configuration version '1526924636'
-Notice: Applied catalog in 0.05 seconds
-Changes:
-Events:
-Resources:
-            Total: 7
-Time:
-         Schedule: 0.00
-   Transaction evaluation: 0.02
-   Convert catalog: 0.04
-   Catalog application: 0.05
-   Node retrieval: 0.16
-   Config retrieval: 0.31
-      Plugin sync: 0.65
-   Fact generation: 1.23
-         Last run: 1526924636
-       Filebucket: 0.00
-            Total: 2.47
-Version:
-           Config: 1526924636
-           Puppet: 5.5.0
-```
-
-
-#### Other report types
-
-
-Puppet can generate different types of reports with the reports option
-in the `[main]` section of `puppet.conf` on your
-Puppet master servers. There are several built-in report[]{#id325458775
-.indexterm} types, listed at
-<https://docs.puppetlabs.com/references/latest/report.html>. In addition
-to the built-in report types, there are some community-developed reports
-that are quite useful. The Foreman
-([http://theforeman.org](http://theforeman.org/){.ulink}), for example,
-provides a Foreman report type that you can enable to forward your node
-reports to the Foreman.
-
-
-
-### See also
-
-
-
-- The [*Auditing resources*] recipe in [Lab
-    5],
-    [*Users and Virtual Resources*]
-
-
-Producing automatic HTML documentation
----------------------------------------------------------
-
-
-As your manifests get bigger and more
-complex, it can be helpful to create HTML documentation for your nodes
-and classes using an automatic documentation tool, puppet strings.
-Previous versions of Puppet included the `doc` option, which
-was used to produce documentation. However, it was deprecated in favor
-of puppet strings, a ruby gem.
-
-
-
-
-### Getting ready\...
-
-
-Install the puppet strings ruby gem. First install the YARD gem, then
-puppet-strings:
-
-``` 
-t@mylaptop ~ $ sudo /opt/puppetlabs/puppet/bin/gem install yard
-[sudo] password for thomas: 
-Fetching: yard-0.9.12.gem (100%)
---------------------------------------------------------------------------------
-As of YARD v0.9.2:
-
-RubyGems "--document=yri,yard" hooks are now supported. You can auto-configure
-YARD to automatically build the yri index for installed gems by typing:
-
-$ yard config --gem-install-yri
-
-See `yard config --help` for more information on RubyGems install hooks.
-
-You can also add the following to your .gemspec to have YARD document your gem
-on install:
-
-    spec.metadata["yard.run"] = "yri" # use "yard" to build full HTML docs.
-
---------------------------------------------------------------------------------
-Successfully installed yard-0.9.12
-Parsing documentation for yard-0.9.12
-Installing ri documentation for yard-0.9.12
-Done installing documentation for yard after 2 seconds
-1 gem installed
+Info: Caching catalog for dbserver.example.com
+Info: Applying configuration version '1522266120'
+Notice: /Stage[main]/Main/Node[dbserver]/File[/root/drupal.sql]/ensure: defined content as '{md5}f0f695b4b093cd225da626ae207f425a'
+Notice: /Stage[main]/Main/Node[dbserver]/Mysql::Db[drupal]/Mysql_database[drupal]/ensure: created
+Info: /Stage[main]/Main/Node[dbserver]/Mysql::Db[drupal]/Mysql_database[drupal]: Scheduling refresh of Exec[drupal-import]
+Notice: /Stage[main]/Main/Node[dbserver]/Mysql::Db[drupal]/Mysql_user[drupal@localhost]/ensure: created
+Notice: /Stage[main]/Main/Node[dbserver]/Mysql_grant[drupal@localhost/drupal.nodes]/ensure: created
+Notice: /Stage[main]/Main/Node[dbserver]/Mysql::Db[drupal]/Mysql_grant[drupal@localhost/drupal.*]/ensure: created
 ```
 
 
 ``` 
-t@mylaptop ~ $ sudo /opt/puppetlabs/puppet/bin/gem install puppet-strings
-Fetching: rgen-0.8.2.gem (100%)
-Successfully installed rgen-0.8.2
-Fetching: puppet-strings-2.0.0.gem (100%)
-Successfully installed puppet-strings-2.0.0
-Parsing documentation for rgen-0.8.2
-Installing ri documentation for rgen-0.8.2
-Parsing documentation for puppet-strings-2.0.0
-Installing ri documentation for puppet-strings-2.0.0
-Done installing documentation for rgen, puppet-strings after 2 seconds
-2 gems installed
+Notice: /Stage[main]/Main/Node[dbserver]/Mysql::Db[drupal]/Exec[drupal-import]: Triggered 'refresh' from 1 event
+Notice: Applied catalog in 0.32 seconds
 ```
 
 
 
-### How to do it\...
-
-
-We\'ll use the `thing1` module we created[]{#id325445368
-.indexterm} with PDK. PDK does a great job of filling out all the
-default comments that are used by puppet strings:
-
-
-1.  Use `puppet` strings to generate the HTML documentation as
-    follows:
+4.  Verify that the database and table have
+    been created:
 
 
 ``` 
-t@mylaptop $ cd modules/thing1/home/thomas/puppet/modules/thing1
-t@mylaptop $ puppet strings
-Files: 1
-Modules: 0 ( 0 undocumented)
-Classes: 0 ( 0 undocumented)
-Constants: 0 ( 0 ocumented)
-Attributes: 0 ( 0 undocumented)
-Methods: 0 ( 0 undocumented)
-Puppet Classes: 1 ( 0 undocumented)
-Puppet Defined Types: 0 ( 0 undocumented)
-Puppet Types: 0 ( 0 undocumented)
-Puppet Providers: 0 ( 0 undocumented)
-Puppet Functions: 0 ( 0 undocumented)
-Puppet Tasks: 0 ( 0 undocumented)
-Puppet Plans: 0 ( 0 undocumented)
- 100.00% documented
+[root@dbserver ~]# mysql -u drupal -pfenago drupal
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MariaDB monitor. Commands end with ; or \g.
+Your MariaDB connection id is 40
+Server version: 5.5.56-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [drupal]> show tables;
++------------------+
+| Tables_in_drupal |
++------------------+
+| users |
++------------------+
+1 row in set (0.00 sec)
 ```
 
 
 
-2.  This will generate a set of HTML files in a directory
-    named doc in the current directory. Open
-    the top-level index file at
-    `modules/thing1/doc/index.html`:
+5.  Verify that our default data has been loaded into the table:
 
 
+``` 
+MariaDB [drupal]> select * from users;
++----+-------------+-------------------------+
+| id | title | body |
++----+-------------+-------------------------+
+| 1 | First Node | Contents of first Node |
+| 2 | Second Node | Contents of second Node |
++----+-------------+-------------------------+
+2 rows in set (0.00 sec)
 
-![](./images/f69626ed-edc1-4041-9429-c799df7eed8f.png)
-
-
-
-3.  Click the **`hamburger`** menu on the right and select the
-    `thing1` class:
-
-
-
-![](./images/78c5778f-5083-417b-88aa-39ff4d730eb5.png)
+MariaDB [drupal]> \q
+Bye
+```
 
 
 
 ### How it works\...
 
 
-The puppet strings command creates a structured HTML
-documentation tree similar to using YARD
-(YARD is similar to RDoc, which was used previously). Puppet-strings
-will use the comments in your code to generate the documentation.
-Properly formatting your comments will make it easier to produce quality
-documentation for your modules.
-
-
-### There\'s more\...
-
-
-Using the puppet strings server command, you can generate documentation
-for all the modules known in the current environment. Puppet strings
-will then start a web server and serve up your documentation. For
-example, we can run the server command on our Puppet server, as follows:
+We will start with the definition of the new `drupal`
+database:
 
 ``` 
-[root@puppet ~]# puppet strings server
-Generating documentation for Puppet module 'concat'.
-[warn]: Missing a description for Puppet resource property 'ensure' at /etc/puppetlabs/code/environments/production/public/concat/lib/puppet/type/concat_file.rb:24.
-...
-Starting YARD documentation server.
-[2018-05-21 20:19:19] INFO WEBrick 1.3.1
-[2018-05-21 20:19:19] INFO ruby 2.4.2 (2017-09-14) [x86_64-linux] 
-[2018-05-21 20:19:19] INFO WEBrick::HTTPServer#start: pid=25400 port=8808 
-::1 - - [21/May/2018:20:23:24 UTC] "GET / HTTP/1.1" 200 2838 
-- -> /
+mysql::db { 'drupal':
+  host     => 'localhost',
+  user     => 'drupal',
+  password => 'fenago',
+  sql      => '/root/drupal.sql',
+  require  => File['/root/drupal.sql']
+ }
 ```
 
 
-Now, when we point our web browser to port `8808` on our
-puppet server, we see documentation for all the modules in our
-environment:
-
-
-![](./images/0f2bb09c-e36c-46cf-8e40-392156c4b81b.png)
-
-
-
-Drawing dependency graphs
---------------------------------------------
-
-
-Dependencies can get complicated quickly, and
-it\'s easy to end up with a circular dependency (where A depends on B,
-which depends on A) that will cause Puppet to complain and stop working.
-Fortunately, Puppet\'s `--graph` option makes it easy to
-generate a diagram of your resources and the dependencies between them,
-which can be a big help in fixing such problems.
-
-
-
-
-### Getting ready
-
-
-Install the `graphviz` package to view the diagram files:
+We specify that we\'ll connect from `localhost` using the
+`drupal` user. We give the password for the
+user and specify a SQL file that will be
+applied to the database after the database has been[]{#id325453767
+.indexterm} created. We require that the SQL file exists before we
+create the user; that way, the `CREATE TABLE` in the SQL file
+can be executed:
 
 ``` 
-t@mylaptop ~ $ sudo puppet resource package graphviz ensure=installed
-Notice: /Package[graphviz]/ensure: created
-package { 'graphviz':
-  ensure => '2.40.1-20.fc28',
+$drupal = @(DRUPAL)
+  CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT, 
+    title VARCHAR(255),
+    body TEXT);
+  INSERT INTO users (id, title, body) VALUES (1,'First Node','Contents of first Node');
+  INSERT INTO users (id, title, body) VALUES (2,'Second Node','Contents of second Node');
+  | DRUPAL
+file { '/root/drupal.sql':
+  ensure  => present,
+  content => $drupal,
 }
 ```
 
 
-
-### How to do it\...
-
-
-Follow these steps to generate a dependency
-graph for your manifest:
-
-
-1.  Create a new `trifecta` module:
-
+We then ensure that the user has the appropriate privileges with a
+`mysql_grant` resource:
 
 ``` 
-t@burnaby $ pdk new module trifecta
-pdk (INFO): Creating new module: trifecta
-
-We need to create the metadata.json file for this module, so we're going to ask you 4 questions.
-If the question is not applicable to this module, accept the default option shown after each question. You can modify any answers at any time by manually updating the metadata.json file.
-
-[Q 1/4] If you have a Puppet Forge username, add it here.\
-We can use this to upload your module to the Forge when it's complete.
---> uphillian
-
-[Q 2/4] Who wrote this module?
-This is used to credit the module's author.
---> Thomas Uphill
-
-[Q 3/4] What license does this module code fall under?
-This should be an identifier from https://spdx.org/licenses/. Common values are "Apache-2.0", "MIT", or "proprietary".
---> GPL-3.0
-
-[Q 4/4] What operating systems does this module support?
-Use the up and down keys to move between the choices, space to select and enter to continue.
---> RedHat based Linux, Debian based Linux, Windows (Use arrow or number (1-7) keys, press Space to select and Ente--> RedHat based Linux, Debian based Linux
-Metadata will be generated based on this information, continue? Yes
-pdk (INFO): Module 'trifecta' generated at path '/home/thomas/puppet/modules/trifecta', from template 'file:///opt/puppetlabs/pdk/share/cache/pdk-templates.git'.
-pdk (INFO): In your module directory, add classes with the 'pdk new class' command.
-```
-
-
-
-2.  Create the `init` class:
-
-
-``` 
-t@burnaby $ cd trifecta/home/thomas/puppet/modules/trifectat@burnaby 
-$ pdk new class trifecta
-pdk (INFO): Creating '/home/thomas/puppet/modules/trifecta/manifests/init.pp' from template.
-pdk (INFO): Creating '/home/thomas/puppet/modules/trifecta/spec/classes/trifecta_spec.rb' from template.
-```
-
-
-
-3.  Place the following code, containing a
-    deliberate circular dependency, in the `init` class (can
-    you spot the problem?):
-
-
-``` 
-# A description of what this class does
-#
-# @summary A short summary of the purpose of this class
-#
-# @example
-# include trifecta
-class trifecta {
-  package { 'ntp':
-    ensure  => installed,
-    require => File['/etc/ntp.conf'],
-  }
-
-  service { 'ntp':
-    ensure  => running,
-    require => Package['ntp'],
-  }
-
-  file { '/etc/ntp.conf':
-    source  => 'puppet:///modules/trifecta/ntp.conf',
-    notify  => Service['ntp'],
-    require => Package['ntp'],
-  }
+mysql_grant { 'drupal@localhost/drupal.nodes':
+  ensure     => 'present',
+  options    => ['GRANT'],
+  privileges => ['ALL'],
+  table      => 'drupal.nodes',
+  user       => 'drupal@localhost',
 }
 ```
-
-
-
-4.  Create a simple `ntp.conf` file in
-    `modules/trifecta/files/ntp.conf` with the following
-    content:
-
-
-``` 
-server 127.0.0.1
-```
-
-
-
-5.  Run `Puppet apply` to generate the graph:
-
-
-``` 
-t@mylaptop $ puppet apply --modulepath ~thomas/puppet/modules -e 'include trifecta' --graph
-Notice: Compiled catalog for burnaby.strangled.net in environment production in 0.01 seconds
-Error: Found 1 dependency cycle:
-(File[/etc/ntp.conf] => Package[ntp] => File[/etc/ntp.conf])\nCycle graph written to /home/thomas/.puppetlabs/opt/puppet/cache/state/graphs/cycles.dot.
-Error: Failed to apply catalog: One or more resource dependency cycles detected in graph
-```
-
-
-
-6.  Convert the `cycles.dot` file to a PNG using the dot
-    command, as follows:
-
-
-``` 
-t@mylaptop $ dot -Tpng /home/thomas/.puppetlabs/opt/puppet/cache/state/graphs/cycles.dot -o cycles.png
-```
-
-
-
-7.  View the PNG:
-    
-    ![](./images/655ba534-6acb-46b8-8352-983b03a2734d.png)
-    
-
-
-### How it works\...
-
-
-When you run `puppet apply --graph` (or set
-`graph=true` in `puppet.conf`), Puppet will generate
-three graphs in the DOT format (a graphics language):
-
-
-- `resources.dot`: This shows the
-    hierarchical structure of your classes
-    and resources, but without dependencies
-- `relationships.dot`: This shows the dependencies between
-    resources as arrows, as shown in the preceding image
-- `expanded_relationships.dot`: This is a more detailed
-    version of the relationships graph
-
-
-If there is a dependency cycle in your code, then Puppet will also
-generate a `cycles.dot` file. For our preceding code, the
-`relationships.dot` file produces the following PNG:
-
-
-![](./images/f18d271b-b0c0-413f-892e-d76f51fc7403.png)
-
-
-The dot tool (part of the graphviz package) will convert these to an
-image format, such as PNG, for viewing.
-
-In the relationships graph, each resource in your manifest is shown as a
-balloon (known as a vertex), with arrowed lines connecting them to
-indicate the dependencies. You can see that, in our example, the
-dependencies between `File['/etc/ntp.conf']` and
-`Package['ntp']` are bidirectional. When Puppet tries to
-decide where to begin applying these resources, it can start at
-`File['/etc/ntp.conf']`, look for what depends on
-`File['/etc/ntp. conf']`, and end up at
-`Package['ntp']`.
-
-
-
-
-#### When Puppet looks for the dependencies
-
-
-This type of problem is known as a circular dependency[]{#id325467066
-.indexterm} problem; Puppet can\'t decide where to start because the two
-resources depend on each other.
-
-To fix the circular dependency problem, all you need to do is remove one
-of the dependency lines and break the circle. The following code fixes
-the problem:
-
-``` 
-class trifecta {
-  package { 'ntp':
-    ensure => installed,
-  }
-
-  service { 'ntp':
-    ensure  => running,
-    require => Package['ntp'],
-  }
-
-  file { '/etc/ntp.conf':
-    source  => 'puppet:///modules/trifecta/ntp.conf',
-    notify  => Service['ntp'],
-    require => Package['ntp'],
-  }
-}
-```
-
-
-Now, when we run puppet apply or agent with the `--graph`
-option, the resulting graph does not have any circular paths (cycles).
-
-In this graph, it is easy to see that `Package[ntp]` is the
-first resource to be applied, then `File[/etc/ntp.conf]`, and
-finally `Service[ntp]`.
-
-A graph such as that shown previously is
-known as a **Directed Acyclic Graph** (**DAG**).
-Reducing the resources to a DAG ensures that Puppet can calculate the
-shortest path of all the vertices (resources) in linear time. For more
-information on DAGs, check
-out <http://en.wikipedia.org/wiki/Directed_acyclic_graph>.
 
 
 
 ### There\'s more\...
 
 
-Resource and relationship graphs can be useful even when you don\'t have
-a bug to find. If you have a very complex network of classes and
-resources, for example, studying the resources graph can help you see
-where to simplify things. Similarly, when dependencies become too
-complicated to understand by reading the manifest, the graphs can be a
-useful form of documentation. For instance, a graph will make it readily
-apparent which resources have the most dependencies and which resources
-are required by the most other resources. Resources that are required by
-a large number of other resources will have numerous arrows pointing at
-them.
-
-
-### See also
-
-
-
-- The [*Using run stages*] recipe in [Lab
-    3],
-    [*Writing Better Manifests*]
-
-
-Understanding Puppet errors
-----------------------------------------------
-
-
-Puppet\'s error messages can sometimes be a
-little confusing. Updated and increasingly helpful error messages are
-one reason to upgrade your Puppet installation if you are running any
-version prior to Version 3.
-
-Here are some of the most common errors you might encounter, and what to
-do about them.
-
-
-
-
-### How to do it\...
-
-
-Often, the first step is simply to search the web for the error message
-text and see what explanations you can find for the error, along with
-any helpful advice about fixing it. Here are some of the most common
-puzzling errors, with possible explanations.
-
-
-
-
-#### Could not retrieve file metadata for XXX: getaddrinfo: Name or service not known
-
-
-Where `XXX` is a file resource, you may have
-accidentally typed
-`puppet://modules...` in a file source instead of
-`puppet:///modules...` (note the triple slash).
-
-
-#### Could not evaluate: Could not retrieve information from environment production source(s) XXX
-
-
-The source file may not be present or may not be in the right location
-in the Puppet repo.
-
-
-#### Error: Could not set \'file\' on ensure: No such file or directory XXX
-
-
-The file path may specify a parent directory
-(or directories) that doesn\'t exist. You can use separate file
-resources in Puppet to create these. You will see this error if, for
-example, you specified the `/etc/myProduct/config.ini` file
-and the `/etc/myProduct` directory did not exist.
-
-
-#### Change from absent to file failed: Could not set \'file on ensure: No such file or directory
-
-
-This is often caused by Puppet trying to write a file to a directory
-that doesn\'t exist. Check that the directory either exists already or
-is defined in Puppet, and that the file resource requires the directory
-(so that the directory is always created first). 
-
-
-#### Note
-
-Another thing to consider is that SELinux rules may prevent the file
-from being created. Check the audit log for entries from Puppet
-attempting to create the file. You may also encounter this with remote
-file systems (NFS, Samba), where the local root user does not have
-permission to create the file in question.
-
-
-
-#### Undefined method \'closed?\' for nil:NilClass
-
-
-This unhelpful error message is roughly translated as [*something went
-wrong*]. It tends to be a catch-all error caused by many
-different problems, but you may be able to determine what is wrong from
-the name of the resource, the class, or the module. One trick is to add
-the `--debug` switch, to get more useful information:
-
-``` 
-[root@fenago ~]# puppet agent -t --debug
-```
-
-
-If you check your Git history to see what was touched[]{#id325436476
-.indexterm} in the most recent change, this may be another way to
-identify what\'s upsetting Puppet:
-
-
-#### Duplicate definition: X is already defined in \[file\] at line Y; cannot redefine at \[file\] line Y
-
-
-This one has caused me a bit of puzzlement in the past. Puppet\'s
-complaining about a duplicate definition, and normally ,if you have two
-resources with the same name, Puppet will helpfully tell you where they
-are both defined. But in this case, it\'s indicating the same file and
-line number for both. How can one resource be a duplicate of itself?
-
-The answer is, if it\'s a defined type (a resource created with the
-define keyword). If you create two instances of a defined type, you\'ll
-also have two instances of all the resources contained within the
-definition, and they need to have distinct names. For example:
-
-``` 
-define check_process() {
-  exec { 'is-process-running?':
-  command => "/bin/ps ax |/bin/grep ${name} >/tmp/pslist.${name}.txt",
-  }
-}
-check_process { 'exim': }
-check_process { 'nagios': }
-```
-
-
-When we run Puppet, the same error is printed twice:
-
-``` 
-t@mylaptop $ puppet apply duplicate.pp
-Error: Evaluation Error: Error while evaluating a Resource Statement, Evaluation Error: Error while evaluating a Resource Statement, Duplicate declaration: Exec[is-process-running?] is already declared at (file: /home/thomas/puppet/duplicate.pp, line: 2); cannot redeclare (file: /home/thomas/puppet/duplicate.pp, line: 2) (file: /home/thomas/puppet/duplicate.pp, line: 2, column: 5) (file: /home/thomas/puppet/duplicate.pp, line: 7) on node burnaby.strangled.net
-```
-
-
-Because the exec resource is named `is-process-running?`, if
-you try to create more than one instance of the definition, Puppet will
-refuse because the result would be two exec resources with the same
-name. The solution is to include the name of the instance (or some other
-unique value) in the title of each resource:
-
-``` 
-exec { "is-process-${name}-running?":
-```
-
-
-The double quotes are required when you want Puppet to interpolate the
-value of a variable into a string.
-
-
-
-### See also
-
-
-
-- The [*Generating reports*] recipe in this lab
-- The [*Noop -- the don\'t-change-anything option (doing a dry
-    run)*] recipe in this lab
-- The [*Logging debug messages*] recipe in this lab
-
-
-
-Inspecting configuration settings
-----------------------------------------------------
-
-
-You probably know that Puppet\'s configuration[]{#id325145172
-.indexterm} settings are stored in `puppet.conf`, but there
-are lots of parameters, and those that aren\'t listed in
-`puppet.conf` will take a default value. How can you see the
-value of any configuration parameter, regardless of whether or not it\'s
-explicitly set in `puppet.conf`? The answer is to use the
-`puppet config print` command.
-
-
-
-
-### How to do it\...
-
-
-Run the following command. This will produce a lot of output (it may be
-helpful to pipe it through less if you\'d like to browse the available
-configuration settings):
-
-``` 
-[root@fenago ~]# puppet config print --section agent |head -10 
-Resolving settings from section 'agent' in environment 'production' 
-agent_catalog_run_lockfile = /opt/puppetlabs/puppet/cache/state/agent_catalog_run.lock
-agent_disabled_lockfile = /opt/puppetlabs/puppet/cache/state/agent_disabled.lock 
-allow_duplicate_certs = false
-always_retry_plugins = true
-app_management = false
-autoflush = true
-autosign = /etc/puppetlabs/puppet/autosign.conf 
-basemodulepath = /etc/puppetlabs/code/modules:/opt/puppetlabs/puppet/modules 
-bindaddress = *
-binder_config =
-```
-
-
-
-### How it works\...
-
-
-Running `puppet config print` will output every
-configuration parameter and its current value
-(and there are lots of them).
-
-To see the value for a specific parameter, add it as an argument to the
-puppet config print command:
-
-``` 
-[root@fenago ~]# puppet config print modulepath --section agent 
-Resolving settings from section 'agent' in environment 'production' 
-/etc/puppetlabs/code/environments/production/modules:/etc/puppetlabs/code/modules:/opt/puppetlabs/puppet/modules
-```
-
-
-
-### See also
-
-
-
-- The [*Generating reports*] recipe in this lab
+Using the `puppetlabs-mysql` and `puppetlabs-apache`
+modules, we can create an entire functioning web server. The
+`puppetlabs-apache` module will install Apache, and we can
+include the PHP module as well. We can then use the
+`puppetlabs-mysql` module to install the MariaDB server, and
+then create the required Drupal databases and seed the database with the
+data.
+
+Deploying a new Drupal installation would be as simple as including a
+class on a node. There are numerous examples on the web of this
+workflow. Systems such as Wordpress and Django can be installed from
+scratch in this way.
