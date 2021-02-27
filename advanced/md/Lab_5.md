@@ -570,7 +570,7 @@ Puppet master servers. There are several built-in report types, listed at
 <https://docs.puppetlabs.com/references/latest/report.html>. In addition
 to the built-in report types, there are some community-developed reports
 that are quite useful. The Foreman
-([http://theforeman.org](http://theforeman.org/){.ulink}), for example,
+([http://theforeman.org](http://theforeman.org/)), for example,
 provides a Foreman report type that you can enable to forward your node
 reports to the Foreman.
 

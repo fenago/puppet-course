@@ -637,7 +637,7 @@ the value of a tag. You can find out more about resource collectors and
 the `<| |>` operator (sometimes known as the spaceship
 operator) on the Puppet Labs website:
 [http://docs.puppetlabs.com/puppet/3/reference/
-lang\_collectors.html.](https://puppet.com/docs/puppet/5.0/lang_collectors.html){.ulink}
+lang\_collectors.html.](https://puppet.com/docs/puppet/5.0/lang_collectors.html)
 
 What does `~>` mean? This is a chaining arrow with
 notification. The resource(s) on the left must come before the
@@ -887,7 +887,7 @@ class. This single class should include all classes that are required to
 perform that purpose. Craig Dunn wrote a post about such a
 classification system, which he dubbed \"roles and profiles\"
 ([http://www.
-craigdunn.org/2012/05/239/](http://www.%20craigdunn.org/2012/05/239/){.ulink}).
+craigdunn.org/2012/05/239/](http://www.%20craigdunn.org/2012/05/239/)).
 In this model, roles are the single purpose of a node; a node may only
 have one role, a role may contain more than one profile, and a profile
 contains all the resources related to a single service. In this example,
@@ -1115,7 +1115,7 @@ The following types are available in Puppet5:
 
 More information on types is available on the
 Puppet website
-at [https://puppet.com/docs/puppet/latest/lang\_data\_type.html](https://puppet.com/docs/puppet/5.3/lang_data_type.html){.ulink}.
+at [https://puppet.com/docs/puppet/latest/lang\_data\_type.html](https://puppet.com/docs/puppet/5.3/lang_data_type.html).
 
 In addition to these data types, there are
 several abstract data types built upon the code data types. The abstract
@@ -1151,7 +1151,7 @@ assert_type(Variant[Array[String],String],$pkgs)
 
 For more information on abstract data types,
 see the Puppet website
-at [https://puppet.com/docs/puppet/latest/lang\_data\_abstract.html](https://puppet.com/docs/puppet/5.3/lang_data_abstract.html){.ulink}.
+at [https://puppet.com/docs/puppet/latest/lang\_data\_abstract.html](https://puppet.com/docs/puppet/5.3/lang_data_abstract.html).
 
 
 

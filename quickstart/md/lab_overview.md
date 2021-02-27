@@ -27,8 +27,8 @@ Puppet 5 Beginner's Guide, Third Edition is a practical guide that gets you up a
 
 Labs for this course are available at endpoints shared below. Update `<host-ip>` with the lab environment DNS.
 
-1. Getting started with Puppet
-2. Creating your first manifests
+1. Creating your first manifests
+2. Managing packages and Services
 3. Managing your Puppet code with Git
 4. Understanding Puppet resources
 5. Variables, expressions, and facts

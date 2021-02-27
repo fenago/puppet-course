@@ -137,11 +137,11 @@ package or software you\'re interested in with the
 use `puppet module install`. You can add the `-i`
 option to tell Puppet where to find your module directory. You can
 browse the site to see what\'s available at
-[http://forge.puppet.com](http://forge.puppet.com/){.ulink}. More
+[http://forge.puppet.com](http://forge.puppet.com/). More
 information on supported modules is available
 at <https://forge.puppet.com/supported>. The current list of supported
 modules is available at
-[https://forge.puppetlabs.com/modules?endorsements=supported](https://forge.puppet.com/modules?endorsements=supported+partner){.ulink}.
+[https://forge.puppetlabs.com/modules?endorsements=supported](https://forge.puppet.com/modules?endorsements=supported+partner).
 
 
 ### There\'s more\...

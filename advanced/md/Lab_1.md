@@ -624,7 +624,7 @@ idea to follow the existing style conventions as closely as possible.
 These govern such aspects of your code as layout, spacing, quoting,
 alignment, and variable references, and the official puppetlabs
 recommendations on style are available at
-[https://puppet.com/docs/puppet/latest/style\_guide.html.](https://puppet.com/docs/puppet/latest/style_guide.html){.ulink}
+[https://puppet.com/docs/puppet/latest/style\_guide.html.](https://puppet.com/docs/puppet/latest/style_guide.html)
 
 
 
@@ -842,7 +842,7 @@ machine or create a virtual machine and install Puppet on that machine.
 
 
 For YUM-based systems, use
-[https://yum.puppetlabs.com/puppet5](https://yum.puppetlabs./){.ulink},
+[https://yum.puppetlabs.com/puppet5](https://yum.puppetlabs./),
 and for APT-based systems, use <https://apt.puppetlabs.com/>. Use the
 `puppet5-release-[version].deb` package to install Puppet 5.
 After installing the YUM release RPM or the APT release source package,
