@@ -1,1 +1,0 @@
-STATDOPTS="--port 4000 --outgoing-port 4001"

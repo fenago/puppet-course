@@ -1,4 +1,0 @@
-model=ED-209
-builder=OCP
-directives=4
-architecture=ppc64
