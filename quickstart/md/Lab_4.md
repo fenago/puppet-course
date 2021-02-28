@@ -24,9 +24,8 @@ Files
 -----------------------
 
 
-We saw in [Lab 2],
-[*Creating your first manifests*] that Puppet can manage
-files on a node using the `file` resource,
+We saw in Lab 1 that Puppet can manage
+files using the `file` resource,
 and we looked at an example which sets the contents of a file to a
 particular string using the `content` attribute. Here it is
 again (`file_hello.pp`):

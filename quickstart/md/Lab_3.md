@@ -15,12 +15,22 @@ about the advantages of automation?
 
 #### Setup Cron
 
-Our Puppet manifest in `run-puppet-cron.pp` copies this script using a `file` resource, and then sets up a
+Our Puppet manifest in `run-puppet-cron.pp` first install cron package and start cron service, copies bash script using a `file` resource, and then sets up a
 cron job to run it every 2 minutes, using a `cron` resource.
 
 
 ```
 # Set up regular Puppet runs
+
+package { 'cron':
+  ensure => installed,
+}
+
+service { 'cron':
+  ensure  => running,
+  enable  => true,
+}
+
 file { '/usr/local/bin/run-puppet-cron':
   source => '/examples/run-puppet-cron.sh',
   mode   => '0755',
@@ -29,10 +39,10 @@ file { '/usr/local/bin/run-puppet-cron':
 cron { 'run-puppet-cron':
   command => '/usr/local/bin/run-puppet-cron',
   hour    => '*',
-  minute  => '*/15',
+  minute  => '*/2',
 }
-```
 
+```
 
 
 
