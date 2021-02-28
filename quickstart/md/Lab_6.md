@@ -244,14 +244,8 @@ point.
 
 If you don\'t get the result `This is a test` , your Hiera setup is not working properly. If you see the
 warning `Config file not found, using Hiera defaults`, check
-that your Vagrant box has an
-`/etc/puppetlabs/code/environments/pbg` directory. If not,
-destroy and re-provision your Vagrant box with:
-
-``` 
-vagrant destroy
-scripts/start_vagrant.sh
-```
+that your lab environment has an
+`/etc/puppetlabs/code/environments/pbg` directory.
 
 
 If you see an error like the following, it generally indicates a problem
@@ -1322,7 +1316,7 @@ numbers.
 
 For convenience of editing, I suggest you make a shell script, called
 something like `/usr/local/bin/eyaml_edit`, which runs the
-`eyaml edit` command. There\'s an example on your Vagrant box,
+`eyaml edit` command. There\'s an example on your lab environment,
 at `/examples/eyaml_edit.sh`, which you can copy to
 `/usr/local/bin` and edit (as before, substitute the
 `gpg-recipients` email address with the one associated with

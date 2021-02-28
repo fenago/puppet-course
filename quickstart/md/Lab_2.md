@@ -89,24 +89,6 @@ The `ensure` attribute governs the installation state of
 packages: unsurprisingly, `installed` tells Puppet that the
 package should be installed.
 
-As we saw in the earlier example, Puppet processes this manifest by
-examining each resource in turn and checking its attributes on the
-server against those specified in the manifest. In this case, Puppet
-will look for the `cowsay` package to see whether it\'s
-installed. It is not, but the manifest says it should be, so Puppet
-carries out all the necessary actions to make reality match the manifest, which here means installing the
-package.
-
-
-#### Note
-
-It\'s still early on in the course, but you can already do a great deal
-with Puppet! If you can install packages and manage the contents of
-files, you can get a very long way towards setting up any kind of server
-configuration you might need. If you were to stop reading right here
-(which would be a shame, but we\'re all busy people), you would still be
-able to use Puppet to automate a large part of the configuration work
-you will encounter. But Puppet can do much more.
 
 
 
@@ -190,14 +172,6 @@ expect, Puppet will start the service if it is not running. If you set
 `ensure` to `stopped`, Puppet will stop the service
 if it is running.
 
-Services may also be set to start when the system boots, using the
-`enable` parameter. If `enable` is set to
-`true`, the service will start at boot. If, on the other hand,
-`enable` is set to `false`, it will not. Generally
-speaking, unless there\'s a good reason not to, all services should be
-set to start at boot.
-
-
 
 
 ### Getting help on resources with puppet describe
@@ -265,7 +239,21 @@ Finally, the `service` resource ensures that the
 `mysql` service is running.
 
 
-### Notifying a linked resource
+
+```
+puppet apply /examples/package_file_service.pp
+```
+
+
+Run following command in the terminal to verify that mysql is installed and running:
+
+```
+service mysql status
+```
+
+
+
+#### Notifying a linked resource
 
 
 You might have noticed a new attribute, called
@@ -292,17 +280,7 @@ resource to notify about the change, and what that involves depends on
 the type of resource that\'s being notified. When it\'s a service, the
 default action is to restart the service.
 
-Usually, with the package-file-service pattern, the file notifies the
-service, so whenever Puppet changes the contents of the file, it will
-restart the notified service to pick up the new configuration. If
-there are several files that affect the service,
-they should all notify the service, and Puppet is
-smart enough to only restart the service once, however many dependent
-resources are changed.
 
-The name of the resource to notify is specified as the resource type,
-capitalized, followed by the resource title, which is quoted and within
-square brackets: `Service['mysql']`.
 
 
 ### Resource ordering with require
@@ -358,22 +336,13 @@ declare them. However, it can be useful to specify an ordering
 explicitly, for the benefit of those reading the code, especially when
 there are lots of resources in a manifest file.
 
-In older versions of Puppet, resources were applied
-in a more or less arbitrary order, so it was much more important to
-express dependencies using `require`. Nowadays, you won\'t
-need to use it very much, and you\'ll mostly come across it in legacy
-code.
 
 
 Summary
 -------------------------
 
 
-In this lab, we\'ve seen how a manifest is made up of Puppet
-resources. You\'ve learned how to use Puppet\'s `file`
-resource to create and modify files, how to install packages using the
-`package` resource, and how to manage services with the
-`service` resource. We\'ve looked at the common
+In this lab, we\'ve looked at the common
 package-file-service pattern and seen how to use the `notify`
 attribute on a resource to send a message to another resource indicating
 that its configuration has been updated. We\'ve covered the use of the

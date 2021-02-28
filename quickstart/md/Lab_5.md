@@ -559,7 +559,7 @@ notice($facts['kernel'])
 ```
 
 
-On the Vagrant box, or any Linux system, this will return the value
+On the lab environment, or any Linux system, this will return the value
 `Linux`.
 
 In older versions of Puppet, each fact was a distinct global variable,
@@ -1028,7 +1028,7 @@ The list of interfaces returned by
 is the name of the interface (for example, `lo0` for the local
 loopback interfaces) and the value is a hash of the interface\'s
 attributes (including the IP address, netmask, and so on). Applying the
-manifest in the previous example gives this result (on my Vagrant box):
+manifest in the previous example gives this result (on my lab environment):
 
 ``` 
 puppet apply /examples/iteration_hash.pp

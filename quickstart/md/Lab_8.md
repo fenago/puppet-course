@@ -682,7 +682,7 @@ defined in `common.yaml`.
 
 However, some classes will only be needed on particular nodes. Add these
 to the per-node Hiera data file. For example, our `pbg`
-environment on the Vagrant box contains the following in
+environment on the lab environment contains the following in
 `hiera.yaml`:
 
 ``` 

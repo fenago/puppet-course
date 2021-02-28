@@ -3,7 +3,7 @@
 
 
 
-Chapter 7. Mastering modules
+Lab 7. Mastering modules
 -------------------------------------
 
 
@@ -65,8 +65,6 @@ from Puppet Forge:
 - HAProxy
 
 - Amazon AWS
-
-- Docker
 
 - Jenkins
 
@@ -499,7 +497,7 @@ create a simple virtual host serving an image file
 include apache
 
 apache::vhost { 'cat-pictures.com':
-  port          => '80',
+  port          => '81',
   docroot       => '/var/www/cat-pictures',
   docroot_owner => 'www-data',
   docroot_group => 'www-data',
@@ -507,7 +505,7 @@ apache::vhost { 'cat-pictures.com':
 
 file { '/var/www/cat-pictures/index.html':
   content => "<img 
-    src='http://bitfieldconsulting.com/files/happycat.jpg'>",
+    src='https://raw.githubusercontent.com/fenago/puppet-course/master/quickstart/md/images/8880_07_02.jpg'>",
   owner   => 'www-data',
   group   => 'www-data',
 }
@@ -534,10 +532,8 @@ Follow these steps to apply the manifest:
     ```
     
 
-3.  To test the new website, point your browser to (for Vagrant users;
-    if you\'re not using the Vagrant box, browse to port `80`
-    on the server you\'re managing with Puppet)
-    `http://localhost:8080/`
+3.  To test the new website, browse to port `81`
+    `http://localhost:81/`
 
 
 You should see a picture of a happy cat:
@@ -599,34 +595,11 @@ Let\'s go through the manifest and see how it works in detail.
     ``` 
     file { '/var/www/cat-pictures/index.html':
       content => "<img 
-        src='http://bitfieldconsulting.com/files/happycat.jpg'>",
+        src='https://raw.githubusercontent.com/fenago/puppet-course/master/quickstart/md/images/8880_07_02.jpg'>",
       owner   => 'www-data',
       group   => 'www-data',
     }
     ```
-    
-
-
-#### Note
-
-Note that port `80` on the Vagrant box is mapped to port
-`8080` on your local machine, so browsing to
-`http://localhost:8080` is the equivalent of browsing directly
-to port `80` on the Vagrant box. If for some reason you need
-to change this port mapping, edit your `Vagrantfile` (in the
-Puppet Beginner\'s Guide repo) and look for the following line:
-
-``` 
-config.vm.network "forwarded_port", guest: 80, host: 8080
-```
-
-
-Change these settings as required and run the
-following command on your local machine in the PBG repo directory:
-
-``` 
-vagrant reload
-```
 
 
 
@@ -1412,7 +1385,7 @@ puppet apply --environment=pbg -e 'include pbg_ntp'
 ```
 
 
-If you\'re using the Vagrant box or a recent version of Ubuntu, your
+If you\'re using the lab environment or a recent version of Ubuntu, your
 server will most likely be running NTP already, so the only change
 you\'ll see Puppet apply will be the `ntp.conf` file.
 Nonetheless, it confirms that your module works.

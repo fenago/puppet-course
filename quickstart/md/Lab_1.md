@@ -15,9 +15,6 @@ to use Puppet to manage the contents of files, how to install packages,
 and how to control services.
 
 
-![](./images/B08880_02_01.jpg)
-
-
 
 Hello, Puppet -- your first Puppet manifest
 -------------------------------------------------------------
@@ -28,7 +25,7 @@ language, by tradition, prints `hello, world`. Although we can
 do that easily in Puppet, let\'s do something a little more ambitious,
 and have Puppet create a file on the server containing that text.
 
-On your Vagrant box, run the following command:
+On your lab environment, run the following command:
 
 ``` 
 puppet apply /examples/file_hello.pp
@@ -205,41 +202,9 @@ to---or, sometimes, when you want to check if something has been changed
 outside Puppet without actually undoing the change.
 
 
-### How Puppet applies the manifest
 
 
-Here\'s how your manifest is processed. First,
-Puppet reads the manifest and the list of resources it contains (in this
-case, there\'s just one resource), and compiles these into a catalog (an
-internal representation of the desired state of the node).
-
-Puppet then works through the catalog, applying each resource in turn:
-
-
-1.  First, it checks if the resource exists on the server. If not,
-    Puppet creates it. In the example, we\'ve declared that the file
-    `/tmp/hello.txt` should exist. The first time you run
-    `puppet apply`, this won\'t be the case, so Puppet
-    will create the file for you.
-
-2.  Then, for each resource, it checks the value of each attribute in
-    the catalog against what actually exists on the server. In our
-    example, there\'s just one attribute: `content`. We\'ve
-    specified that the content of the file should be
-    `hello, world\n`. If the file is empty or contains
-    something else, Puppet will overwrite the file with what the catalog
-    says it should contain.
-
-
-In this case, the file will be empty the first time you apply the
-catalog, so Puppet will write the string `hello, world\n` into
-it.
-
-We\'ll go on to examine the `file` resource in much more
-detail in later chapters.
-
-
-### Creating a file of your own
+### Task: Creating a file of your own
 
 
 Create your own manifest file (you can name it

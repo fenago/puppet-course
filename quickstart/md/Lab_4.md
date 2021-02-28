@@ -3,7 +3,7 @@
 
 
 
-Chapter 4. Understanding Puppet resources
+Lab 4. Understanding Puppet resources
 --------------------------------------------------
 
 
@@ -69,7 +69,7 @@ file { '/etc/motd':
 ```
 
 
-To try this example with your Vagrant box, run the following commands:
+To try this example with your lab environment, run the following commands:
 
 ``` 
 puppet apply /examples/file_source.pp
@@ -725,19 +725,6 @@ a convenience for those (mere humans, for example) who prefer strings to
 numbers. Access permissions are in fact based on the uid and not the
 username.
 
-
-#### Note
-
-Why set the `uid` attribute? Often, when creating users
-manually, we don\'t specify a uid, so the system will assign one
-automatically. The problem with this is that if you create the same user
-(`hsing-hui`, for example) on three different nodes, you may
-end up with three different uids. This would be fine as long as you have
-never shared files between nodes, or copied data from one place to
-another. But in fact, this happens all the time, so it\'s important to
-make sure that a given user\'s uid is the same across all the nodes in
-your infrastructure. That\'s why we specify the `uid`
-attribute in the Puppet manifest.
 
 
 The `home` attribute sets the user\'s home directory (this

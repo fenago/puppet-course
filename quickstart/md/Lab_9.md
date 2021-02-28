@@ -23,7 +23,7 @@ What are templates?
 -------------------------------------
 
 
-In previous chapters, we\'ve used Puppet to manage
+In previous labs, we\'ve used Puppet to manage
 the **contents of files** on the node by various means,
 including setting the contents to a literal string using the
 `content` attribute, and copying a file from a Puppet module
@@ -289,7 +289,7 @@ innodb_buffer_pool_size=<%= $facts['memory']['system']['total_bytes'] * 3/4 %>
 ```
 
 
-The generated output (on my Vagrant box) is as follows:
+The generated output (on my lab environment) is as follows:
 
 ``` 
 puppet epp render --environment pbg /examples/template_compute.epp
@@ -675,19 +675,7 @@ EPP templates declare parameters in the same way as classes do:
 parameters can be given default values, and any parameter without a
 default value is mandatory.
 
-It\'s clear from the previous example that declaring parameters makes it
-much easier to see what information the template is going to use from
-the calling code, and we now have the benefit of automated checking of
-the parameters and their types.
 
-Note, however, that even templates with a parameter list can still
-access any Puppet variable or fact in the template body; Puppet does not
-prevent the template from using variables which have not been declared as parameters, or getting data directly from Hiera.
-It should be clear by now, though, that bypassing the parameter checking
-machinery in this way is a bad idea.
-
-
-#### Note
 
 **Best practices**
 
@@ -833,7 +821,7 @@ scope.call_function('strftime', ...)
 
 
 ERB templates also do not support declared
-parameters or type checking. I recommend you use only EPP templates in
+parameters or type checking. It is recommend to use only EPP templates in
 your own code.
 
 
@@ -845,11 +833,6 @@ In this lab we\'ve looked at one of the most powerful tools in
 Puppet\'s toolbox, the template file. We\'ve examined the EPP tag syntax
 and seen the different kinds of tags available, including printing and
 non-printing tags.
-
-We\'ve learned that not only can you simply insert values from variables
-into templates, but that you can also include or exclude whole blocks of
-text, depending on the value of Puppet expressions, or generate
-templates of arbitrary size by iterating over arrays and hashes.
 
 We\'ve looked at some real-life examples of dynamically generating
 config files from Facter and Hiera data, and seen seen how to declare
@@ -868,8 +851,3 @@ Finally, we\'ve touched on legacy ERB templates, where they come from,
 how they compare to EPP templates, and why, although you may still
 encounter ERB templates in the wild, you should only use EPP in your own
 code.
-
-In the next lab, we\'ll explore the popular topic of containers, and
-look at how to manage the Docker engine and Docker containers with
-Puppet, and deal with the vexed issue of how to manage configuration in
-containers.
