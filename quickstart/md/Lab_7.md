@@ -8,7 +8,6 @@ Lab 7. Mastering modules
 
 
 
-
 In this lab you\'ll learn about Puppet Forge, the public repository
 for Puppet modules, and you\'ll see how to install and use third-party
 modules from Puppet Forge, using the `r10k` module management
@@ -38,7 +37,6 @@ piece of software, such as the Apache web server.
 
 
 
-
 ### What is the Puppet Forge?
 
 
@@ -57,21 +55,12 @@ from Puppet Forge:
 
 
 - MySQL/PostgreSQL/SQL Server
-
 - Apache/Nginx
-
 - Java/Tomcat/PHP/Ruby/Rails
-
 - HAProxy
-
-- Amazon AWS
-
 - Jenkins
-
 - Elasticsearch/Redis/Cassandra
-
 - Git repos
-
 - Firewalls (via iptables)
 
 
@@ -103,49 +92,13 @@ list of all approved modules at the following URL:
 
 <https://forge.puppet.com/modules?endorsements=approved>
 
-Assuming that a Puppet-Supported or Puppet-Approved module is not
-available, another useful way to choose modules is by looking at the
-number of downloads. Selecting the **Most Downloads** tab on
-the Puppet Forge search results page will sort the results by downloads,
-with the most popular modules first. The most-downloaded modules are not
-necessarily the best, of course, but they\'re usually a good place to
-start.
-
-It\'s also worth checking the latest release date
-for modules. If the module you\'re looking at hasn\'t been updated in
-over a year, it may be better to go with a more actively-maintained
-module, if one is available. Clicking on the **Latest
-release** tab will sort search results by the most recently
-updated.
-
-You can also filter search results by operating system support and
-Puppet version compatibility; this can be very useful for finding a
-module that works with your system.
-
-Having chosen the module you want, it\'s time to add it to your Puppet
-infrastructure.
 
 
 ### Using r10k
 
 
-In the past, many people used to download Puppet
-Forge modules directly and check a copy of them into their codebase,
-effectively forking the module repo (and some still
-do this). There are many drawbacks to this approach. One is that your
-codebase becomes cluttered with code that is not yours, and this can
-make it difficult to search for the code you want. Another is that it\'s
-difficult to test your code with different versions of public modules,
-without creating your own Git branches, redownloading the modules, and
-so on. You also won\'t get future bug fixes and improvements from the
-Puppet Forge modules unless you manually update your copies. In many
-cases, you will need to make small changes or fixes to the modules to
-use them in your environment, and your version of the module will then
-diverge from the upstream version, storing up maintenance problems for
-the future.
-
-A much better approach to module management, therefore, is to use the
-`r10k` tool, which eliminates these problems. Instead of
+A much better approach to module management is to use the
+`r10k` tool. Instead of
 downloading the modules you need directly and adding them to your
 codebase, `r10k` installs your required modules on each
 Puppet-managed node, using a special text file called a
@@ -1489,35 +1442,12 @@ Summary
 In this lab, we\'ve gained an understanding of Puppet modules,
 including an introduction to the Puppet Forge module repository. We\'ve
 seen how to search for the modules we need and how to evaluate the
-results, including **Puppet Approved** and **Puppet
-Supported** modules, operating system support, and download
+results, including **Puppet Approved** and **Puppet Supported** modules, operating system support, and download
 count.
 
-We\'ve looked at using the `r10k` tool to download and manage
-Puppet modules in your infrastructure and how to specify the modules and
-versions you need in your Puppetfile. We\'ve worked through detailed
-examples of using three important Forge modules:
-`puppetlabs/apache`, `puppetlabs/mysql`, and
-`puppet/archive`.
-
-Introducing the standard library for Puppet, we\'ve covered the use of
+We\'ve looked at using the `r10k` tool , covered the use of
 `ensure_packages()` to avoid package conflicts between
-modules, the `file_line` resource, which provides line-level
-editing for config files, and a host of useful functions for
-manipulating data, as well as looking at the Pry debugger.
-
-To fully understand how modules work, we\'ve developed a simple module
-from scratch to manage the NTP service, hosted in its own Git repository
-and managed via a Puppetfile and `r10k`. We\'ve seen what
-metadata modules require and how to create it and validate it using
-`metadata-json-lint`.
-
+modules, the `file_line` resource.
 Finally, we\'ve looked at some of the features of more sophisticated
-modules, discussed uploading modules to the Puppet Forge, and outlined
-some considerations to bear in mind when you\'re deciding whether to
-start a new module or extend and improve an existing one.
+modules and discussed uploading modules to the Puppet Forge.
 
-In the next lab, we\'ll look at how to organize your Puppet code
-into classes, how to pass parameters to your classes, how to create
-defined resource types, and how to structure your manifests using roles,
-profiles, and how to include classes on a node using Hiera data.

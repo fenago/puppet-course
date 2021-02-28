@@ -53,15 +53,7 @@ settings depend on specific information about the node: the available
 memory, perhaps. Obviously, we don\'t want to have to maintain multiple
 versions of an almost identical config file, each containing a suitable
 value for all the different sizes of memory we may come across. We have
-a way of obtaining that information directly in Puppet, as we\'ve seen
-in [Lab
-5],
-[*Variables, expressions, and facts*], and we also have a
-flexible, powerful database for configuration data, as we saw in
-[Lab
-6],
-[*Managing data with Hiera*]. The question is how we can
-insert this data dynamically into text files.
+a way of obtaining that information directly in Puppet.
 
 
 ### Puppet template syntax
@@ -274,9 +266,7 @@ contain any valid Puppet expression.
 
 It\'s very common for certain values in config files to be
 **computed** from other values, such as the amount of
-physical memory on the node. We saw an example of this in [Lab
-5],
-[*Variables, expressions, and facts*], where we computed a
+physical memory on the node. We saw an example of this in Lab 5, where we computed a
 config value based on the value of
 `$facts['memory']['system']['total_bytes']`.
 
@@ -377,35 +367,13 @@ files, you can also use `else` to include an alternative block instead, if the c
 false.
 
 
-#### Note
-
-Notice that the closing tags in the previous example had an extra
-leading hyphen: `-%>`.
-
-When you use this syntax, Puppet suppresses any trailing whitespace and
-linebreak after the tag. It\'s common to use this syntax with
-non-printing template tags, because otherwise you\'d end up with empty
-lines in the output.
-
-
 
 Iteration in templates
 ----------------------------------------
 
 
-If we can generate parts of a file from Puppet
-expressions, and also include or exclude parts of
-the file depending on conditions, could we generate parts of the file
-with a Puppet loop? That is to say, could we **iterate over an array or
-hash**, generating template content for each element? Indeed
-we can. This is a very powerful mechanism which enables us to generate
-files of arbitrary size, based on Puppet variables, or Hiera and Facter
-data.
 
-
-
-
-### Iterating over Facter data
+#### Iterating over Facter data
 
 
 Our first example generates part of the config file
@@ -566,36 +534,8 @@ AllowUsers katy lark bridget hsing-hui charles
 
 
 
-### Working with templates
 
-
-One potential problem with templates (since they
-can include Puppet code, variables, and Hiera data) is that it\'s not
-always clear from the Puppet manifest what **variables** the
-template is going to use. Conversely, it\'s not easy to see from the
-template code where any referenced variables are coming from. This can
-make it hard to maintain or update templates, and also to debug any
-problems caused by incorrect data being fed into the template.
-
-Ideally, we would like to be able to specify in the Puppet code exactly
-what variables the template is going to receive, and this list would
-also appear in the template itself. For extra credit, we would like to
-be able to specify the **data type** of input variables, in
-just the same way that we do for classes and defined resource types (see
-[Lab
-8],
-[*Classes, roles, and profiles*], for more about this.)
-
-The good news is that EPP templates allow you to declare the parameters
-you want passed to your template, along with the required data types, in
-exactly the same way as you can for classes. While it\'s not compulsory
-to declare parameters for your EPP templates, it\'s a very good idea to
-do so. With declared and typed parameters, you will be able to catch
-most data errors at the template compilation stage, which makes
-troubleshooting much easier.
-
-
-### Passing parameters to templates
+#### Passing parameters to templates
 
 
 To declare parameters for a template, list them
@@ -833,12 +773,6 @@ In this lab we\'ve looked at one of the most powerful tools in
 Puppet\'s toolbox, the template file. We\'ve examined the EPP tag syntax
 and seen the different kinds of tags available, including printing and
 non-printing tags.
-
-We\'ve looked at some real-life examples of dynamically generating
-config files from Facter and Hiera data, and seen seen how to declare
-typed parameters in the template file, and pass in values for those
-parameters when calling the `epp()` function in your Puppet
-manifest.
 
 We\'ve seen how to check the syntax of templates using
 `puppet epp validate`, and how to render the output of a

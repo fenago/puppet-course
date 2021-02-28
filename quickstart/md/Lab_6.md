@@ -15,75 +15,6 @@ secrets such as passwords, and how to use Hiera data to create Puppet
 resources.
 
 
-![](./images/8880_06_01.jpg)
-
-
-
-Why Hiera?
-----------------------------
-
-
-What do we mean by **configuration
-data**? There will be lots of pieces of information in your
-manifests which we can regard as configuration data: for example, the
-values of all your resource attributes. Look at the following example:
-
-``` 
-package { 'puppet-agent':
-  ensure => '5.2.0-1xenial',
-}
-```
-
-
-The preceding manifest declares that version `5.2.0-1xenial`
-of the `puppet-agent` package should be installed. But what
-happens when a new version of Puppet is released? When you want to
-upgrade to it, you\'ll have to find this code, possibly deep in multiple
-levels of directories, and edit it to change the desired version number.
-
-
-
-
-### Data needs to be maintained
-
-
-Multiply this by all the packages managed
-throughout your manifest, and there is there\'s already a problem. But
-this is just one piece of data that needs to be maintained, and there
-are many more: the times of cron jobs, the email addresses for reports
-to be sent to, the URLs of files to fetch from the web, the parameters
-for monitoring checks, the amount of memory to configure for the
-database server, and so on. If these values are embedded in code in
-hundreds of manifest files, you\'re setting up trouble for the future.
-
-How can you make your config data easy to find and maintain?
-
-
-### Settings depend on nodes
-
-
-Mixing data with code makes it harder to find and
-edit that data. But there\'s another problem. What if you have two nodes
-to manage with Puppet, and there\'s a config value which needs to be
-different on each of them? For example, they might both have a cron job
-to run the backup, but the job needs to run at a different time on each
-node.
-
-How can you use different values for different nodes, without having
-lots of complicated logic in your manifest?
-
-
-### Operating systems differ
-
-
-What if you have some nodes running Ubuntu 16, and
-some on Ubuntu 18? As you\'ll know if you\'ve ever had to upgrade the
-operating system on a node, things change from one version to the next.
-For example, the name of the database server package might have changed
-from `mysql-server` to `mariadb-server`.
-
-How can you find the right value to use in your
-manifest depending on what operating system the node is running?
 
 
 ### The Hiera way
@@ -182,21 +113,6 @@ The most important setting in the `defaults` section is
 data files. Conventionally, this is in a `data/` subdirectory
 of the Puppet manifest directory, but you can change this if you need
 to.
-
-
-#### Note
-
-Large organizations may find it useful to manage Hiera data files
-separately to Puppet code, perhaps in a separate Git repo (for example,
-you might want to give certain people permission to edit Hiera data, but
-not Puppet manifests).
-
-
-The `hierarchy` section is also interesting. This tells Hiera
-which files to read for its data and in which order. In the example only
-`Common defaults` is defined, telling Hiera to look for data
-in a file called `common.yaml`. We\'ll see later in this
-lab what else you can do with the `hierarchy` section.
 
 
 
@@ -1240,14 +1156,6 @@ cat data/secret.eyaml
 ```
 
 
-Of course, the actual ciphertext will be different for you, since
-you\'re using a different encryption key. The point is, though, the
-message is completely scrambled. GnuPG\'s encryption algorithms are
-extremely strong; even using every computer on Earth simultaneously, it
-would take (on average) many times the current age of the Universe to
-unscramble data encrypted with a 2,048-bit key. (Or, to put it a
-different way, the chances of decrypting the data within a reasonable
-amount of time are many billions to one.)
 
 When you reference a Hiera key such as `test_secret` in your
 manifest, what happens next? Hiera consults its list of data sources
@@ -1374,20 +1282,6 @@ Make sure that you delete all copies of the text file once you have
 imported the key.
 
 
-#### Note
-
-**Important note**
-
-Because all Puppet nodes have a copy of the decryption key, this method
-only protects your secret data from someone who does not have access to
-the nodes. It is still considerably better than putting secret data in
-your manifests in plaintext, but it has the disadvantage that someone
-with access to a node can decrypt, modify, and re-encrypt the secret
-data. For improved security you should use a secrets management system
-where the node does not have the key, and Puppet has read-only access to
-secrets. Some options here include Vault, from Hashicorp, and Summon,
-from Conjur.
-
 
 
 Summary
@@ -1399,19 +1293,6 @@ configuration data in Puppet manifests, and introduced Hiera as a
 powerful solution. We\'ve seen how to configure Puppet to use the Hiera
 data store, and how to query Hiera keys in Puppet manifests using
 `lookup()`.
-
-We\'ve looked at how to write Hiera data sources, including string,
-array, and hash data structures, and how to interpolate values into
-Hiera strings using `lookup()`, including Puppet facts and
-other Hiera data, and how to duplicate Hiera data structures using
-`alias()`. We\'ve learned how Hiera\'s hierarchy works, and
-how to configure it using the `hiera.yaml` file.
-
-We\'ve seen how our example Puppet infrastructure is configured to use
-Hiera data, and demonstrated the process by looking up a data value in a
-Puppet manifest. In case of problems, we also looked at some common
-Hiera errors, and we\'ve discussed rules of thumb about when to put data
-into Hiera.
 
 We\'ve explored using Hiera data to create resources, using an
 `each` loop over an array or hash. Finally, we\'ve covered

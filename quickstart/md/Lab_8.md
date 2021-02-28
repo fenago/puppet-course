@@ -493,43 +493,6 @@ user, and an `ssh_authorized_key` for the user, containing the
 specified key.
 
 
-#### Note
-
-Wait, we seem to be referring to a parameter called `$title`
-in the example code. Where does that come from? `$title` is a
-special parameter which is always available in classes and defined
-resource types, and its value is the title of this particular
-declaration of the class or type. In the example, that\'s
-`john`, because we gave the declaration of
-`user_with_key` the title `john`.
-
-
-So what\'s the difference between defined resource types and classes?
-They look pretty much the same. They seem to act the same. Why would you
-use one rather than the other? The most important difference is that you
-can only have **one declaration** of a given class on a given
-node, whereas you can have as many different instances of a defined
-resource type as you like. The only restriction is that, like all Puppet
-resources, the title of each instance of the defined resource type must
-be unique.
-
-Recall our example `ntp` class, which installs and runs the
-NTP daemon. Usually, you would only want one NTP service per node.
-There\'s very little point in running two. So we declare the class once,
-which is all we need.
-
-Contrast this with the `user_with_key` defined resource type.
-It\'s quite likely that you\'ll want more than one
-`user_with_key` on a given node, perhaps several. In this
-case, a defined resource type is the right choice.
-
-Defined resource types are ideal in modules when you want to make a
-resource available to users of the module. For example, in the
-`puppetlabs/apache` module, the `apache::vhost`
-resource is a defined resource type, provided by the `apache`
-class. You can think of a defined resource type as being a wrapper for a
-collection of multiple resources.
-
 
 #### Note
 
@@ -852,13 +815,6 @@ automatically looked up from Hiera data, then there\'s no problem. This
 is the kind of simple, encouraging, unrealistic example you\'ll see in
 product documentation or on a conference slide.
 
-Real-life Puppet code is often more complicated, however, with logic and
-conditionals and special cases, and extra resources that need to be
-added, and so forth. We don\'t want to duplicate all this code when we
-use Tomcat as part of another role (for example, serving another
-Tomcat-based app). How can we neatly encapsulate it at the right level
-of abstraction and avoid duplication?
-
 We could, of course, create a custom module for each app, which hides
 away all that messy support code. However, it\'s a big overhead to
 create a new module just for a few lines of code, so it seems like there
@@ -934,50 +890,6 @@ class profile::tomcat {
 ```
 
 
-The exact contents of this class don\'t really matter here, but the
-point you should take away is that this kind of site-specific \'glue\'
-code, wrapping third-party modules and connecting them with particular
-applications, should live in a profile class.
-
-In general, a profile class should include everything needed to make
-that particular software component or service work, including other
-profiles if necessary. For example, every profile which requires a
-specific configuration of Java should include that Java profile. You can
-include a profile from multiple other profiles without any conflicts.
-
-Using profile classes in this way both makes your role classes neater,
-tidier, and easier to maintain, but it also allows you to reuse the profiles for different roles. The
-`app_server` role includes these profiles, and other roles can
-include them as well. This way, our code is organized to reduce
-duplication and encourage re-use. The second rule of thumb is, **roles
-should only include profiles**.
-
-If you\'re still confused about the exact distinction between roles and
-profiles, don\'t worry: you\'re in good company. Let\'s try and define
-them as succinctly as possible:
-
-
-- **Roles** identify a particular function for a node, such
-    as being an app server or a database server. A role exists to
-    document what a node is for. Roles should only include profiles, but
-    they can include any number of profiles.
-
-- **Profiles** identify a particular piece of software or
-    functionality which contributes to a role; for example, the
-    `tomcat` profile is required for the
-    `app_server` role. Profiles generally install and
-    configure a specific software component or service, its associated
-    business logic, and any other Puppet resources needed. Profiles are
-    the \'glue layer\' which sits between roles and modules.
-
-
-It\'s possible that your manifest may be so simple that you can organize
-it using only roles or only profiles. That\'s fine, but when things
-start getting more complex and you find yourself duplicating code,
-consider refactoring it to use the roles-and-profiles pattern in the way
-we\'ve seen here.
-
-
 
 Summary
 -------------------------
@@ -992,25 +904,7 @@ parameters for included classes.
 
 Declaring parameters involves specifying the allowable data types for
 parameters, and we\'ve had a brief overview of Puppet\'s data types,
-including scalars, collections, content types and range parameters,
-abstract types, flexible types, and introduced creating your own type
-aliases. We\'ve also introduced the defined resource type, and explained
-the difference between defined resource types and classes, and when you
-would use one or the other.
-
-We\'ve also looked at how to use the `classes` array in Hiera
-to include common classes on all nodes, and other classes only on
-particular nodes. We\'ve introduced the idea of the role class, which
-encapsulates everything needed for a node to fulfil a particular role,
-such as an app server.
-
-Finally, we\'ve seen how to use profile classes to configure and support
-a particular software package or service, and how to compose several
-profile classes into a single role class. Between them, roles and
-profiles bridge the gap between the Hiera `classes` array, at
-the top level, and modules and configuration data (at the lowest level).
-We can summarize the rules by saying that [*nodes should only include
-roles, and roles should only include profiles*].
+including scalars, collections, content types and range parameters.
 
 In the next lab we\'ll look at using Puppet to create files using
 templates, iteration, and Hiera data.
