@@ -573,7 +573,7 @@ following commands:
 
 ``` 
 sudo git pull
-sudo puppet apply manifests/
+puppet apply manifests/
 Notice: Compiled catalog for localhost in environment production in 0.08 seconds
 Notice: /Stage[main]/Main/File[/usr/local/bin/run-puppet]/ensure: defined content as '{md5}83a6903e69564bcecc8fd1a83b1a7beb'
 Notice: /Stage[main]/Main/Cron[run-puppet]/ensure: created

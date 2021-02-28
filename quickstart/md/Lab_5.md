@@ -195,7 +195,7 @@ Here\'s what happens when the manifest is applied:
 
 ``` 
 sudo apt-get update
-sudo puppet apply /examples/resource_array.pp
+puppet apply /examples/resource_array.pp
 Notice: Compiled catalog for ubuntu-xenial in environment production in 0.68 seconds
 Notice: /Stage[main]/Main/Package[php7.0-cgi]/ensure: created
 Notice: /Stage[main]/Main/Package[php7.0-cli]/ensure: created
@@ -1031,7 +1031,7 @@ attributes (including the IP address, netmask, and so on). Applying the
 manifest in the previous example gives this result (on my Vagrant box):
 
 ``` 
-sudo puppet apply /examples/iteration_hash.pp
+puppet apply /examples/iteration_hash.pp
 Notice: Scope(Class[main]): Interface enp0s3 has IP 10.0.2.15
 Notice: Scope(Class[main]): Interface lo has IP 127.0.0.1
 ```

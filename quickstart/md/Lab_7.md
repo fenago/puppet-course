@@ -216,7 +216,7 @@ manifests. To test that the `stdlib` module is correctly
 installed, run the following command:
 
 ``` 
-sudo puppet apply --environment pbg -e "notice(upcase('hello'))"
+puppet apply --environment pbg -e "notice(upcase('hello'))"
 Notice: Scope(Class[main]): HELLO
 ```
 
@@ -353,7 +353,7 @@ Follow these steps to run the
 2.  Run the following command to apply the manifest:
 
     ``` 
-    sudo puppet apply --environment=pbg /examples/module_mysql.pp
+    puppet apply --environment=pbg /examples/module_mysql.pp
     Notice: Compiled catalog for ubuntu-xenial in environment pbg in 0.89 seconds
     Notice: /Stage[main]/Mysql::Server::Config/File[/etc/mysql]/ensure: created
     Notice: /Stage[main]/Mysql::Server::Config/File[/etc/mysql/conf.d]/ensure: created
@@ -530,7 +530,7 @@ Follow these steps to apply the manifest:
 2.  Run the following command to apply the manifest:
 
     ``` 
-    sudo puppet apply --environment=pbg /examples/module_apache.pp
+    puppet apply --environment=pbg /examples/module_apache.pp
     ```
     
 
@@ -658,7 +658,7 @@ WordPress blogging software. Follow these steps to apply the manifest:
 2.  Run the following command to apply the manifest:
 
     ``` 
-    sudo puppet apply --environment=pbg /examples/module_archive.pp
+    puppet apply --environment=pbg /examples/module_archive.pp
     Notice: Compiled catalog for ubuntu-xenial in environment production in 2.50 seconds
     Notice: /Stage[main]/Main/Archive[/tmp/wordpress.tar.gz]/ensure: download archive from https://wordpress.org/latest.tar.gz to /tmp/wordpress.tar.gz and extracted in /var/www with cleanup
     ```
@@ -806,7 +806,7 @@ ensure_packages(['cowsay'])
 To apply this example, run the following command:
 
 ``` 
-sudo puppet apply --environment=pbg /examples/package_ensure.pp
+puppet apply --environment=pbg /examples/package_ensure.pp
 ```
 
 
@@ -1044,8 +1044,8 @@ the `pry()` function is called. You can then run the
 all the resources currently declared in your manifest:
 
 ``` 
-sudo puppet apply --environment=pbg /examples/pry_install.pp
-sudo puppet apply --environment=pbg /examples/pry.pp
+puppet apply --environment=pbg /examples/pry_install.pp
+puppet apply --environment=pbg /examples/pry.pp
 ...
 [1] pry(#<Puppet::Parser::Scope>)> catalog
 => #<Puppet::Resource::Catalog:0x00000001bbcf78
@@ -1408,7 +1408,7 @@ Now that you\'ve created, uploaded, and installed
 your module, we can use it in a manifest:
 
 ``` 
-sudo puppet apply --environment=pbg -e 'include pbg_ntp'
+puppet apply --environment=pbg -e 'include pbg_ntp'
 ```
 
 

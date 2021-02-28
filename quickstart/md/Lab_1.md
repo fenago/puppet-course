@@ -31,7 +31,7 @@ and have Puppet create a file on the server containing that text.
 On your Vagrant box, run the following command:
 
 ``` 
-sudo puppet apply /examples/file_hello.pp
+puppet apply /examples/file_hello.pp
 Notice: Compiled catalog for ubuntu-xenial in environment production in 0.07 seconds
 Notice: /Stage[main]/Main/File[/tmp/hello.txt]/ensure: defined content as '{md5}22c3683b094136c3398391ae71b20f04'
 Notice: Applied catalog in 0.01 seconds
@@ -133,7 +133,7 @@ runs and it contains something else? Will Puppet change it?
 sudo sh -c 'echo "goodbye, world" >/tmp/hello.txt'
 cat /tmp/hello.txt
 goodbye, world
-sudo puppet apply /examples/file_hello.pp
+puppet apply /examples/file_hello.pp
 cat /tmp/hello.txt
 hello, world
 ```
@@ -171,7 +171,7 @@ without actually changing anything:
 
 ``` 
 sudo sh -c 'echo "goodbye, world" >/tmp/hello.txt'
-sudo puppet apply --noop /examples/file_hello.pp
+puppet apply --noop /examples/file_hello.pp
 Notice: Compiled catalog for ubuntu-xenial in environment production in 0.04 seconds
 Notice: /Stage[main]/Main/File[/tmp/hello.txt]/content: current_value {md5}7678..., should be {md5}22c3... (noop)
 ```
@@ -188,7 +188,7 @@ If you want to see what change Puppet would actually make to the file,
 you can use the `--show_diff` option:
 
 ``` 
-sudo puppet apply --noop --show_diff /examples/file_hello.pp
+puppet apply --noop --show_diff /examples/file_hello.pp
 Notice: Compiled catalog for ubuntu-xenial in environment production in 0.04 seconds
 Notice: /Stage[main]/Main/File[/tmp/hello.txt]/content:
 --- /tmp/hello.txt      2017-02-13 02:27:13.186261355 -0800
@@ -219,7 +219,7 @@ Puppet then works through the catalog, applying each resource in turn:
 1.  First, it checks if the resource exists on the server. If not,
     Puppet creates it. In the example, we\'ve declared that the file
     `/tmp/hello.txt` should exist. The first time you run
-    `sudo puppet apply`, this won\'t be the case, so Puppet
+    `puppet apply`, this won\'t be the case, so Puppet
     will create the file for you.
 
 2.  Then, for each resource, it checks the value of each attribute in

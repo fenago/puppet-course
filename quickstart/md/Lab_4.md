@@ -72,7 +72,7 @@ file { '/etc/motd':
 To try this example with your Vagrant box, run the following commands:
 
 ``` 
-sudo puppet apply /examples/file_source.pp
+puppet apply /examples/file_source.pp
 cat /etc/motd
 The best software in the world only sucks. The worst software is significantly worse than that.
 -Luke Kanies
@@ -81,7 +81,7 @@ The best software in the world only sucks. The worst software is significantly w
 
 (From now on, I won\'t give you explicit instructions on how to run the
 examples; just apply them in the same way using
-`sudo puppet apply` as shown here. All the examples in this
+`puppet apply` as shown here. All the examples in this
 course are in the `examples/` directory of the GitHub repo, and
 I\'ll give you the name of the appropriate file for each example, such
 as `file_source.pp`.)
@@ -89,7 +89,7 @@ as `file_source.pp`.)
 
 #### Note
 
-Why do we have to run `sudo puppet apply` instead of just
+Why do we have to run `puppet apply` instead of just
 `puppet apply`? Puppet has the permissions of the user who
 runs it, so if Puppet needs to modify a file owned by `root`,
 it must be run with `root`\'s permissions (which is what
@@ -1230,11 +1230,11 @@ attribute. If it specifies the `creates` attribute, it may be
 looking for the wrong file; if the 
 `unless` or `onlyif` command is specified, it may
 not be returning what you expect. You can see what command is being run
-and what output it generates by running `sudo puppet apply`
+and what output it generates by running `puppet apply`
 with the `-d` (debug) flag:
 
 ``` 
-sudo puppet apply -d exec_onlyif.pp
+puppet apply -d exec_onlyif.pp
 Debug: Exec[process-incoming-cat-pictures](provider=posix): Executing check '/bin/ls /tmp/incoming/*'
 Debug: Executing: '/bin/ls /tmp/incoming/*'
 Debug: /Stage[main]/Main/Exec[process-incoming-cat-pictures]/onlyif: /tmp/incoming/foo

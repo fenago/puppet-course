@@ -763,7 +763,7 @@ which can be a big help in fixing such problems.
 Install the `graphviz` package to view the diagram files:
 
 ``` 
-t@mylaptop ~ $ sudo puppet resource package graphviz ensure=installed
+t@mylaptop ~ $ puppet resource package graphviz ensure=installed
 Notice: /Package[graphviz]/ensure: created
 package { 'graphviz':
   ensure => '2.40.1-20.fc28',

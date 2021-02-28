@@ -51,7 +51,7 @@ package { 'cowsay':
 Try this example:
 
 ``` 
-sudo puppet apply /examples/package.pp
+puppet apply /examples/package.pp
 Notice: Compiled catalog for ubuntu-xenial in environment production in 0.52 seconds
 Notice: /Stage[main]/Main/Package[cowsay]/ensure: created
 Notice: Applied catalog in 29.53 seconds

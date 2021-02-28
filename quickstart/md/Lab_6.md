@@ -8,15 +8,6 @@ Lab 6. Managing data with Hiera
 
 
 
-
-[*What you don\'t know can\'t hurt me.*]
-
- 
-
- 
-
-\--[[*Edward S. Marshall*]]{.attribution}
-
 In this lab, you will learn why it\'s useful to separate your data
 and code. You will see how to set up Puppet\'s built-in Hiera mechanism,
 how to use it to store and query configuration data, including encrypted
@@ -220,7 +211,7 @@ Hiera config and the sample data file, in the
 Run the following commands:
 
 ``` 
-sudo puppet lookup --environment pbg test
+puppet lookup --environment pbg test
 --- This is a test
 ```
 
@@ -304,7 +295,7 @@ To apply this manifest in the example environment, run the following
 command:
 
 ``` 
-sudo puppet apply --environment pbg /examples/lookup2.pp
+puppet apply --environment pbg /examples/lookup2.pp
 Notice: Scope(Class[main]): Apache is set to use 100 workers
 Notice: Scope(Class[main]): dns_allow_query enabled:  true
 ```
@@ -823,7 +814,7 @@ user resources from a Hiera array.
 Run the following command:
 
 ``` 
-sudo puppet apply --environment pbg /examples/hiera_users.pp
+puppet apply --environment pbg /examples/hiera_users.pp
 Notice: /Stage[main]/Main/User[katy]/ensure: created
 Notice: /Stage[main]/Main/User[lark]/ensure: created
 Notice: /Stage[main]/Main/User[bridget]/ensure: created
@@ -877,7 +868,7 @@ that, we will need to add some structure to the Hiera data.
 Run the following command:
 
 ``` 
-sudo puppet apply --environment pbg /examples/hiera_users2.pp
+puppet apply --environment pbg /examples/hiera_users2.pp
 Notice: Compiled catalog for ubuntu-xenial in environment pbg in 0.05 seconds
 Notice: /Stage[main]/Main/User[katy]/uid: uid changed 1001 to 1900
 Notice: /Stage[main]/Main/User[katy]/shell: shell changed '' to '/bin/bash'
@@ -1235,7 +1226,7 @@ Hiera store.
     can read and decrypt your secret:
 
     ``` 
-    sudo puppet lookup --environment pbg test_secret
+    puppet lookup --environment pbg test_secret
     --- This is a test secret
     ```
     

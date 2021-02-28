@@ -292,7 +292,7 @@ innodb_buffer_pool_size=<%= $facts['memory']['system']['total_bytes'] * 3/4 %>
 The generated output (on my Vagrant box) is as follows:
 
 ``` 
-sudo puppet epp render --environment pbg /examples/template_compute.epp
+puppet epp render --environment pbg /examples/template_compute.epp
 innodb_buffer_pool_size=780257280
 ```
 
@@ -788,7 +788,7 @@ Just as when testing your manifests, you can also use
 command similar to the following:
 
 ``` 
-sudo puppet apply -e "file { '/tmp/result': content => epp('/examples/template_iterate.epp')}"
+puppet apply -e "file { '/tmp/result': content => epp('/examples/template_iterate.epp')}"
 ```
 
 
