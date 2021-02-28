@@ -4,7 +4,6 @@ $dependencies = [
   'php-common',
   'php-gd',
   'php-json',
-  'php-mcrypt',
   'php-mysql',
   'php-soap',
 ]

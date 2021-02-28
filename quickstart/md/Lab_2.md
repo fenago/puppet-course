@@ -111,7 +111,7 @@ tool:
 ``` 
 puppet resource package openssl
 package { 'openssl':
-  ensure => '1.0.2g-1ubuntu4.8',
+  ensure => '1.1.1f-1ubuntu2.2',
 }
 ```
 
@@ -159,7 +159,7 @@ directory. From now on, I\'ll just give the filename of each example, as
 they are all in the same directory):
 
 ``` 
-service { 'sshd':
+service { 'ssh':
   ensure => running,
   enable => true,
 }

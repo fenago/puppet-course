@@ -1,4 +1,4 @@
-service { 'sshd':
+service { 'ssh':
   ensure => running,
   enable => true,
 }

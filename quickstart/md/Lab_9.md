@@ -488,7 +488,7 @@ to generate Puppet resources for each user. Let\'s
 use the same Hiera data now to build a dynamic configuration file using
 iteration in a template.
 
-The SSH daemon `sshd` can be configured to allow SSH access
+The SSH daemon `ssh` can be configured to allow SSH access
 only by a list of named users (with the `AllowUsers`
 directive), and, indeed, it\'s good practice to do this.
 
@@ -499,7 +499,7 @@ directive), and, indeed, it\'s good practice to do this.
 
 Most servers accessible from the public Internet regularly receive
 brute-force login attempts for random usernames, and dealing with these
-can use up a lot of resources. If `sshd` is configured to
+can use up a lot of resources. If `ssh` is configured to
 allow only specified users, it can quickly reject any users not in this
 list, without having to process the request further.
 

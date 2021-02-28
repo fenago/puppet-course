@@ -115,9 +115,5 @@ Summary
 -------------------------
 
 
-In this lab, we introduced the concepts of version control, and the
-essentials of Git in particular. We set up a new Git repo, created a
-GitHub account, pushed our code to it, and cloned it on a node. We wrote
-a shell script to automatically pull and apply changes from the GitHub
-repo on any node, and a Puppet manifest to install this script and run
+In this lab, we wrote a shell script and a Puppet manifest to install this script and run
 it regularly from `cron`.

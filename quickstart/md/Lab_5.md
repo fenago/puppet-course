@@ -61,7 +61,7 @@ logician George Boole. We have already encountered some Boolean values
 in Puppet resource attributes (`service.pp`):
 
 ``` 
-service { 'sshd':
+service { 'ssh':
   ensure => running,
   enable => true,
 }
@@ -160,7 +160,6 @@ $dependencies = [
   'php-common',
   'php-gd',
   'php-json',
-  'php-mcrypt',
   'php-mysql',
   'php-soap',
 ]
@@ -185,7 +184,6 @@ Notice: /Stage[main]/Main/Package[php-cli]/ensure: created
 Notice: /Stage[main]/Main/Package[php-common]/ensure: created
 Notice: /Stage[main]/Main/Package[php-gd]/ensure: created
 Notice: /Stage[main]/Main/Package[php-json]/ensure: created
-Notice: /Stage[main]/Main/Package[php-mcrypt]/ensure: created
 Notice: /Stage[main]/Main/Package[php-mysql]/ensure: created
 Notice: /Stage[main]/Main/Package[php-soap]/ensure: created
 Notice: Applied catalog in 56.98 seconds
@@ -195,10 +193,7 @@ Notice: Applied catalog in 56.98 seconds
 Giving an array of strings as the title of a resource results in Puppet
 creating multiple resources, all identical except for the title. You can
 do this not just with packages, but also with files, users, or, in fact,
-any type of resource. We\'ll see some more sophisticated ways of
-creating resources from data in [Lab
-6],
-[*Managing data with Hiera*].
+any type of resource.
 
 
 #### Note
@@ -237,18 +232,6 @@ previous example, the keys of this hash are `john`,
 `rabiah`, `abigail`, `melina`, and
 `sumiko`. To look up the value of a given key, you put the key
 in square brackets after the hash name: `$heights['john']`.
-
-
-#### Note
-
-**Puppet style note**
-
-Did you spot the trailing comma on the last hash key-value pair and the
-last element of the array in the previous example? Although the comma
-isn\'t strictly required, it\'s good style to add one. The reason is
-that it\'s very common to want to add another item to an array or hash,
-and if your last item already has a trailing comma, you won\'t have to
-remember to add one when extending the list.
 
 
 
@@ -341,46 +324,9 @@ notice(1 != 2)
 ```
 
 
-### Meeting Puppet\'s comparison operators
-
-
-All the operators in the Boolean expressions shown
-in the previous example are known as **comparison
-operators**, because they compare two values. The result is either `true` or
-`false`. These are the comparison operators Puppet provides:
-
-
-- `==` and `!=` (equal, not equal)
-
-- `>`, `>=`, `<`, and `<=`
-    (greater than, greater than or equal to, less than, less than or
-    equal to)
-
-- `A in B` (`A` is a substring of `B`,
-    `A` is an element of the array `B`, or
-    `A` is a key of the hash `B`)
-
-- `A =~ B` (`A` is matched by the regular
-    expression `B`, or `A` is a value of data type
-    `B`. For example, the expression
-    `'hello' =~ String` is `true`, because the value
-    `'hello'` is of type String.)
-
-
 
 ### Introducing regular expressions
 
-
-The `=~` operator tries to match a given
-value against a **regular expression**. A regular expression
-([*regular*] in the sense of constituting a pattern or a
-rule) is a special kind of expression which
-specifies a set of strings. For example, the regular expression
-`/a+/` describes the set of all strings that contain one or
-more consecutive `a`s: `a`, `aa`,
-`aaa`, and so on, as well as all strings which contain such a
-sequence among other characters. The slash characters `//`
-delimit a regular expression in Puppet.
 
 When we say a regular expression **matches** a value, we mean
 the value is one of the set of strings specified by the regular
@@ -402,19 +348,6 @@ notice($candidate =~ /[fgh]oo/) # f, g, or h followed by 'oo'
 
 
 
-#### Note
-
-Regular expressions are more-or-less a standard
-language for expressing string patterns. It\'s a
-complicated and powerful language, which really deserves a course of its
-own (and there are several), but suffice it to say for now that
-Puppet\'s regular expression syntax is the same as that used in the Ruby
-language. You can read more about it in the Ruby documentation at:
-
-<http://ruby-doc.org/core/Regexp.html>
-
-
-
 ### Using conditional expressions
 
 
@@ -423,8 +356,7 @@ example, are useful because we can use them to make choices in the
 Puppet manifest. We can apply certain resources
 only if a given condition is met, or we can assign an attribute one
 value or another, depending on whether some expression is true. An
-expression used in this way is called a **conditional
-expression**.
+expression used in this way is called a **conditional expression**.
 
 
 ### Making decisions with if statements
@@ -568,23 +500,25 @@ command line will show you the hash of available OS-related facts:
 
 ``` 
 facter os
+
+Output: 
 {
   architecture => "amd64",
   distro => {
-    codename => "xenial",
-    description => "Ubuntu 16.04 LTS",
+    codename => "focal",
+    description => "Ubuntu 20.04 LTS",
     id => "Ubuntu",
     release => {
-      full => "16.04",
-      major => "16.04"
+      full => "20.04",
+      major => "20.04"
     }
   },
   family => "Debian",
   hardware => "x86_64",
   name => "Ubuntu",
   release => {
-    full => "16.04",
-    major => "16.04"
+    full => "20.04",
+    major => "20.04"
   },
   selinux => {
     enabled => false
@@ -594,9 +528,7 @@ facter os
 
 
 You can also use the `puppet facts` command to see what facts
-will be available to Puppet manifests. This will also include any custom facts defined by third-party Puppet modules (see [Lab
-7],
-[*Mastering modules*], for more information about this).
+will be available to Puppet manifests. This will also include any custom facts defined by third-party Puppet modules (see Lab 7).
 
 
 ### Accessing hashes of facts
@@ -657,16 +589,6 @@ if $facts['os']['selinux']['enabled'] {
 }
 ```
 
-
-
-#### Note
-
-Although conditional expressions based on facts can be useful, an even
-better way of making decisions based on facts in your manifests is to
-use Hiera, which we\'ll cover in the next lab. For example, if you
-find yourself writing an `if` or `case` statement
-which chooses different resources depending on the operating system
-version, consider using a Hiera query instead.
 
 
 
@@ -771,8 +693,7 @@ The `cloud` fact is now available in your manifests. You can
 check that the fact is working by running the following command:
 
 ``` 
-sudo facter cloud
-aws
+facter cloud
 ```
 
 
@@ -838,10 +759,9 @@ as an example:
 3.  Now test the fact:
 
     ``` 
-    sudo facter date
-    2017-04-12
-    ```
-    
+    facter date
+    ```  
+  
 
 Here is the script which generates this output (`date.sh`):
 
@@ -856,16 +776,9 @@ date value. This is because Facter expects executable facts to output a
 list of `key=value` pairs (just one such pair, in this case).
 The `key` is the name of the fact
 (`date`), and the `value` is whatever is returned by
-`` `date +%F` `` (the current date in ISO 8601 format). You
-should use ISO 8601 format (`YYYY-MM-DD`) whenever you need to
-represent dates, by the way, because it\'s not only the international
-standard date format, but it is also unambiguous and sorts
-alphabetically.
+`` `date +%F` `` (the current date in ISO 8601 format). 
 
-As you can see, executable facts are quite powerful
-because they can return any information which can be generated by a
-program (the program could make network requests or database queries,
-for example). However, you should use executable facts with care, as
+You should use executable facts with care, as
 Puppet has to evaluate [*all*] external facts on the node
 every time it runs, which means running every script in
 `/opt/puppetlabs/facter/facts.d`.
@@ -898,6 +811,19 @@ file { '/usr/local/bin/task3':
 }
 ```
 
+
+**Output:**
+
+```
+root@acdc886ba990:~/Desktop/puppet-course# cat /usr/local/bin/task1
+echo I am task1
+
+root@acdc886ba990:~/Desktop/puppet-course# cat /usr/local/bin/task2
+echo I am task2
+
+root@acdc886ba990:~/Desktop/puppet-course# cat /usr/local/bin/task3
+echo I am task3
+```
 
 You can see that each of these resources is identical, except for the
 task number: `task1`, `task2`, and

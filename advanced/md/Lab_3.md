@@ -1572,7 +1572,7 @@ To see a complete list of the facts available on your system, run the
 following code:
 
 ``` 
-$ sudo facter
+$ facter
 aio_agent_version => 5.5.3
 augeas => {
 ```
@@ -1594,7 +1594,7 @@ defined locally, add the `-p` (pluginsync) option to
 `facter`, as follows:
 
 ``` 
-$ sudo facter -p
+$ facter -p
 ```
 
 

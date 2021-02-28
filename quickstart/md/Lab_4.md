@@ -307,11 +307,14 @@ Puppet will install that version (`package_version.pp`):
 
 ``` 
 package { 'openssl':
-  ensure => '1.0.2g-1ubuntu4.8',
+  ensure => '1.1.1f-1ubuntu2.2',
 }
 ```
 
+**Note:** Run following command to get current version(s) available for the openssl package and update `package_version.pp` file if needed:
 
+
+`apt-cache madison openssl`
 
 ### Installing Ruby gems
 
@@ -371,28 +374,18 @@ lint errors.
 ### Installing gems in Puppet\'s context
 
 
-Puppet itself is written at least partly in Ruby,
-and makes use of several Ruby gems. To avoid any
-conflicts with the version of Ruby and gems which the node might need
-for other applications, Puppet packages its own version of Ruby and
+Puppet packages its own version of Ruby and
 associated gems under the `/opt/puppetlabs/` directory. This
 means you can install (or remove) whichever system version of Ruby you
 like and Puppet will not be affected.
 
-However, if you need to install a gem to extend Puppet\'s capabilities
-in some way, then doing it with a `package` resource and
-`provider => gem` won\'t work. That is, the gem will be
-installed, but only in the system Ruby context, and it won\'t be visible
-to Puppet.
-
-Fortunately, the `puppet_gem` provider is available for
-exactly this purpose. When you use this provider, the gem will be
+When you use `puppet_gem` provider, the gem will be
 installed in Puppet\'s context (and, naturally, won\'t be visible in the
 system context). The following example demonstrates how to use this
 provider (`package_puppet_gem.pp`):
 
 ``` 
-package { 'r10k':
+package { 'puppet-lint':
   ensure   => installed,
   provider => puppet_gem,
 }
@@ -419,11 +412,7 @@ varied and complicated ways at the operating system level, Puppet does a
 good job of abstracting away most of this with the `service`
 resource and exposing just the two attributes of services which you most
 commonly need to manage: whether they\'re running (`ensure`)
-and whether they start at boot time (`enable`). We covered the
-use of these in [Lab
-2],
-[*Creating your first manifests*], and most of the time, you
-won\'t need to know any more about `service` resources.
+and whether they start at boot time (`enable`). 
 
 However, you\'ll occasionally encounter services which don\'t play well
 with Puppet, for a variety of reasons. Sometimes, Puppet is unable to
@@ -485,6 +474,8 @@ the list of running processes:
 ps ax
 ```
 
+Check for `ntp` process: `ps ax | grep -i ntp`
+
 
 Find the process you\'re interested in and pick a string which will
 match only the name of that process. For example, if it\'s
@@ -509,13 +500,7 @@ When a service is notified (for example, if a
 `file` resource uses the
 `notify` attribute to tell the service its config file has
 changed, a common pattern which we looked at in Lab 2, Puppet\'s default
-behavior is to stop the service, then start it again. This usually
-works, but many services implement a `restart` command in
-their management scripts. If this is available, it\'s usually a good
-idea to use it: it may be faster or safer than stopping and starting the
-service. Some services take a while to shut down properly when stopped,
-for example, and Puppet may not wait long enough before trying to
-restart them, so that you end up with the service not running at all.
+behavior is to stop the service, then start it again.
 
 If you specify `hasrestart => true` for a service, then Puppet
 will try to send a `restart` command to it, using whatever
@@ -588,29 +573,25 @@ user { 'hsing-hui':
 ### The user resource
 
 
-The title of the resource is the username (login
+- The title of the resource is the username (login
 name) of the user; in this example, `hsing-hui`. The
 `ensure => present` attribute says that the user should exist
 on the system.
 
-The `uid` attribute needs a little more explanation. On
-Unix-like systems, each user has an individual numerical id, known as
-the **uid**. The text name associated with the user is merely
-a convenience for those (mere humans, for example) who prefer strings to
-numbers. Access permissions are in fact based on the uid and not the
+- On Unix-like systems, each user has an individual numerical id, known as
+the **uid**. Access permissions are in fact based on the uid and not the
 username.
 
-
-
-The `home` attribute sets the user\'s home directory (this
+- The `home` attribute sets the user\'s home directory (this
 will be the current working directory when the user logs in, if she does
-log in, and also the default working directory for cron jobs that run as
-the user).
+log in).
 
-The `shell` attribute specifies the
+- The `shell` attribute specifies the
 command-line shell to run when the user logs in interactively. For
 humans, this will generally be a user shell, such as
-`/bin/bash` or `/bin/sh`. For service users, such as
+`/bin/bash` or `/bin/sh`. 
+
+**Note:** For service users, such as
 `www-data`, the shell should be set to
 `/usr/sbin/nologin` (on Ubuntu systems), which does not allow
 interactive access, and prints a message saying
@@ -618,16 +599,9 @@ interactive access, and prints a message saying
 not need to log in interactively should have the `nologin`
 shell.
 
-If the user needs to be a member of certain groups, you can pass the
-`groups` attribute an array of the group names (just
-`devs` in this example).
+- If the user needs to be a member of certain groups, you can pass the
+`groups` attribute an array of the group names (just `devs` in this example).
 
-Although Puppet supports a `password` attribute for
-`user` resources, I don\'t advise you to use it. Service users
-don\'t need passwords, and interactive users should be logging in with
-SSH keys. In fact, you should configure SSH to disable password logins
-altogether (set `PasswordAuthentication no` in
-`sshd_config`).
 
 
 ### The group resource
@@ -713,18 +687,6 @@ manually that the user has been deleted from every
 affected system.
 
 
-#### Note
-
-If you need to prevent a user logging in, but want to retain the account
-and any files owned by the user, for archival or compliance purposes,
-you can set their `shell` to `/usr/sbin/nologin`.
-You can also remove any `ssh_authorized_key` resources
-associated with their account, and set the `purge_ssh_keys`
-attribute to `true` on the `user` resource. This
-will remove any authorized keys for the user that are not managed by
-Puppet.
-
-
 
 Cron resources
 --------------------------------
@@ -739,32 +701,25 @@ kept in a specially formatted file called
 
 Puppet provides the `cron` resource for managing scheduled
 jobs, and we saw an example of this in the `run-puppet`
-manifest we developed in [Lab
-3],
-[*Managing your Puppet code with Git*]
-(`run-puppet.pp`):
+manifest we developed in Lab 3 (`run-puppet-cron.pp`):
 
 ``` 
-cron { 'run-puppet':
-  command => '/usr/local/bin/run-puppet',
+cron { 'run-puppet-cron':
+  command => '/usr/local/bin/run-puppet-cron',
   hour    => '*',
-  minute  => '*/15',
+  minute  => '*/2',
 }
 ```
 
 
-The title `run-puppet` identifies the cron job (Puppet writes
+The title `run-puppet-cron` identifies the cron job (Puppet writes
 a comment to the `crontab` file containing this name to
 distinguish it from other manually-configured cron jobs). The
 `command` attribute specifies the command for cron to run, and
 the `hour` and `minute` specify the time
-(`*/15` is a cron syntax, meaning \"every 15 minutes\").
+(`*/2` is a cron syntax, meaning \"every 15 minutes\").
 
 
-#### Note
-
-For more information about cron and the possible ways to specify the
-times of scheduled jobs, run the command `man 5 crontab`.
 
 
 ### Attributes of the cron resource
@@ -1066,7 +1021,7 @@ and what output it generates by running `puppet apply`
 with the `-d` (debug) flag:
 
 ``` 
-puppet apply -d exec_onlyif.pp
+puppet apply -d /examples/exec_onlyif.pp
 Debug: Exec[process-incoming-cat-pictures](provider=posix): Executing check '/bin/ls /tmp/incoming/*'
 Debug: Executing: '/bin/ls /tmp/incoming/*'
 Debug: /Stage[main]/Main/Exec[process-incoming-cat-pictures]/onlyif: /tmp/incoming/foo
