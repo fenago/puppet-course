@@ -174,7 +174,7 @@ Let\'s make our first commit to the new repo:
 
     ``` 
     git config --global user.name "John Arundel"
-    git config --global user.email john@bitfieldconsulting.com
+    git config --global user.email john@fenago.com
     ```
     
 
@@ -241,7 +241,7 @@ Let\'s make our first commit to the new repo:
     ``` 
     git log
     commit ee215951199158ef28dd78197d8fa9ff078b3579
-    Author: John Arundel <john@bitfieldconsulting.com>
+    Author: John Arundel <john@fenago.com>
     Date:   Tue Aug 30 05:59:42 2016 -0700
         Add README file
     ```

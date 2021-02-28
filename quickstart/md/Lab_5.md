@@ -15,9 +15,6 @@ external facts. Finally, you will use Puppet\'s `each`
 function to iterate over arrays and hashes, including Facter data.
 
 
-![](./images/B08880_05_01.jpg)
-
-
 
 Introducing variables
 ---------------------------------------
@@ -28,7 +25,7 @@ of giving a name to a particular value, which we could then use wherever
 we would use the literal value (`variable_string.pp`):
 
 ``` 
-$php_package = 'php7.0-cli'
+$php_package = 'php'
 
 package { $php_package:
   ensure => installed,
@@ -42,7 +39,7 @@ underscore, though the rest of the name can also contain uppercase
 letters or numbers.
 
 A variable can contain different types of data; one such type is a
-**String** (like `php7.0-cli`), but Puppet
+**String** (like `php-cli`), but Puppet
 variables can also contain **Number** or
 **Boolean** values (`true` or `false`).
 Here are a few examples (`variable_simple.pp`):
@@ -77,20 +74,6 @@ hold the values of conditional expressions (expressions whose value is
 `true` or `false`), which we\'ll explore later in
 this lab.
 
-
-#### Note
-
-You might be wondering what type the value `running` is in the
-previous example. It\'s actually a string, but a special, unquoted kind
-of string called a **bare word**. Although it would be exactly the same to Puppet if you used a normal
-quoted string `'running'` here, it\'s considered good style to
-use bare words for attribute values which can only be one of a small
-number of words (for example, the `ensure` attribute on
-services can only take the values `running` or
-`stopped`). By contrast, `true`
-is not a bare word but a Boolean value, and it is not interchangeable
-with the string `'true'`. Always use the unquoted literal
-values `true` or `false` for Boolean values.
 
 
 
@@ -172,14 +155,14 @@ see what happens (`resource_array.pp`):
 
 ``` 
 $dependencies = [
-  'php7.0-cgi',
-  'php7.0-cli',
-  'php7.0-common',
-  'php7.0-gd',
-  'php7.0-json',
-  'php7.0-mcrypt',
-  'php7.0-mysql',
-  'php7.0-soap',
+  'php-cgi',
+  'php-cli',
+  'php-common',
+  'php-gd',
+  'php-json',
+  'php-mcrypt',
+  'php-mysql',
+  'php-soap',
 ]
 
 package { $dependencies:
@@ -197,14 +180,14 @@ Here\'s what happens when the manifest is applied:
 sudo apt-get update
 puppet apply /examples/resource_array.pp
 Notice: Compiled catalog for ubuntu-xenial in environment production in 0.68 seconds
-Notice: /Stage[main]/Main/Package[php7.0-cgi]/ensure: created
-Notice: /Stage[main]/Main/Package[php7.0-cli]/ensure: created
-Notice: /Stage[main]/Main/Package[php7.0-common]/ensure: created
-Notice: /Stage[main]/Main/Package[php7.0-gd]/ensure: created
-Notice: /Stage[main]/Main/Package[php7.0-json]/ensure: created
-Notice: /Stage[main]/Main/Package[php7.0-mcrypt]/ensure: created
-Notice: /Stage[main]/Main/Package[php7.0-mysql]/ensure: created
-Notice: /Stage[main]/Main/Package[php7.0-soap]/ensure: created
+Notice: /Stage[main]/Main/Package[php-cgi]/ensure: created
+Notice: /Stage[main]/Main/Package[php-cli]/ensure: created
+Notice: /Stage[main]/Main/Package[php-common]/ensure: created
+Notice: /Stage[main]/Main/Package[php-gd]/ensure: created
+Notice: /Stage[main]/Main/Package[php-json]/ensure: created
+Notice: /Stage[main]/Main/Package[php-mcrypt]/ensure: created
+Notice: /Stage[main]/Main/Package[php-mysql]/ensure: created
+Notice: /Stage[main]/Main/Package[php-soap]/ensure: created
 Notice: Applied catalog in 56.98 seconds
 ```
 
@@ -816,18 +799,6 @@ have each fact in a separate file: it doesn\'t make any difference.
 Puppet will read all the files in the `facts.d/` directory and
 extract all the `key=value` pairs from each one.
 
-Text files work well for simple facts (those that
-return a single value). If your external facts need
-to return structured data (arrays or hashes, for example), you can use a
-YAML or JSON file instead to do this. We\'ll be learning more about YAML
-in the next lab, but for now, if you need to build structured
-external facts, consult the Puppet documentation for details.
-
-It\'s common to set up external facts like this at build time, perhaps
-as part of an automated bootstrap script (see [Lab
-12],
-[*Putting it all together*], for more about the bootstrap
-process).
 
 
 ### Creating executable facts
@@ -898,14 +869,6 @@ for example). However, you should use executable facts with care, as
 Puppet has to evaluate [*all*] external facts on the node
 every time it runs, which means running every script in
 `/opt/puppetlabs/facter/facts.d`.
-
-
-#### Note
-
-If you don\'t need the information from an executable fact to be
-regenerated every time Puppet runs, consider running the script from a
-cron job at longer intervals and having it write output to a static text
-file in the facts directory instead.
 
 
 
@@ -1053,20 +1016,7 @@ pairs and the attribute splat operator.
 We\'ve seen how to use variables and values in expressions, including
 arithmetic expressions, and explored the range of Puppet\'s comparison
 operators to generate Boolean expressions. We\'ve used conditional
-expressions to build `if…else` and `case` statements
-and had a brief introduction to regular expressions.
-
-We\'ve learned how Puppet\'s Facter subsystem supplies information about
-the node via the facts hash and how to use facts in our own manifests
-and in expressions. We\'ve pointed out some key facts, including the
-operating system release, the system memory capacity, and the system
-hostname. We\'ve seen how to create custom external facts, such as a
-`cloud` fact, and how to dynamically generate fact information
-using executable facts.
-
-Finally, we\'ve learned about iteration in Puppet using the
-`each` function and how to create multiple resources based on
-data from arrays or hashes, including Facter queries.
+expressions to build `if…else` and `case` statements and iteration in Puppet 
 
 In the next lab, we\'ll stay with the topic of data and explore
 Puppet\'s powerful Hiera database. We\'ll see what problems Hiera

@@ -81,20 +81,9 @@ The best software in the world only sucks. The worst software is significantly w
 (From now on, I won\'t give you explicit instructions on how to run the
 examples; just apply them in the same way using
 `puppet apply` as shown here. All the examples in this
-course are in the `examples/` directory of the GitHub repo, and
+course are in the `examples/` directory, and
 I\'ll give you the name of the appropriate file for each example, such
 as `file_source.pp`.)
-
-
-#### Note
-
-Why do we have to run `puppet apply` instead of just
-`puppet apply`? Puppet has the permissions of the user who
-runs it, so if Puppet needs to modify a file owned by `root`,
-it must be run with `root`\'s permissions (which is what
-`sudo` does). You will usually run Puppet as `root`
-because it needs those permissions to do things like installing
-packages, modifying config files owned by `root`, and so on.
 
 
 The value of the  `source` attribute can
@@ -111,18 +100,6 @@ file { '/tmp/README.md':
 Although this is a handy feature, bear in mind that every time you add
 an external dependency like this to your Puppet manifest, you\'re adding
 a potential point of failure.
-
-
-#### Note
-
-Wherever you can, use a local copy of a file instead of having Puppet
-fetch it remotely every time. This particularly applies to software
-which needs to be built from a tarball downloaded from a website. If
-possible, download the tarball and serve it from a local webserver or
-file server. If this isn\'t practical, using a caching proxy server can
-help save time and bandwidth when you\'re building a large number of
-nodes.
-
 
 
 ### Ownership
@@ -336,50 +313,6 @@ package { 'openssl':
 
 
 
-#### Note
-
-It\'s a good idea to specify an exact version whenever you manage
-packages with Puppet, so that all the nodes will get the same version of
-a given package. Otherwise, if you use `ensure => installed`,
-they will just get whatever version was current at the time they were
-built, leading to a situation where different nodes have different
-package versions.
-
-
-When a newer version of the package is released, and you decide it\'s
-time to upgrade to it, you can update the version string specified in
-the Puppet manifest and Puppet will upgrade the package everywhere.
-
-
-### Installing the latest version
-
-
-On the other hand, if you specify
-`ensure => latest` for a package, Puppet will make sure that
-the latest available version is installed [*every time the manifest is
-applied*]. When a new version of the package becomes
-available, it will be installed automatically on the next Puppet run.
-
-
-#### Note
-
-This is not generally what you want when using a package repository
-that\'s not under your control (for example, the main Ubuntu
-repository). It means that packages will be upgraded at unexpected
-times, which may break your application (or at least result in unplanned
-downtime). A better strategy is to tell Puppet to install a specific
-version which you know works, and test upgrades in a controlled
-environment before rolling them out to production.
-
-
-If you maintain your own package repository and control the release of
-new packages to it, `ensure => latest` can be a useful
-feature: Puppet will update a package as soon as you push a new version
-to the repo. If you are relying on upstream repositories, such as the
-Ubuntu repositories, it\'s better to manage the version number directly
-by specifying an explicit version as the value of `ensure`.
-
-
 ### Installing Ruby gems
 
 
@@ -476,17 +409,6 @@ version of the `gem` command with the following path:
 
 
 
-### Using ensure\_packages
-
-
-To avoid potential package conflicts between
-different parts of your Puppet code or between your
-code and third-party modules, the Puppet standard library provides a
-useful wrapper for the `package` resource, called
-`ensure_packages()`. We\'ll cover this in detail in [Lab
-7], [*Mastering modules*].
-
-
 
 Services
 --------------------------
@@ -519,10 +441,7 @@ a dependent resource changes. There are a few useful attributes for
 When a `service` resource has the
 attribute `ensure => running` attribute, Puppet needs to be able to check whether the service is, in fact,
 running. The way it does this depends on the underlying operating
-system. On Ubuntu 16 and later, for example, it runs
-`systemctl is-active SERVICE`. If the service is packaged to
-work with `systemd`, that should be just fine, but in many
-cases, particularly with older software, it may not respond properly.
+system. 
 
 If you find that Puppet keeps attempting to start the service on every
 Puppet run, even though the service is running, it may be that Puppet\'s
@@ -589,10 +508,7 @@ service { 'ntp':
 When a service is notified (for example, if a
 `file` resource uses the
 `notify` attribute to tell the service its config file has
-changed, a common pattern which we looked at in
-[Lab
-2],
-[*Creating your first manifests*]), Puppet\'s default
+changed, a common pattern which we looked at in Lab 2, Puppet\'s default
 behavior is to stop the service, then start it again. This usually
 works, but many services implement a `restart` command in
 their management scripts. If this is available, it\'s usually a good
@@ -627,62 +543,22 @@ the service using the `restart` attribute
 service { 'ntp':
   ensure  => running,
   enable  => true,
-  restart => '/bin/echo Restarting >>/tmp/debug.log && systemctl restart ntp',
+  restart => '/bin/echo Restarting >>/tmp/debug.log && service ntp restart',
 }
 ```
-
-
-In this example, the `restart` command writes a message to a
-log file before restarting the service in the usual way, but it could,
-of course, do anything you need it to. Note that the `restart`
-command is only used when Puppet restarts the service (generally because
-it was notified by a change to some config file). It\'s not used when
-starting the service from a stopped state. If Puppet finds the service
-has stopped and needs to start it, it will use the normal system service
-start command.
-
-In the extremely rare event that the service cannot be stopped or
-started using the default service management command, Puppet also
-provides the `stop` and `start` attributes so that
-you can specify custom commands to stop and start the service, just the
-same way as with the `restart` attribute. If you need to use
-either of these, though, it\'s probably safe to say that you\'re having
-a bad day.
-
 
 
 Users
 -----------------------
 
 
-A user on Unix-like systems does not necessarily
-correspond to a human person who logs in and types commands, although it
-sometimes does. A user is simply a named entity that can own files and
-run commands with certain permissions and that may or may not have
-permission to read or modify other users\' files. It\'s very common, for
-sound security reasons, to run each service on a system with its own
-user account. This simply means that the service runs with the identity
-and permissions of that user.
-
-For example, a web server will often run as the `www-data`
-user, which exists solely to own files the web server needs to read and
-write. This limits the danger of a security breach via the web server,
-because the attacker would only have the `www-data` user\'s
-permissions, which are very limited, rather than
-the `root` user\'s, which can modify any aspect of the system.
-It is generally a bad idea to run services exposed to the public
-Internet as the `root` user. The service user should have only
-the minimum permissions it needs to operate the service.
-
-Given this, an important part of system configuration involves creating
+An important part of system configuration involves creating
 and managing users, and Puppet\'s `user` resource provides a
 model for doing just that. Just as we saw with packages and services,
 the details of implementation and the commands used to manage users vary
 widely from one operating system to another, but Puppet provides an
 abstraction which hides those details behind a common set of attributes
 for users.
-
-
 
 
 ### Creating users
@@ -783,7 +659,7 @@ an SSH key (mine, in this instance) to the `ubuntu` user on
 our Vagrant VM (`ssh_authorized_key.pp`):
 
 ``` 
-ssh_authorized_key { 'john@bitfieldconsulting.com':
+ssh_authorized_key { 'john@fenago.com':
   user => 'ubuntu',
   type => 'ssh-rsa',
   key  => 'AAAAB3NzaC1yc2EAAAABIwAAAIEA3ATqENg+GWACa2BzeqTdGnJhNoBer8x6pfWkzNzeM8Zx7/2Tf2pl7kHdbsiTXEUawqzXZQtZzt/j3Oya+PZjcRpWNRzprSmd2UxEEPTqDw9LqY5S2B8og/NyzWaIYPsKoatcgC7VgYHplcTbzEhGu8BsoEVBGYu3IRy5RkAcZik=',
@@ -800,7 +676,7 @@ itself. When this manifest is applied, it adds the following to the
 `ubuntu` user\'s `authorized_keys` file:
 
 ``` 
-ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEA3ATqENg+GWACa2BzeqTdGnJhNoBer8x6pfWkzNzeM8Zx7/2Tf2pl7kHdbsiTXEUawqzXZQtZzt/j3Oya+PZjcRpWNRzprSmd2UxEEPTqDw9LqY5S2B8og/NyzWaIYPsKoatcgC7VgYHplcTbzEhGu8BsoEVBGYu3IRy5RkAcZik= john@bitfieldconsulting.com
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEA3ATqENg+GWACa2BzeqTdGnJhNoBer8x6pfWkzNzeM8Zx7/2Tf2pl7kHdbsiTXEUawqzXZQtZzt/j3Oya+PZjcRpWNRzprSmd2UxEEPTqDw9LqY5S2B8og/NyzWaIYPsKoatcgC7VgYHplcTbzEhGu8BsoEVBGYu3IRy5RkAcZik= john@fenago.com
 ```
 
 
@@ -924,21 +800,6 @@ attribute to specify a particular day, or days, of the week. (The
 range or array of values between 1-31 to specify the day of the month.)
 
 
-#### Note
-
-One important point about cron scheduling is that the default value for
-any schedule attribute is `*`, which means [*all allowed
-values*]. For example, if you do not specify an
-`hour` attribute, the cron job will be scheduled with an
-`hour` of `*`, meaning that it will run every hour.
-This is generally not what you want. If you do want it to run every
-hour, specify `hour => '*'` in your manifest, but otherwise,
-specify the particular hour it should run at. The same goes for
-`minute`. Accidentally leaving out the `minute`
-attribute and having a job run sixty times an hour can have amusing
-consequences, to say the least.
-
-
 
 ### Randomizing cron jobs
 
@@ -1003,21 +864,6 @@ allows you to run any arbitrary command on the node. This might create
 or modify state, or it might not; anything you can run from the command
 line, you can run via an `exec` resource.
 
-
-
-
-### Automating manual interaction
-
-
-The most common use for an `exec`
-resource is to simulate manual interaction on the command line. Some
-older software is not packaged for modern operating systems, and needs
-to be compiled and installed from source, which requires you to run
-certain commands. The authors of some software have also not realized,
-or don\'t care, that users may be trying to install their product
-automatically and have install scripts which prompt for user input. This
-can require the use of `exec` resources
-to work around the problem.
 
 
 ### Attributes of the exec resource
@@ -1249,7 +1095,7 @@ command `newaliases`, which rebuilds the system alias database
 
 ``` 
 file { '/etc/aliases':
-  content => 'root: john@bitfieldconsulting.com',
+  content => 'root: john@fenago.com',
   notify  => Exec['newaliases'],
 }
 
@@ -1277,16 +1123,6 @@ and debug, and it can also be rather fragile. Felix Frank makes this
 point in a blog post, [*Friends Don\'t Let Friends Use
 Refreshonly*]:
 
-\"With the `exec` resource type considered the last ditch, its
-`refreshonly` parameter should be seen as especially
-outrageous. To make an `exec` resource fit into Puppet\'s
-model better, you should use \[the `creates`,
-`onlyif`, or `unless`\] parameters instead.\" Refer
-to:
-
-<http://ffrank.github.io/misc/2015/05/26/friends-don't-let-friends-use-refreshonly/>
-
-
 Note that you don\'t need to use the `refreshonly` attribute
 in order to make the `exec` resource notifiable by other
 resources. Any resource can notify an `exec` resource in order
@@ -1294,119 +1130,7 @@ to make it run; however, if you don\'t want it to run
 [*unless*] it\'s notified, use `refreshonly`.
 
 
-#### Note
 
-By the way, if you actually want to manage email aliases on a node, use
-Puppet\'s built-in `mailalias` resource. The previous example
-is just to demonstrate the use of `refreshonly`.
-
-
-
-### The logoutput attribute
-
-
-When Puppet runs shell commands via an
-`exec` resource, the output is normally hidden from us.
-However, if the command doesn\'t seem to be working properly, it can be very useful to see what output it
-produced, as this usually tells us why it didn\'t work.
-
-The `logoutput` attribute determines whether Puppet will log
-the output of the `exec` command along with the usual
-informative Puppet output. It can take three values: `true`,
-`false`, or `on_failure`.
-
-If `logoutput` is set to `on_failure` (which is the
-default), Puppet will only log command output when the command fails
-(that is, returns a non-zero exit status). If you never want to see
-command output, set it to `false`.
-
-Sometimes, however, the command returns a successful exit status but
-does not appear to do anything. Setting `logoutput` to
-`true` will force Puppet to log the command output regardless
-of exit status, which should help you figure
-out what\'s going on.
-
-
-### The timeout attribute
-
-
-Sometimes, commands can take a long time to run, or
-never terminate at all. By default, Puppet allows an `exec`
-command to run for 300 seconds, at which point Puppet will terminate it if it has not finished. If you need
-to allow a little longer for the command to complete, you can use the
-`timeout` attribute to set this. The value is the maximum
-execution time for the command in seconds.
-
-Setting a `timeout` value of `0` disables the
-automatic timeout altogether and allows the command to run forever. This
-should be the last resort, as a command which blocks or hangs could stop
-Puppet\'s automatic runs altogether if no timeout is set. To find a
-suitable value for `timeout`, try running the command a few
-times and choose a value which is perhaps twice as long as a typical
-run. This should avoid failures caused by slow network conditions, for
-example, but not block Puppet from running altogether.
-
-
-### How not to misuse exec resources
-
-
-The `exec` resource can do anything to
-the system that you could do from the command line. As you can imagine,
-such a powerful tool can be misused. In theory, Puppet is a declarative
-language: the manifest specifies the way things should be, and it is up
-to Puppet to take the necessary actions to make them so. Manifests are
-therefore what computer scientists call **idempotent**: the
-system is always in the same state after the catalog has been applied, and however many times you apply
-it, it will always be in that state.
-
-The `exec` resource rather spoils this theoretical picture, by
-allowing Puppet manifests to have side-effects. Since your
-`exec` command can do anything, it could, for example, create
-a new 1 GB file on disk with a random name, and since this will happen
-every time Puppet runs, you could rapidly run out of disk space. It\'s
-best to avoid commands with side-effects like this. In general, there\'s
-no way to know from within Puppet exactly what changes to a system were
-caused by an `exec` resource.
-
-Commands run via `exec` are also sometimes used to bypass
-Puppet\'s existing resources. For example, if the `user`
-resource doesn\'t do quite what you want for some reason, you could
-create a user by running the `adduser` command directly from
-an `exec`. This is also a bad idea, since by doing this you
-lose the declarative and cross-platform nature of Puppet\'s built-in
-resources. `exec` resources potentially change the state of
-the node in a way that\'s invisible to Puppet\'s catalog.
-
-
-#### Note
-
-In general, if you need to manage a concrete aspect of system state
-which isn\'t supported by Puppet\'s built-in resource types, you should
-think about creating a custom resource type and provider to do what you
-want. This extends Puppet to add a new resource type, which you can then
-use to model the state of that resource in your manifests. Creating
-custom types and providers is an advanced topic and not covered in this
-course, but if you want to know more, consult the Puppet documentation:
-
-<https://docs.puppet.com/guides/custom_types.html>
-
-
-You should also think twice before running complex
-commands via `exec`, especially commands which use loops or
-conditionals. It\'s a better idea to put any complicated logic in a
-shell script (or, even better, in a real programming language), which
-you can then deploy and run with Puppet (avoiding, as we\'ve said,
-unnecessary side-effects).
-
-
-#### Note
-
-As a matter of good Puppet style, every `exec` resource should
-have at least one of `creates`, `onlyif`,
-`unless`, or `refreshonly` specified, to stop it
-from being applied on every Puppet run. If you find yourself using
-`exec` just to run a command every time Puppet runs, make it a
-cron job instead.
 
 
 Summary
