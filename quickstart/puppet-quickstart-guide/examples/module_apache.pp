@@ -1,6 +1,6 @@
 include apache
 
-apache::vhost { '*':
+apache::vhost { 'localhost':
   port          => '81',
   docroot       => '/var/www/cat-pictures',
   docroot_owner => 'www-data',

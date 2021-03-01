@@ -237,7 +237,7 @@ create a simple virtual host serving an image file
 ``` 
 include apache
 
-apache::vhost { '*':
+apache::vhost { 'localhost':
   port          => '81',
   docroot       => '/var/www/cat-pictures',
   docroot_owner => 'www-data',
@@ -270,14 +270,17 @@ Follow these steps to apply the manifest:
     ```
     
 
+Verify that virtualhost is created: `ls -ltr /etc/apache2/sites-enabled/`
+
+
+#### Apache Port 
 Run following command to start apache server:
 
 ```
 apachectl start
 ```
 
-
-<span style="color:red;">Note: You will get and error because port 80 is already in use for the lan environment. We will change the port in the next step.</span>
+<span style="color:red;">Note: You will get and error because port 80 is already in use for the lab environment. We will change the port in the next step.</span>
 
 
 #### Change Apache Port
@@ -327,7 +330,7 @@ Let\'s go through the manifest and see how it works in detail.
     host or website.
 
     ``` 
-    apache::vhost { '*':
+    apache::vhost { 'localhost':
       port          => '81',
       docroot       => '/var/www/cat-pictures',
       docroot_owner => 'www-data',
@@ -379,6 +382,7 @@ WordPress blogging software. Follow these steps to apply the manifest:
 
     ``` 
     puppet apply --environment=pbg /examples/module_archive.pp
+
     Notice: Compiled catalog for ubuntu-xenial in environment production in 2.50 seconds
     Notice: /Stage[main]/Main/Archive[/tmp/wordpress.tar.gz]/ensure: download archive from https://wordpress.org/latest.tar.gz to /tmp/wordpress.tar.gz and extracted in /var/www with cleanup
     ```
@@ -403,42 +407,6 @@ archive { '/tmp/wordpress.tar.gz':
 
 
 
-1.  The title gives the path to where you want the archive file to be
-    downloaded (`/tmp/wordpress.tar.gz`). Assuming you don\'t
-    need to keep the archive file after it\'s been unpacked, it\'s
-    usually a good idea to put it in `/tmp`.
-
-2.  The `extract` attribute determines whether or not Puppet
-    should unpack the archive; this should usually be set to
-    `true`.
-
-3.  The `extract_path` attribute specifies where to unpack the
-    contents of the archive. In this case, it makes sense to extract it
-    to a subdirectory of `/var/www/`, but this will vary
-    depending on the nature of the archive. If the archive file contains
-    software which will be compiled and installed, for example, it may
-    be a good idea to unpack it in `/tmp/`, so that the files
-    will be automatically cleaned up after the next reboot.
-
-4.  The `source` attribute tells Puppet where to download the
-    archive from, usually (as in this example) a web URL.
-
-5.  The `creates` attribute works exactly
-    the same way as `creates` on an `exec` resource,
-    which we looked at in [Lab
-    4],
-    [*Understanding Puppet resources*]. It specifies a file
-    which unpacking the archive will create. If this file exists, Puppet
-    knows the archive has already been unpacked, so it does not need to
-    unpack it again.
-
-6.  The `cleanup` attribute tells Puppet whether or not to
-    delete the archive file once it has been unpacked. Usually, this
-    will be set to `true`, unless you need to keep the archive
-    around or unless you don\'t need to unpack it in the first place.
-
-
-
 #### Note
 
 Once the file has been deleted by `cleanup`, Puppet won\'t
@@ -460,15 +428,6 @@ example of installing a module with `r10k`, but let\'s look
 more closely now and see what the standard library provides and where
 you might use it.
 
-Rather than managing some specific software or file format, the standard
-library aims to provide a set of functions and resources which could be
-useful in any piece of Puppet code. Consequently, well-written Forge
-modules use the facilities of the standard library rather than
-implementing their own utility functions which do the same thing.
-
-You should do the same in your own Puppet code: when you need a
-particular piece of functionality, check the standard library first to see if it solves your problem
-rather than implementing it yourself.
 
 Before trying the examples in this section, make sure the
 `stdlib` module is installed by following these steps: If

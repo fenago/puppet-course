@@ -1,4 +1,4 @@
-<img align="right" src="./logo.png">
+<img align="right" src="./images/logo.png">
 
 <h2><span style="color:red;"></span>Puppet 5 QuickStart</h2>
 
@@ -24,8 +24,6 @@ Puppet 5 QuickStart is a practical guide that gets you up and running with the v
 
 ### Labs
 
-Labs for this course are available at endpoints shared below. Update `<host-ip>` with the lab environment DNS.
-
 1. Creating your first manifests
 2. Managing packages and Services
 3. Schedule Cron with Puppet 
@@ -43,4 +41,4 @@ Puppet 5 QuickStart gets you up and running with the very latest features of Pup
 
 Whether you're a developer, a system administrator, or you are simply curious about Puppet, you'll learn Puppet skills that you can put into practice right away. With practical steps giving you the key concepts you need, this course teaches you how to install packages and config files, create users, set up scheduled jobs, provision cloud instances, build containers, and so much more.
 
-Every example in this course deals with something real and practical that you're likely to need in your work, and you'll see the complete Puppet code that makes it happen, along with step-by-step instructions for what to type and what output you’ll see. All the examples are available in a GitHub repo for you to download and adapt for your own server setup.
+Every example in this course deals with something real and practical that you're likely to need in your work, and you'll see the complete Puppet code that makes it happen, along with step-by-step instructions for what to type and what output you’ll see.
