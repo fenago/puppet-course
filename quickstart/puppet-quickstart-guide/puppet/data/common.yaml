@@ -14,7 +14,7 @@
     pxe_just_once: true
   domain: 'fenago.com'
   servername: 'www.fenago.com'
-  port: 80
+  port: 81
   docroot: '/var/www/fenago.com'
   dns_allow_query: true
   backup_retention_days: 10
@@ -68,7 +68,7 @@
       ensure: present
       uid: 1904
       shell: '/bin/bash'
-  mysql::server::root_password: 'hairline-quotient-inside-tableful'
+  mysql::server::root_password: 'fenago'
   mysql::server::remove_default_accounts: true
   apache::default_vhost: false
   pbg_ntp_params::version: 'latest'

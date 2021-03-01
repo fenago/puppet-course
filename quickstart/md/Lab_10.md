@@ -442,8 +442,7 @@ GitHub so that you can share it with other nodes.
 In order to manage multiple nodes with Puppet, you
 will need a copy of the repo on each node. If you
 have a node you\'d like to manage with Puppet, you can use it in this
-example. Otherwise, use the Vagrant box we\'ve been working with in
-previous labs.
+example.
 
 Run the following commands (replace the argument to
 `git clone` with the URL of your own GitHub repo, but don\'t
@@ -647,13 +646,11 @@ automatically applied to all nodes under Puppet management. To add more
 nodes to your infrastructure, follow these steps for each new node:
 
 
-1.  Install Puppet (not necessary if you\'re using the Vagrant box).
+1.  Install Puppet.
 
-2.  Clone your Git repo (as described in the [*Cloning the
-    repo*] section).
+2.  Clone your Git repo (as described in the [*Cloning the repo*] section).
 
-3.  Apply the manifest (as described in the [*Applying the run-puppet
-    manifest*] section).
+3.  Apply the manifest (as described in the [*Applying the run-puppet manifest*] section).
 
 
 You might be wondering how to tell Puppet how to apply different

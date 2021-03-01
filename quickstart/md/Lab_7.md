@@ -11,29 +11,12 @@ Lab 7. Mastering modules
 In this lab you\'ll learn about Puppet Forge, the public repository
 for Puppet modules, and you\'ll see how to install and use third-party
 modules from Puppet Forge, using the `r10k` module management
-tool. You\'ll see examples of how to use three important Forge modules:
-`puppetlabs/apache`, `puppetlabs/mysql`, and
-`puppet/archive`. You\'ll be introduced to some useful
-functions provided by `puppetlabs/stdlib`, the Puppet standard
-library. Finally, working through a complete example, you\'ll learn how
+tool. Finally, working through a complete example, you\'ll learn how
 to develop your own Puppet module from scratch, how to add appropriate
 metadata for your module, and how to upload it to Puppet Forge.
 
 
 ![](./images/8880_07_01.jpg)
-
-
-
-Using Puppet Forge modules
---------------------------------------------
-
-
-Although you could write your own manifests for
-everything you want to manage, you can save yourself a lot of time and
-effort by using public Puppet modules wherever possible. A
-**module** in Puppet is a self-contained unit of shareable,
-reusable code, usually designed to manage one particular service or
-piece of software, such as the Apache web server.
 
 
 
@@ -47,23 +30,6 @@ browse the Forge at the following URL:
 
 <https://forge.puppet.com/>
 
-One of the advantages of using a well-established tool like Puppet is
-that there are a large number of mature public modules available, which
-cover the most common software you\'re likely to need. For example, here
-is a small selection of the things you can manage with public modules
-from Puppet Forge:
-
-
-- MySQL/PostgreSQL/SQL Server
-- Apache/Nginx
-- Java/Tomcat/PHP/Ruby/Rails
-- HAProxy
-- Jenkins
-- Elasticsearch/Redis/Cassandra
-- Git repos
-- Firewalls (via iptables)
-
-
 
 ### Finding the module you need
 
@@ -73,41 +39,24 @@ top. Type what you\'re looking for into this box, and the website will
 show you all the modules which match your search keywords. Often, there
 will be more than one result, so how do you decide which module to use?
 
-The best choice is a **Puppet Supported** module, if one is
-available. These are officially supported and maintained by Puppet, and
-you can be confident that supported modules will work with a wide range
-of operating systems and Puppet versions. Supported modules are
-indicated by a yellow **SUPPORTED** flag in search results,
-or you can browse the list of all supported modules at the following
-URL:
+The best choice is a **Puppet Supported** module, if one is available.
+
 
 <https://forge.puppet.com/modules?endorsements=supported>
 
 The next best option is a **Puppet Approved** module. While
 not officially supported, these modules are recommended by Puppet and
 have been checked to make sure they follow best practices and meet
-certain quality standards. Approved modules are indicated by a green
-**APPROVED** flag in search results, or you can browse the
-list of all approved modules at the following URL:
+certain quality standards. 
 
 <https://forge.puppet.com/modules?endorsements=approved>
 
 
+**Note:** Copy and open above url in Midori browser.
+
 
 ### Using r10k
 
-
-A much better approach to module management is to use the
-`r10k` tool. Instead of
-downloading the modules you need directly and adding them to your
-codebase, `r10k` installs your required modules on each
-Puppet-managed node, using a special text file called a
-**Puppetfile**. `r10k` will manage the contents of
-your `modules/` directory, based entirely on the Puppetfile
-metadata. The module code is never checked into your codebase, but
-always downloaded from the Puppet Forge when requested. So you can stay
-up to date with the latest releases if you want, or pin each module to a
-specified version which you know works with your manifest.
 
 `r10k` is the de facto standard module manager for Puppet
 deployments, and we\'ll be using it to manage modules throughout the
@@ -121,20 +70,16 @@ Here it is (we\'ll look more closely at the syntax in a moment):
 ``` 
 forge 'http://forge.puppetlabs.com'
 
-mod 'garethr/docker', '5.3.0'
 mod 'puppet/archive', '1.3.0'
-mod 'puppet/staging', '2.2.0'
 mod 'puppetlabs/apache', '2.0.0'
 mod 'puppetlabs/apt', '3.0.0'
-mod 'puppetlabs/aws', '2.0.0'
 mod 'puppetlabs/concat', '4.0.1'
-mod 'puppetlabs/docker_platform', '2.2.1'
 mod 'puppetlabs/mysql', '3.11.0'
 mod 'puppetlabs/stdlib', '4.17.1'
 mod 'stahnma/epel', '1.2.2'
 
 mod 'pbg_ntp',
-  :git => 'https://github.com/bitfield/pbg_ntp.git',
+  :git => 'https://github.com/fenago/pbg_ntp.git',
   :tag => '0.1.4'
 ```
 
@@ -196,7 +141,6 @@ should be retrieved from.
 There follows a group of lines beginning with `mod`:
 
 ``` 
-mod 'garethr/docker', '5.3.0'
 mod 'puppet/archive', '1.3.0'
 mod 'puppet/staging', '2.2.0'
 ...
@@ -238,6 +182,7 @@ Puppetfile.
 
     ``` 
     generate-puppetfile puppetlabs/docker_platform
+
     Installing modules. This may take a few minutes.
     Your Puppetfile has been generated. Copy and paste between the markers:
     =============================================
@@ -273,8 +218,7 @@ Using modules in your manifests
 
 Now that we know how to find and install public
 Puppet modules, let\'s see how to use them. We\'ll work through a few
-examples, using the `puppetlabs/mysql` module to set up a
-MySQL server and database, using the `puppetlabs/apache`
+examples, using the `puppetlabs/apache`
 module to set up an Apache website, and using `puppet/archive`
 to download and unpack a compressed archive. After you\'ve tried out
 these examples, you should feel quite confident in your ability to find
@@ -284,163 +228,7 @@ deploy it with `r10k`.
 
 
 
-### Using puppetlabs/mysql
-
-
-Follow these steps to run the
-`puppetlabs/mysql` example:
-
-
-1.  If you\'ve previously followed the steps in the [*Using
-    r10k*] section, the required module will already be
-    installed. If not, run the following commands to install it:
-
-    ``` 
-    cd /etc/puppetlabs/code/environments/pbg
-    sudo r10k puppetfile install
-    ```
-    
-
-2.  Run the following command to apply the manifest:
-
-    ``` 
-    puppet apply --environment=pbg /examples/module_mysql.pp
-    Notice: Compiled catalog for ubuntu-xenial in environment pbg in 0.89 seconds
-    Notice: /Stage[main]/Mysql::Server::Config/File[/etc/mysql]/ensure: created
-    Notice: /Stage[main]/Mysql::Server::Config/File[/etc/mysql/conf.d]/ensure: created
-    Notice: /Stage[main]/Mysql::Server::Config/File[mysql-config-file]/ensure: defined content as '{md5}44e7aa974ab98260d7d013a2087f1c77'
-    Notice: /Stage[main]/Mysql::Server::Install/Package[mysql-server]/ensure: created
-    Notice: /Stage[main]/Mysql::Server::Root_password/Mysql_user[root@localhost]/password_hash: password_hash changed '' to '*F4AF2E5D85456A908E0F552F0366375B06267295'
-    Notice: /Stage[main]/Mysql::Server::Root_password/File[/root/.my.cnf]/ensure: defined content as '{md5}4d59f37fc8a385c9c50f8bb3286b7c85'
-    Notice: /Stage[main]/Mysql::Client::Install/Package[mysql_client]/ensure: created
-    Notice: /Stage[main]/Main/Mysql::Db[cat_pictures]/Mysql_database[cat_pictures]/ensure: created
-    Notice: /Stage[main]/Main/Mysql::Db[cat_pictures]/Mysql_user[greebo@localhost]/ensure: created
-    Notice: /Stage[main]/Main/Mysql::Db[cat_pictures]/Mysql_grant[greebo@localhost/cat_pictures.*]/ensure: created
-    Notice: Applied catalog in 79.85 seconds
-    ```
-    
-
-Let\'s take a look at the example manifest
-(`module_mysql.pp`). The first part installs the MySQL server
-itself, by including the class `mysql::server`:
-
-``` 
-# Install MySQL and set up an example database
-include mysql::server
-```
-
-
-The `mysql::server` class accepts a number of parameters, most
-of which we needn\'t worry about for now, but we would like to set a
-couple of them for this example. Although you can set the values for
-class parameters directly in your Puppet manifest code, just as you
-would for resource attributes, I\'ll show you a better way to do it:
-using Hiera\'s automatic parameter lookup
-mechanism.
-
-
-#### Note
-
-We mentioned briefly in [Lab
-6],
-[*Managing data with Hiera*], that Hiera can supply values
-for class and module parameters, but how does it work, exactly? When you
-include a class `x` which takes a parameter `y`,
-Puppet automatically searches Hiera for any keys matching the name
-`x::y`. If it finds one, it uses that value for the parameter.
-Just as with any other Hiera data, you can use the hierarchy to set
-different values for different nodes, roles, or operating systems.
-
-
-In this example, our parameters are set in the example Hiera data file
-(`/etc/puppetlabs/code/environments/pbg/data/common.yaml`):
-
-``` 
-mysql::server::root_password: 'hairline-quotient-inside-tableful'
-mysql::server::remove_default_accounts: true
-```
-
-
-The `root_password` parameter, as you\'d expect, sets the
-password for the MySQL `root` user. We also enable
-`remove_default_accounts`, which is a security feature. MySQL
-ships with various default user accounts for testing purposes, which
-should be turned off in production. This parameter disables these
-default accounts.
-
-
-#### Note
-
-Note that although we\'ve specified the password in plain text for the
-purposes of clarity, in your production manifests, this should be
-encrypted, just as with any other credentials or secret data (see
-[Lab
-6],
-[*Managing data with Hiera*]).
-
-
-Next comes a resource declaration:
-
-``` 
-mysql::db { 'cat_pictures':
-  user     => 'greebo',
-  password => 'tabby',
-  host     => 'localhost',
-  grant    => ['SELECT', 'UPDATE'],
-}
-```
-
-
-As you can see, this looks just like the built-in resources we\'ve used
-before, such as the `file` and `package` resources.
-In effect, the `mysql` module has added a new resource type to
-Puppet: `mysql::db`. This resource models a specific MySQL
-database: `cat_pictures` in our example.
-
-The title of the resource is the name of the database, in this case,
-`cat_pictures`. There follows a list of attributes. The
-`user`, `password`, and `host` attributes
-specify that the user `greebo` should be allowed to connect to
-the database from `localhost` using the password
-`tabby`. The `grant` attribute specifies the MySQL
-privileges that the user should have: `SELECT` and
-`UPDATE` on the database.
-
-When this manifest is applied, Puppet will create the
-`cat_pictures` database and set up the `greebo` user
-account to access it. This is a very common pattern
-for Puppet manifests which manage an application: usually, the
-application needs some sort of database to store its state, and user
-credentials to access it. The `mysql` module lets you
-configure this very easily.
-
-So we can now see the general principles of using a Puppet Forge module:
-
-
-- We add the module and its dependencies to our `Puppetfile`
-    and deploy it using `r10k`
-
-- We `include` the class in our manifest, supplying any
-    required parameters as Hiera data
-
-- Optionally, we add one or more resource declarations of a custom
-    resource type defined by the module (in this case, a MySQL database)
-
-
-Almost all Puppet modules work in a similar way. In the next section,
-we\'ll look at some key modules which you\'re likely to need in the
-course of managing servers with Puppet.
-
-
 ### Using puppetlabs/apache
-
-
-Most applications have a web interface of some
-kind, which usually requires a web server, and the venerable Apache
-remains a popular choice. The `puppetlabs/apache` module not
-only installs and configures Apache, but also allows you to manage
-virtual hosts (individual websites, such as the frontend for your
-application).
 
 Here\'s an example manifest which uses the `apache` module to
 create a simple virtual host serving an image file
@@ -449,7 +237,7 @@ create a simple virtual host serving an image file
 ``` 
 include apache
 
-apache::vhost { 'cat-pictures.com':
+apache::vhost { '*':
   port          => '81',
   docroot       => '/var/www/cat-pictures',
   docroot_owner => 'www-data',
@@ -457,19 +245,16 @@ apache::vhost { 'cat-pictures.com':
 }
 
 file { '/var/www/cat-pictures/index.html':
-  content => "<img 
-    src='https://raw.githubusercontent.com/fenago/puppet-course/master/quickstart/md/images/8880_07_02.jpg'>",
+  content => "<img  src='https://raw.githubusercontent.com/fenago/puppet-course/master/quickstart/md/images/8880_07_02.jpg'>",
   owner   => 'www-data',
   group   => 'www-data',
 }
 ```
 
-
 Follow these steps to apply the manifest:
 
 
-1.  If you\'ve previously followed the steps in the [*Using
-    r10k*] section, the required module will already be
+1.  If you\'ve previously followed the steps in the [*Using  r10k*] section, the required module will already be
     installed. If not, run the following commands to install it:
 
     ``` 
@@ -484,6 +269,25 @@ Follow these steps to apply the manifest:
     puppet apply --environment=pbg /examples/module_apache.pp
     ```
     
+
+Run following command to start apache server:
+
+```
+apachectl start
+```
+
+
+<span style="color:red;">Note: You will get and error because port 80 is already in use for the lan environment. We will change the port in the next step.</span>
+
+
+#### Change Apache Port
+
+Let's change the default Apache port. Open `/etc/apache2/ports.conf` in vscode and update `80` with port `81`. Save and close the file.
+
+```
+apachectl start
+```
+
 
 3.  To test the new website, browse to port `81`
     `http://localhost:81/`
@@ -516,31 +320,21 @@ Let\'s go through the manifest and see how it works in detail.
     ```
     
 
-    This disables the default **Apache 2 Test Page** virtual
-    host.
+    This disables the default **Apache 2 Test Page** virtual host.
 
 3.  Next comes a resource declaration for an
     `apache::vhost` resource, which creates an Apache virtual
     host or website.
 
     ``` 
-    apache::vhost { 'cat-pictures.com':
-      port          => '80',
+    apache::vhost { '*':
+      port          => '81',
       docroot       => '/var/www/cat-pictures',
       docroot_owner => 'www-data',
       docroot_group => 'www-data',
     }
     ```
-    
 
-    The title of the resource is the domain name which the virtual host
-    will respond to (`cat-pictures.com`). The `port`
-    tells Apache which port to listen on for requests. The
-    `docroot` identifies the pathname of the directory where
-    Apache will find the website files on the server. Finally, the
-    `docroot_owner` and `docroot_group` attributes
-    specify the user and group which should own the `docroot/`
-    directory.
 
 4.  Finally, we create an `index.html` file to add some
     content to the website, in this case, an image of a happy cat.
@@ -1034,19 +828,14 @@ before continuing:
 4.  Click on **Create repository**.
 
 5.  GitHub will take you to the project page for the new repository.
-    Click on the **Clone or download** button. If you\'re
-    using GitHub with an SSH key, as we discussed in [Lab
-    3],
-    [*Managing your Puppet code with Git*], copy the **Clone
-    with SSH** link. Otherwise, click on **Use
-    HTTP**S and copy the **Clone with HTTPS** link.
+    Click on the **Clone or download** button.
 
 6.  On your own computer, or wherever you develop Puppet code, run the
     following command to clone the new repo (use the GitHub URL you
     copied in the previous step instead of this one):
 
     ``` 
-    git clone https://github.com/bitfield/pbg_ntp.git
+    git clone https://github.com/fenago/pbg_ntp.git
     ```
     
 
@@ -1072,7 +861,7 @@ NTP, and add a config file which the code will install.
 All the code and files for this module are available in the GitHub repo
 at the following URL:
 
-<https://github.com/bitfield/pbg_ntp>
+<https://github.com/fenago/pbg_ntp>
 
 
 
@@ -1184,8 +973,8 @@ Create the file `metadata.json` with the following contents
   "author": "John Arundel",
   "summary": "Example module to manage NTP",
   "license": "Apache-2.0",
-  "source": "https://github.com/bitfield/pbg_ntp.git",
-  "project_page": "https://github.com/bitfield/pbg_ntp",
+  "source": "https://github.com/fenago/pbg_ntp.git",
+  "project_page": "https://github.com/fenago/pbg_ntp",
   "tags": ["ntp"],
   "dependencies": [
     {"name":"puppetlabs/stdlib",
@@ -1302,7 +1091,7 @@ from GitHub.
 
     ``` 
     mod 'pbg_ntp',
-      :git => 'https://github.com/bitfield/pbg_ntp.git',
+      :git => 'https://github.com/fenago/pbg_ntp.git',
       :tag => '0.1.1'
     ```
     
@@ -1344,94 +1133,6 @@ you\'ll see Puppet apply will be the `ntp.conf` file.
 Nonetheless, it confirms that your module works.
 
 
-### More complex modules
-
-
-Of course, the module we\'ve developed is a very
-trivial example. However, it demonstrates the essential requirements of
-a Puppet module. As you become a more advanced Puppet coder, you will be
-creating and maintaining much more complicated modules, similar to those
-you download and use from Puppet Forge.
-
-Real-world modules often feature one or more of the following
-components:
-
-
-- Multiple manifest files and subdirectories
-
-- Parameters (which may be supplied directly or looked up from Hiera
-    data)
-
-- Custom facts and custom resource types and providers
-
-- Example code showing how to use the module
-
-- Specs and tests which developers can use to validate their changes
-
-- Dependencies on other modules (which must be declared in the module
-    metadata)
-
-- Support for multiple operating systems 
-
-
-
-#### Note
-
-You can find more detailed information about
-modules and advanced features of modules in the Puppet documentation:
-
-<https://docs.puppet.com/puppet/latest/reference/modules_fundamentals.html>
-
-
-
-### Uploading modules to Puppet Forge
-
-
-It\'s very easy to upload a module to the Puppet
-Forge: all you need to do is sign up for an
-account, use the `puppet module build` command to create an
-archive file of your module, and upload it via the Puppet Forge website.
-
-Before deciding to write a module in the first place, though, you should
-check whether there is already a module on the Puppet Forge which does
-what you need. There are over 4,500 modules available at the time of
-writing, so it\'s quite likely that you\'ll be able to use an existing
-Puppet Forge module instead of writing your own. Contributing a new
-module when there is already one available just makes it more difficult
-for users to choose which module they should use. For example, there are
-currently 150 modules which manage the Nginx web server. Surely this is
-at least 149 too many, so only submit a new module if you\'ve made sure
-that there are no similar modules already on the Puppet Forge.
-
-If there is a module which covers the software you
-want to manage, but it doesn\'t support your operating system or
-version, consider improving this module instead of starting a new one.
-Contact the module author to see whether and how you can help improve
-their module and extend support to your operating system. Similarly, if
-you find bugs in a module or want to make improvements to it, open an
-issue (if there is an issue tracker associated with the module), fork
-the GitHub repo (if it\'s versioned on GitHub), or contact the author to
-find out how you can help. The vast majority of Puppet Forge modules are
-written and maintained by volunteers, so your support and contributions
-benefit the entire Puppet community.
-
-If you don\'t want to fork or contribute to an existing module, consider
-writing a small wrapper module which extends or overrides the existing
-module, rather than creating a new module from scratch.
-
-If you do decide to write and publish your own
-module, use facilities from the standard library wherever possible, such
-as `ensure_packages()`. This will give your module the best
-chance of being compatible with other Forge modules.
-
-
-#### Note
-
-If you want to contribute more to the Puppet module community, consider
-joining the Vox Pupuli group, which maintains over a hundred open source
-Puppet modules:
-
-<https://voxpupuli.org/>
 
 
 

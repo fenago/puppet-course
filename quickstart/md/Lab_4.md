@@ -630,7 +630,7 @@ Puppet provides the `ssh_authorized_key`
 resource to control the SSH keys associated with a user account. The
 following example shows how to use `ssh_authorized_key` to add
 an SSH key (mine, in this instance) to the `ubuntu` user on
-our Vagrant VM (`ssh_authorized_key.pp`):
+our VM (`ssh_authorized_key.pp`):
 
 ``` 
 ssh_authorized_key { 'john@fenago.com':

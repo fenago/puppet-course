@@ -16,22 +16,9 @@ resources.
 
 
 
-
 ### The Hiera way
 
-
-What we want is a kind of central database in Puppet where we can look
-up configuration settings. The data should be stored separately from
-Puppet code, and make it easy to find and edit values. It should be
-possible to look up values with a simple function
-call in Puppet code or templates. Further, we need to be able to specify
-different values depending on things like the hostname of the node, the
-operating system, or potentially anything else. We would also like to be
-able to enforce a particular data type for values, such as String or
-Boolean. The database should do all of this work for us, and just return
-the appropriate value to the manifest where it\'s needed.
-
-Fortunately, Hiera does exactly this. Hiera lets you store your config
+Hiera lets you store your config
 data in simple text files (actually, YAML, JSON, or HOCON files, which
 use popular structured text formats), and it looks like the following
 example:
@@ -73,8 +60,7 @@ files, which are also YAML files, and we\'ll find about those later in
 this lab.) Each Puppet environment has its own local Hiera config
 file, located at the root of the environment directory (for example, for
 the `production` environment, the local Hiera config file
-would be
-`/etc/puppetlabs/code/environments/production/hiera.yaml`).
+would be `/etc/puppetlabs/code/environments/production/hiera.yaml`).
 
 
 #### Note
@@ -120,7 +106,7 @@ Adding Hiera data to your Puppet repo
 -------------------------------------------------------
 
 
-Your Vagrant VM is already set up with a suitable
+Your VM is already set up with a suitable
 Hiera config and the sample data file, in the
 `/etc/puppetlabs/code/environments/pbg` directory. Try it now:
 
@@ -138,7 +124,7 @@ puppet lookup --environment pbg test
 We haven\'t seen the `--environment` switch before, so it\'s
 time to briefly introduce Puppet environments. A Puppet
 **environment** is a directory containing a Hiera config
-file, Hiera data, a set of Puppet manifests---in other words, a
+file, Hiera data, a set of Puppet manifests --- in other words, a
 complete, self-contained Puppet setup. Each environment lives in a named
 directory under `/etc/puppetlabs/code/environments`. The
 default environment is `production`, but you can use any
@@ -160,8 +146,7 @@ point.
 
 If you don\'t get the result `This is a test` , your Hiera setup is not working properly. If you see the
 warning `Config file not found, using Hiera defaults`, check
-that your lab environment has an
-`/etc/puppetlabs/code/environments/pbg` directory.
+that your lab environment has an `/etc/puppetlabs/code/environments/pbg` directory.
 
 
 If you see an error like the following, it generally indicates a problem
@@ -230,8 +215,7 @@ Types of Hiera data
 
 
 As we\'ve seen, Hiera data is stored in text files,
-structured using the format called **YAML Ain\'t Markup
-Language**, which is a common way of
+structured using the format called **YAML Ain\'t Markup Language**, which is a common way of
 organizing data. Here\'s another snippet from our sample Hiera data
 file, which you\'ll find at
 `/etc/puppetlabs/code/environments/pbg/data/common.yaml` on
@@ -507,15 +491,6 @@ In general, though, you should keep as much data as possible in the
 maintain data if it\'s in one place, rather than scattered through
 several files.
 
-For example, if you have some Hiera data which is
-only used on the `monitor` node, you might be tempted to put
-it in a `nodes/monitor.yaml` file. But, unless it has to
-override some settings in `common.yaml`, you\'ll just be
-making it harder to find and update. Put everything in
-`common.yaml` that you can, and reserve other data sources
-only for overrides to common values.
-
-
 
 
 ### Dealing with multiple values
@@ -637,40 +612,6 @@ Xenial, Hiera will look for a data file named `os/xenial.yaml`
 
 
 
-### What belongs in Hiera?
-
-
-What data should you put in Hiera, and what should
-be in your Puppet manifests? A good rule of thumb about when to separate
-data and code is to ask yourself what might **change** in the
-future. For example, the exact version of a package is a good candidate
-for Hiera data, because it\'s quite likely you\'ll need to update it in
-the future.
-
-Another characteristic of data that belongs in Hiera is that it\'s
-**specific** to your site or company. If you take your Puppet
-manifest and give it to someone else in another company or organization,
-and she has to modify any values in the code to make it work at her
-site, then those values should probably be in Hiera. This makes it much
-easier to share and re-use code; all you have to do is edit some values
-in Hiera.
-
-If the same data is needed in **more than one place** in your
-manifests, it\'s also a good idea for that data to be stored in Hiera.
-Otherwise, you have to either repeat the data, which makes it harder to
-maintain, or use a global variable, which is bad style in any
-programming language, and especially so in Puppet.
-
-If you have to change a data value when you apply your manifests on a
-different **operating system**, that\'s also a candidate for
-Hiera data. As we\'ve seen in this lab, you can use the hierarchy to
-select the correct value based on facts, such as the operating system or
-version.
-
-One other kind of data that belongs in Hiera is parameter values for
-classes and modules; we\'ll see more about that in [Lab
-7],
-[*Mastering modules*].
 
 
 
@@ -857,347 +798,6 @@ specified attributes.
 
 
 
-Managing secret data
---------------------------------------
-
-
-Hiera has a pluggable **backend** system which allows it to
-support various different ways of storing data. One such backend is called `hiera-eyaml-gpg`, which allows
-Hiera to use a GnuPG-encrypted data store. Rather than encrypting a
-whole data file, `hiera-eyaml-gpg` lets you mix encrypted and
-plaintext data in the same YAML file. That way, even someone who
-doesn\'t have the private key can still edit and update the plaintext
-values in Hiera data files, although the encrypted data values will be
-unreadable to them.
-
-
-
-
-### Setting up GnuPG
-
-
-First, we\'ll need to install GnuPG and create a
-key pair for use with Hiera. The following
-instructions will help you do this:
-
-
-1.  Run the following command:
-
-    ``` 
-    sudo apt-get install gnupg rng-tools
-    ```
-    
-
-2.  Once GnuPG is installed, run the following command to generate a new
-    key pair:
-
-    ``` 
-    gpg --gen-key
-    ```
-    
-
-3.  When prompted, select the RSA and RSA key type:
-
-    ``` 
-    Please select what kind of key you want:
-       (1) RSA and RSA (default)
-       (2) DSA and Elgamal
-       (3) DSA (sign only)
-       (4) RSA (sign only)
-    Your selection? 1
-    ```
-    
-
-4.  Select a 2,048 bit key size:
-
-    ``` 
-    RSA keys may be between 1024 and 4096 bits long.
-    What keysize do you want? (2048) 2048
-    ```
-    
-
-5.  Enter `0` for the key expiry time:
-
-    ``` 
-    Key is valid for? (0) 0
-    Key does not expire at all
-    Is this correct? (y/N) y
-    ```
-    
-
-6.  When prompted for a real name, email address, and comment for the
-    key, enter whatever is appropriate for your site:
-
-    ``` 
-    Real name: Puppet
-    Email address: puppet@cat-pictures.com
-    Comment:
-    You selected this USER-ID:
-        "Puppet <puppet@cat-pictures.com>"
-
-    Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? o
-    ```
-    
-
-7.  When prompted for a passphrase, just hit [*Enter*] (the
-    key can\'t have a passphrase, because Puppet won\'t be able to
-    supply it).
-
-
-It may take a few moments to generate the key, but
-once this is complete, GnuPG will print out the key fingerprint and
-details (yours will look different):
-
-``` 
-pub   2048R/40486112 2016-09-30
-      Key fingerprint = 6758 6CEE D221 7AA0 8369  FF3A FEC1 0055 4048 6112
-uid                  Puppet <puppet@cat-pictures.com>
-sub   2048R/472954EB 2016-09-30
-```
-
-
-This key is now stored in your GnuPG keyring, and Hiera will be able to
-use it to encrypt and decrypt your secret data on this node. We\'ll see
-later in the lab how to distribute this key to other nodes managed
-by Puppet.
-
-
-### Adding an encrypted Hiera source
-
-
-A Hiera source using GPG-encrypted data needs a
-couple of extra parameters. Here\'s the relevant section from the
-example `hiera.yaml` file:
-
-``` 
-  - name: "Secret data (encrypted)"
-    lookup_key: eyaml_lookup_key
-    path: "secret.eyaml"
-    options:
-      gpg_gnupghome: '/root/.gnupg'
-```
-
-
-As with normal data sources, we a have `name` and a
-`path` to the data file, but we also need to specify the
-`lookup_key` function, which in this case is
-`eyaml_lookup_key`, and set
-`options['gpg_gnupghome']` to point to the GnuPG directory,
-where the decryption key lives.
-
-
-### Creating an encrypted secret
-
-
-You\'re now ready to add some secret data to your
-Hiera store.
-
-
-1.  Create a new empty Hiera data file with the following commands:
-
-    ``` 
-    cd /etc/puppetlabs/code/environments/pbg
-    sudo touch data/secret.eyaml
-    ```
-    
-
-2.  Run the following command to edit the data file using the
-    `eyaml` editor (which automatically encrypts the data for
-    you when you save it). Instead of
-    `puppet@cat-pictures.com`, use the email address that you
-    entered when you created your GPG key.
-
-    ``` 
-    sudo /opt/puppetlabs/puppet/bin/eyaml edit --gpg-always-trust --gpg-recipients=puppet@cat-pictures.com data/secret.eyaml
-    ```
-    
-
-3.  If the system prompts you to select your default editor, choose the
-    editor you prefer. If you\'re familiar with Vim, I recommend you
-    choose that, but otherwise, you will probably find `nano`
-    the easiest option. (You should learn Vim, but that\'s a subject for
-    another course.)
-
-4.  Your selected editor will be started with the following text already
-    inserted in the file:
-
-    ``` 
-    #| This is eyaml edit mode. This text (lines starting with #| at the top of the
-    #| file) will be removed when you save and exit.
-    #|  - To edit encrypted values, change the content of the DEC(<num>)::PKCS7[]!
-    #|    block (or DEC(<num>)::GPG[]!).
-    #|    WARNING: DO NOT change the number in the parentheses.
-    #|  - To add a new encrypted value copy and paste a new block from the
-    #|    appropriate example below. Note that:
-    #|     * the text to encrypt goes in the square brackets
-    #|     * ensure you include the exclamation mark when you copy and paste
-    #|     * you must not include a number when adding a new block
-    #|    e.g. DEC::PKCS7[]! -or- DEC::GPG[]!
-    ```
-    
-
-5.  Enter the following text below the commented message, exactly as
-    shown, including the beginning three hyphens:
-
-    ``` 
-    ---
-      test_secret: DEC::GPG[This is a test secret]!
-    ```
-    
-
-6.  Save the file and exit the editor.
-
-7.  Run the following command to test that Puppet
-    can read and decrypt your secret:
-
-    ``` 
-    puppet lookup --environment pbg test_secret
-    --- This is a test secret
-    ```
-    
-
-
-### How Hiera decrypts secrets
-
-
-To prove to yourself that the secret data is
-actually encrypted, run the following command to see what it looks like
-in the data file on disk:
-
-``` 
-cat data/secret.eyaml
----
-  test_secret: ENC[GPG,hQEMA4+8DyxHKVTrAQf/QQPL4zD2kkU7T+FhaEdptu68RAw2m2KAXGujjnQPXoONrbh1QjtzZiJBlhqOP+7JwvzejED0NXNMkmWTGfCrOBvQlZS0U9Vrgsyq5mACPHyeLqFbdeOjNEIR7gLP99aykAmbO2mRqfXvns+cZgaTUEPXOPyipY5Q6w6/KeBEvekTIZ6ME9Oketj+1/zyDz4qWH+0nLwdD9L279d7hnokpts2tp+gpCUc0/qKsTXpdTRPE2R0kg9Bl84OP3fFlTSTgcT+pS8Dfa1/ZzALfHmULcC3hckG9ZSR+0cd6MyJzucwiJCreIfR/cDfqpsENNM6PNkTAHEHrAqPrSDXilg1KtJSAfZ9rS8KtRyhoSsk+XyrxIRH/S1Qg1dgFb8VqJzWjFl6GBJZemy7z+xjoWHyznbABVwp0KXNGgn/0idxfhz1mTo2/49POFiVF4MBo/6/EEU4cw==]
-```
-
-
-
-When you reference a Hiera key such as `test_secret` in your
-manifest, what happens next? Hiera consults its list of data sources
-configured in `hiera.yaml`. The first source in the hierarchy
-is `secret.eyaml`, which contains the key we\'re interested in
-(`test_secret`). Here\'s the value:
-
-``` 
-ENC[GPG,hQEMA4 … EEU4cw==]
-```
-
-
-The `ENC` tells Hiera that this is an encrypted value, and the
-`GPG` identifies which type of encryption is being used
-(`hiera-eyaml` supports several encryption methods, of which
-GPG is one). Hiera calls the GPG subsystem to process the encrypted
-data, and GPG searches the keyring to find the appropriate decryption
-key. Assuming it finds the key, GPG decrypts the data and passes the
-result back to Hiera, which returns it to Puppet, and the result is the
-plaintext:
-
-``` 
-This is a test secret
-```
-
-
-The beauty of the system is that all of this
-complexity is hidden from you; all you have to do is call the function
-`lookup('test_secret', String)` in your manifest, and you get
-the answer.
-
-
-### Editing or adding encrypted secrets
-
-
-If the secret data is stored in encrypted form, you
-might be wondering how to edit it when you want to change the secret
-value. Fortunately, there\'s a way to do this.
-Recall that when you first entered the secret data, you used the
-following command:
-
-``` 
-sudo /opt/puppetlabs/puppet/bin/eyaml edit --gpg-always-trust --gpg-recipients=puppet@cat-pictures.com data/secret.eyaml
-```
-
-
-If you run the same command again, you\'ll find that you\'re looking at
-your original plaintext (along with some explanatory comments):
-
-``` 
----
-  test_secret: DEC(1)::GPG[This is a test secret]!
-```
-
-
-You can edit the `This is a test secret` string (make sure to
-leave everything else exactly as it is, including the
-`DEC::GPG[]!` delimiters). When you save the file and close
-the editor, the data will be re-encrypted using your key, if it has
-changed.
-
-Don\'t remove the `(1)` in parentheses after `DEC`;
-it tells Hiera that this is an existing secret, not a new one. As you
-add more secrets to this file, they will be identified with increasing
-numbers.
-
-For convenience of editing, I suggest you make a shell script, called
-something like `/usr/local/bin/eyaml_edit`, which runs the
-`eyaml edit` command. There\'s an example on your lab environment,
-at `/examples/eyaml_edit.sh`, which you can copy to
-`/usr/local/bin` and edit (as before, substitute the
-`gpg-recipients` email address with the one associated with
-your GPG key):
-
-``` 
-#!/bin/bash
-/opt/puppetlabs/puppet/bin/eyaml edit --gpg-always-trust --gpg-recipients=puppet@cat-pictures.com /etc/puppetlabs/code/environments/pbg/data/secret.eyaml
-```
-
-
-Now, whenever you need to edit your secret data, you can simply run the
-following command:
-
-``` 
-sudo eyaml_edit
-```
-
-
-To add a new secret, add a line like this:
-
-``` 
-  new_secret: DEC::GPG[Somebody wake up Hicks]!
-```
-
-
-When you save and quit the editor, the
-newly-encrypted secret will be stored in the data
-file.
-
-
-### Distributing the decryption key
-
-
-Now that your Puppet manifests use encrypted Hiera
-data, you\'ll need to make sure that each node running Puppet has a copy
-of the decryption key. Export the key to a text file using the following
-command (use your key\'s email address, of course):
-
-``` 
-sudo sh -c 'gpg --export-secret-key -a puppet@cat-pictures.com >key.txt'
-```
-
-
-Copy the `key.txt` file to any nodes which need the key, and
-run the following command to import it:
-
-``` 
-sudo gpg --import key.txt
-sudo rm key.txt
-```
-
-
-Make sure that you delete all copies of the text file once you have
-imported the key.
-
-
-
 
 Summary
 -------------------------
@@ -1210,13 +810,7 @@ data store, and how to query Hiera keys in Puppet manifests using
 `lookup()`.
 
 We\'ve explored using Hiera data to create resources, using an
-`each` loop over an array or hash. Finally, we\'ve covered
-using encrypted data with Hiera, using the `hiera-eyaml-gpg`
-backend, and we\'ve seen how to create a GnuPG key and use it to encrypt
-a secret value, and retrieve it again via Puppet. We\'ve explored the
-process Hiera uses to find and decrypt secret data, developed a simple
-script to make it easy to edit encrypted data files, and outlined a
-basic way to distribute the decryption key to multiple nodes.
+`each` loop over an array or hash. 
 
 In the next lab, we\'ll look at how to find and use public modules
 from Puppet Forge; how to use public modules to manage software
