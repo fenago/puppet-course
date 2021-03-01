@@ -330,9 +330,7 @@ Puppet array.
 ### Hashes
 
 
-As we saw in [Lab
-5],
-[*Variables, expressions, and facts*], a hash (also called a
+A hash (also called a
 **dictionary** in some programming languages) is like
 an array where each value has an identifying
 name (called the **key**), as in the
@@ -353,10 +351,7 @@ keys is `true`.
 When you call `lookup('cobbler_config', Hash)` in a manifest,
 the data will be returned as a Puppet hash, and you can reference
 individual values in it using the normal Puppet hash syntax, as we saw
-in [Lab
-5],
-[*Variables, expressions, and facts*]
-(`lookup_hash.pp`):
+in Lab 5 (`lookup_hash.pp`):
 
 ``` 
 $cobbler_config = lookup('cobbler_config', Hash)
@@ -579,19 +574,6 @@ only one value, the first found value. By contrast, the
 `unique` merge behavior returns all the values found, as a
 flattened array, with duplicates removed (hence `unique`).
 
-If you are looking up hash data, you can use the
-`hash` merge behavior to return a merged hash containing all
-the keys and values from all matching hashes found. If Hiera finds two
-hash keys with the same name, only the value of the first will be returned. This is known as a **shallow merge**.
-If you want a deep merge (that is, one where
-matching hashes will be merged at all levels, instead of just the top
-level) use the `deep` merge behavior.
-
-If this all sounds a bit complicated, don\'t worry. The default merge
-behavior is probably what you want most of the time, and if you should
-happen to need one of the other behaviors instead, you can read more
-about it in the Puppet documentation.
-
 
 ### Data sources based on facts
 
@@ -653,9 +635,6 @@ Xenial, Hiera will look for a data file named `os/xenial.yaml`
 `os/16.04.yaml` (if you\'re using
 `os.release.major`) in the Hiera data directory.
 
-For more information about facts in Puppet, see [Lab
-5],
-[*Variables, expressions, and facts*].
 
 
 ### What belongs in Hiera?
@@ -713,9 +692,7 @@ of resources of any type, based purely on data.
 ### Building resources from Hiera arrays
 
 
-In [Lab
-5],
-[*Variables, expressions, and facts*], we learned how to use
+In Lab 5, we learned how to use
 Puppet\'s `each` function to iterate over
 an array or hash, creating resources as we go. Let\'s apply this
 technique to some Hiera data. In our first example, we\'ll create some
@@ -846,9 +823,7 @@ the loop instead of one:
 ```
 
 
-As we saw in [Lab
-5],
-[*Variables, expressions, and facts*], when iterating over a
+As we saw in Lab 5, when iterating over a
 hash, these two parameters receive the hash key and its value,
 respectively.
 
@@ -881,70 +856,10 @@ Every time we go round the loop with the next element of
 specified attributes.
 
 
-### The advantages of managing resources with Hiera data
-
-
-The previous example makes it easy to manage users
-across your network without having to edit Puppet code: if you want to
-remove a user, for example, you would simply change her
-`ensure` attribute in the Hiera data to `absent`.
-Although each of the users happens to have the same set of attributes
-specified, this isn\'t essential; you could add any attribute supported
-by the Puppet `user` resource to any user in the data. Also,
-if there\'s an attribute whose value is always the same for all users,
-you need not list it in the Hiera data for every user. You can add it as
-a literal attribute value of the `user` resource inside the
-loop, and thus every user will have it.
-
-This makes it easier to add and update users on a routine basis, but
-there are other advantages too: for example, you could write a simple
-web application which allowed HR staff to add or edit users using a
-browser interface, and it would only need to output a YAML file with the
-required data. This is much easier and more robust
-than trying to generate Puppet code automatically. Even better, you
-could pull user data from an LDAP or **Active Directory**
-(**AD**) server and put it into Hiera
-YAML format for input into this manifest.
-
-This is a very powerful and flexible technique, and of course you can
-use it to manage any kind of Puppet resource: files, packages, Apache
-virtual hosts, MySQL databases---anything you can do with a resource you
-can do with Hiera data and `each`. You can also use Hiera\'s
-override mechanism to create different sets of resources for different
-nodes, roles, or operating systems.
-
-However, you shouldn\'t over-use this technique. Creating resources from
-Hiera data adds a layer of abstraction which makes it harder to
-understand the code for anyone trying to read or maintain it. With
-Hiera, it can also be difficult to work out from inspection exactly what
-data the node will get in a given set of circumstances. Keep your
-hierarchy as simple as possible, and reserve the data-driven resources
-trick for situations where you have a large and variable number of
-resources which you need to update frequently. In [Lab
-11],
-[*Orchestrating cloud resources*], we\'ll see how to use the
-same technique to manage cloud instances, for example.
-
-
 
 Managing secret data
 --------------------------------------
 
-
-Puppet often needs to know your secrets; for
-example, passwords, private keys, and other credentials need to be
-configured on the node, and Puppet must have access to this information.
-The problem is how to make sure that no-one else does. If you are
-checking this data into a Git repo, it will be available to anybody who
-has access to the repo, and if it\'s a public GitHub repo, everybody in
-the world can see it.
-
-Clearly, it\'s essential to be able to encrypt secret data in such a way
-that Puppet can decrypt it on individual nodes where it\'s needed, but
-it\'s indecipherable to anybody who does not have the key. The popular
-GnuPG encryption tool is a good choice for this. It lets you encrypt
-data using a public key which can be distributed widely, but only
-someone with the corresponding private key can decrypt the information.
 
 Hiera has a pluggable **backend** system which allows it to
 support various different ways of storing data. One such backend is called `hiera-eyaml-gpg`, which allows
@@ -1059,7 +974,7 @@ example `hiera.yaml` file:
     lookup_key: eyaml_lookup_key
     path: "secret.eyaml"
     options:
-      gpg_gnupghome: '/home/ubuntu/.gnupg'
+      gpg_gnupghome: '/root/.gnupg'
 ```
 
 
