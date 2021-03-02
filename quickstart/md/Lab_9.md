@@ -28,32 +28,10 @@ the **contents of files** on the node by various means,
 including setting the contents to a literal string using the
 `content` attribute, and copying a file from a Puppet module
 using the `source` attribute. While these methods are very
-useful, they are limited in one respect: they can only use **static
-text**, rather than building the contents of the file
+useful, they are limited in one respect: they can only use **static text**, rather than building the contents of the file
 dynamically, based on Puppet data.
 
 
-
-
-### The dynamic data problem
-
-
-To see why this is a problem, consider a common
-Puppet file management task such as a backup script. There are a number
-of site- and node-specific things the backup script needs to know: the
-local directories to back up, the destination to copy them to, and any
-credentials needed to access the backup storage. While we could insert
-these into the script as literal values, this is rather inflexible. We
-might have to maintain several versions of the script, each identical to
-the others except for a backup location, for example. This is clearly
-less than satisfactory.
-
-Consider a configuration file for an application where some of the
-settings depend on specific information about the node: the available
-memory, perhaps. Obviously, we don\'t want to have to maintain multiple
-versions of an almost identical config file, each containing a suitable
-value for all the different sizes of memory we may come across. We have
-a way of obtaining that information directly in Puppet.
 
 
 ### Puppet template syntax
@@ -93,9 +71,12 @@ evaluated and interpolated when the template is
 used.
 
 Puppet\'s template mechanism is called **EPP** (for
-**Embedded Puppet**), and template files have the extension
-`.epp`.
+**Embedded Puppet**), and template files have the extension `.epp`.
 
+
+``` 
+puppet epp render --values "{ 'aws_access_key' => 'foo' }" /examples/aws_credentials.epp
+```
 
 
 Using templates in your manifests
@@ -114,9 +95,7 @@ work with templates. In fact, we use an attribute of the
 ### Referencing template files
 
 
-Recall from  [Lab
-2],
-[*Creating your first manifests*], that you can use the
+Recall from Lab 2, that you can use the
 `content` attribute to set a file\'s contents to a literal
 string:
 
@@ -172,9 +151,7 @@ You can use the `epp()` function anywhere a string is
 expected, but it\'s most common to use it to manage a file, as shown in the example.
 
 To reference a template file from within a module (for example, in our
-NTP module from [Lab
-7],
-[*Mastering modules*]), put the file in the
+NTP module from Lab 7, put the file in the
 `modules/pbg_ntp/templates/` directory, and prefix the
 filename with `pbg_ntp/`, as in the following example:
 
@@ -215,15 +192,9 @@ file { '/usr/local/bin/backup':
 }
 ```
 
+Run following command in the terminal to apply manifest:
 
-Note that we used a **single-quoted string** to specify the
-inline template text. If we\'d used a double-quoted string, Puppet would
-have interpolated the values of `$web_root` and
-`$backup_dir` [*before*] processing the template,
-which is not what we want.
-
-In general, though, it\'s better and more readable
-to use a separate template file for all but the simplest templates.
+`puppet apply /examples/file_inline_epp.pp`
 
 
 ### Template tags
@@ -296,20 +267,7 @@ and so on.
 ### Conditional statements in templates
 
 
-You might not be very impressed with templates so
-far, pointing out that you can already interpolate
-the values of Puppet expressions in strings, and hence files, without
-using a template. That said, templates allow you to interpolate data
-into much bigger files than it would be practical or desirable to create
-with a literal string in your Puppet manifest.
-
-Templates also allow you to do something else very useful: **include or
-exclude sections of text** based on the result of some Puppet
-conditional expression.
-
-We\'ve already met conditional statements in manifests in [Lab
-5],
-[*Variables, expressions, and facts*], where we used them to
+We\'ve already met conditional statements in manifests in Lab 5 where we used them to
 conditionally include sets of Puppet resources (`if.pp`):
 
 ``` 
@@ -387,9 +345,7 @@ all the network interfaces available, with
 where the key is the name of the interface, and the value is a hash of
 the interface\'s attributes, such as the IP address and netmask.
 
-You may recall from [Lab
-5],
-[*Variables, expressions, and facts*] that in order to
+You may recall from Lab 5 that in order to
 iterate over a hash, we use a syntax like the following:
 
 ``` 
@@ -481,9 +437,7 @@ local_address 127.0.0.1;
 ### Iterating over Hiera data
 
 
-In [Lab
-6],
-[*Managing data with Hiera*] we used a Hiera array of users
+In Lab 6 ,we used a Hiera array of users
 to generate Puppet resources for each user. Let\'s
 use the same Hiera data now to build a dynamic configuration file using
 iteration in a template.
@@ -525,6 +479,13 @@ usernames in the output being space-separated. Note also the use of the
 leading hyphen to the closing tag (`-%>`) which, as we saw
 earlier in the lab, will suppress any trailing whitespace on the
 line.
+
+
+Run following command in the terminal to apply changes:
+
+```
+puppet epp render --environment pbg /examples/template_hiera.epp
+```
 
 Here\'s the result:
 
@@ -617,15 +578,6 @@ default value is mandatory.
 
 
 
-**Best practices**
-
-Use EPP templates for dynamically-generated files, declare typed
-parameters in the template, and pass those parameters as a hash to the
-`epp()` function. To make your template code easier to
-understand and maintain, always pass data explicitly to the template. If
-the template needs to look up Hiera data, do the lookup in your Puppet
-manifest and have the template declare a parameter to receive the data.
-
 
 
 ### Validating template syntax
@@ -683,9 +635,9 @@ containing the hash of parameters:
 
 ``` 
 echo "{ 'aws_access_key' => 'foo', 'aws_secret_key' => 'bar' }" >params.pp
+
 puppet epp render --values_file params.pp /examples/template_params.epp
-aws_access_key_id = foo
-aws_secret_access_key = bar
+
 ```
 
 
@@ -707,6 +659,7 @@ string:
 
 ``` 
 puppet epp render --values "{ 'name' => 'Dave' }" -e 'Hello, <%= $name %>'
+
 Hello, Dave
 ```
 
@@ -724,46 +677,6 @@ One advantage of this approach is that all Puppet variables, facts, and
 Hiera data will be available to your template.
 
 
-### Legacy ERB templates
-
-
-You\'ll probably come across references to a
-different type of Puppet template in older code and documentation: the
-**ERB template**. ERB (for Embedded
-Ruby) was the only template mechanism provided in Puppet up until
-version 3.5, when EPP support was added, and EPP has now replaced ERB as
-Puppet\'s default template format.
-
-ERB template syntax looks quite similar to EPP. The following example is
-a snippet from an ERB template:
-
-``` 
-AllowUsers <%= @users.join(' ') %><%= scope['::ubuntu'] == 'yes' ? ',ubuntu' : '' %>
-```
-
-
-The difference is that the template language inside the tags, is Ruby,
-not Puppet. Early versions of Puppet were rather limited in language
-features (for example, there was no `each` function to iterate
-over variables), so it was common to use Ruby code embedded in templates
-to work around this.
-
-This required some complicated plumbing to manage
-the interface between Puppet and Ruby; for example, accessing variables
-in non-local scope in ERB templates requires the use of the
-`scope `hash, as in the previous example. Similarly, in order
-to access Puppet functions such as `strftime()`, you have to
-call:
-
-``` 
-scope.call_function('strftime', ...)
-```
-
-
-ERB templates also do not support declared
-parameters or type checking. It is recommend to use only EPP templates in
-your own code.
-
 
 Summary
 -------------------------
@@ -780,8 +693,3 @@ template using `puppet epp render`, passing in canned values
 for the template parameters using `--values` and
 `--values_file`, or using `puppet apply` to render
 the template directly.
-
-Finally, we\'ve touched on legacy ERB templates, where they come from,
-how they compare to EPP templates, and why, although you may still
-encounter ERB templates in the wild, you should only use EPP in your own
-code.

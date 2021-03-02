@@ -16,120 +16,11 @@ managing your whole network with Puppet.
 ![](./images/B08880_03_01.jpg)
 
 
-
-What is version control?
-------------------------------------------
-
-
-If you\'re already familiar with Git, you can save
-some reading by skipping ahead to the [*Creating a Git repo*]
-section. If not, here\'s a gentle introduction.
-
-Even if you\'re the only person who works on a piece of source code (for
-example, Puppet manifests), it\'s still useful to be able to see what
-changes you made, and when. For example, you might realize that you
-introduced a bug at some point in the past, and you need to examine
-exactly when a certain file was modified and exactly what the change
-was. A version control system lets you do that, by keeping a complete
-history of the changes you\'ve made to a set of files over time.
-
-
-
-
-### Tracking changes
-
-
-When you\'re working on code with others, you also
-need a way to communicate with the rest of the team about your changes.
-A version control tool such as Git not only tracks everyone\'s changes,
-but lets you record a **commit message**, explaining what
-you did and why. The following example illustrates
-some aspects of a good commit message:
-
-``` 
-Summarize changes in around 50 characters or less
-
-More detailed explanatory text, if necessary. Wrap it to about 72
-characters or so. In some contexts, the first line is treated as
-the subject of the commit and the rest of the text as the body.
-The blank line separating the summary from the body is critical
-(unless you omit the body entirely); various tools like `log`,
-`shortlog`, and `rebase` can get confused if you run the two together.
-
-Explain the problem that this commit is solving. Focus on why you
-are making this change as opposed to how (the code explains that).
-Are there side effects or other unintuitive consequences of this
-change? Here's the place to explain them.
-
-Further paragraphs come after blank lines.
-
- - Bullet points are okay, too
-
- - Typically a hyphen or asterisk is used for the bullet, preceded
-   by a single space, with blank lines in between, but conventions
-   vary here
-
-If you use an issue tracker, put references to them at the bottom,
-like this:
-
-Resolves: #123
-See also: #456, #789
-```
-
-
-
-#### Note
-
-This example is taken from Chris Beams\' excellent blog post on [*How to
-Write a Git Commit Message*]:
-
-<https://chris.beams.io/posts/git-commit/>
-
-Of course, you won\'t often need such a long and detailed message; most
-of the time, a single line will suffice. However, it\'s better to give
-more information than less.
-
-
-Git also records when the change happened, who made it, what files were
-changed, added, or deleted, and which lines were added, altered, or
-removed. As you can imagine, if you\'re trying to track down a bug, and
-you can see a complete history of changes to the code, that\'s a big
-help. It also means you can, if necessary, roll back the state of the
-code to any point in history and examine it.
-
-You might think this introduces a lot of extra complication. In fact,
-it\'s very simple. Git keeps out of your way until you need it, and all
-you have to do is write a commit message when you decide to record
-changes to the code.
-
-
-### Sharing code
-
-
-A set of files under Git version control is called a
-**repository**, which is usually equivalent to a project. A
-Git repository (from now on, just **repo**) is also a great
-way to distribute your code to others, whether
-privately or publicly, so that they can use it,
-modify it, contribute changes back to you, or develop it in a different
-direction for their own requirements.
-
-You\'ll be able to use this repo for working through examples throughout
-the course, but you can also use it for help and inspiration when building
-Puppet manifests for your own infrastructure.
-
-Because Git is so important for managing Puppet code, it\'s a good idea
-to get familiar with it, and the only way to do that is to use it for
-real. So let\'s start a new Git repo we can use to experiment with.
-
-
-
 Creating a Git repo
 -------------------------------------
 
 
-It\'s very easy to create a Git repo. Follow these
-steps:
+It\'s very easy to create a Git repo. Follow these steps:
 
 
 1.  Make a directory to hold your versioned files using the following
@@ -173,7 +64,7 @@ Let\'s make our first commit to the new repo:
     particularly prefer mine) using the following commands:
 
     ``` 
-    git config --global user.name "John Arundel"
+    git config --global user.name "Puppet QuickStart"
     git config --global user.email john@fenago.com
     ```
     
@@ -241,104 +132,18 @@ Let\'s make our first commit to the new repo:
     ``` 
     git log
     commit ee215951199158ef28dd78197d8fa9ff078b3579
-    Author: John Arundel <john@fenago.com>
+    Author: Puppet QuickStart <john@fenago.com>
     Date:   Tue Aug 30 05:59:42 2016 -0700
         Add README file
     ```
     
 
 
-### How often should I commit?
-
-
-A common practice is to commit when the code is in a
-consistent, working state, and have the commit include a set of related
-changes made for some particular purpose. So, for example, if you are
-working to fix bug number 75 in your issue-tracking system, you might
-make changes to quite a few separate files and then, once you\'re happy
-the work is complete, make a single commit with a message such as:
-
-``` 
-Make nginx restart more reliable (fixes issue #75)
-```
-
-
-On the other hand, if you are making a large number
-of complicated changes and you are not sure when you\'ll be done, it
-might be wise to make a few separate commits along the way, so that if
-necessary you can roll the code back to a previous state. Commits cost
-nothing, so when you feel a commit is needed, go ahead and make it.
-
-
-### Branching
-
-
-Git has a powerful feature called
-**branching**, which lets you create a parallel copy of the
-code (a branch) and make changes to it independently. At any time, you
-can choose to merge those changes back into the
-master branch. Or, if changes have been made to the master branch in the
-meantime, you can incorporate those into your working branch and carry
-on.
-
-This is extremely useful when working with Puppet, because it means you
-can switch a single node to your branch while you\'re testing it and
-working on it. The changes you make won\'t be visible to other nodes
-which aren\'t on your branch, so there\'s no danger of accidentally
-rolling out changes before you\'re ready.
-
-Once you\'re done, you can merge your changes back into master and have
-them roll out to all nodes.
-
-Similarly, two or more people can work independently on their own
-branches, exchanging individual commits with each other and with the
-master branch as they choose. This is a very flexible and useful way of
-working.
-
-
-#### Note
-
-For more information about Git branching, and indeed about Git in
-general, I recommend the excellent course \'[*Pro Git*]\', by
-[*Scott Chacon*] and [*Ben Straub*], published by
-[*Apress*]. The whole course is available for free at
-<https://git-scm.com/course/en/v2>.
 
 
 
 Distributing Puppet manifests
 -----------------------------------------------
-
-
-So far in this course we\'ve only applied Puppet
-manifests to one node, using `puppet apply` with a local copy
-of the manifest. To manage several nodes at once, we need to distribute
-the Puppet manifests to each node so that they can be applied.
-
-There are several ways to do this, one approach is to use the
-**agent/master** architecture, where a central Puppet master
-server compiles your manifests and distributes the
-**catalog** (the desired node state) to all nodes.
-
-Another way to use Puppet is to do without the master server altogether,
-and use Git to distribute manifests to client nodes, which then runs
-`puppet apply` to update their configuration. This
-**stand-alone** Puppet architecture doesn\'t require a
-dedicated Puppet master server, and there\'s no single point of failure.
-
-Both agent/master and stand-alone architectures are
-officially supported by Puppet, and it\'s possible to change from one to
-the other if you decide you need to. The examples in this course were
-developed with the stand-alone architecture, but will work just as well
-with agent/master if you prefer it. There is no difference in the Puppet
-manifests, language, or structure; the only difference is in the way the
-manifests are applied.
-
-All you need for a stand-alone Puppet architecture is a Git server which
-each node can connect to and clone the repo. You can run your own Git
-server if you like, or use a public Git hosting service such as GitHub.
-For ease of explanation, I\'m going to use GitHub for this example
-setup.
 
 In the following sections, we\'ll create a GitHub account, push our new
 Puppet repo to GitHub, and then set up our virtual machine to
@@ -391,7 +196,7 @@ using another Git server, you can skip this section.
     (`https://github.com/pbgtest/puppet.git`):
 
     
-    ![](./images/B08880_03_02.jpg)
+![](./images/B08880_03_02.jpg)
     
 
 
@@ -432,7 +237,7 @@ GitHub so that you can share it with other nodes.
     repo URL in your browser. It should look something like this:
 
     
-    ![](./images/B08880_03_03.jpg)
+![](./images/B08880_03_03.jpg)
     
 
 

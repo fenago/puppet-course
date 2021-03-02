@@ -8,8 +8,7 @@ Puppet 5 QuickStart is a practical guide that gets you up and running with the v
 
 **Key Features**
 
-- Develop skills to run Puppet 5 on single or multiple servers without hiccups
-- Use Puppet to create and manage cloud resources such as Amazon EC2 instances
+- Develop skills to run Puppet 5 without hiccups
 - Take full advantage of powerful new features of Puppet including loops, data types, Hiera integration, and container management
 
 **What You Will Learn**
@@ -19,7 +18,6 @@ Puppet 5 QuickStart is a practical guide that gets you up and running with the v
 - Deploy configuration files and templates at super-fast speeds and manage user accounts and access control
 - Automate your IT infrastructure
 - Use the latest features in Puppet 5 onward and its official modules
-- Manage clouds, containers, and orchestration
 - Get to know the best practices to make Puppet more reliable and increase its performance
 
 ### Labs

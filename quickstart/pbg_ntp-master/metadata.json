@@ -1,7 +1,7 @@
 {
   "name": "pbg_ntp",
   "version": "0.1.4",
-  "author": "John Arundel",
+  "author": "Puppet QuickStart",
   "summary": "Example module to manage NTP",
   "license": "Apache-2.0",
   "source": "https://github.com/fenago/pbg_ntp.git",

@@ -35,11 +35,7 @@ language building block.
 ### The class keyword
 
 
-You may have noticed that in the code for our
-example NTP module in [Lab
-7,]
-[*Mastering modules*] (in the [*Writing the module
-code*] section), we used the `class` keyword:
+You may have noticed that in the code for our example NTP module in Lab 7, we used the `class` keyword:
 
 ``` 
 class pbg_ntp {
@@ -54,7 +50,7 @@ Puppet that the resources it contains should be grouped together and
 given a name (`pbg_ntp`), and that these resources should not
 be applied yet.
 
-You can then use this name elsewhere to tell Puppet to apply all the
+You can then use this name else where to tell Puppet to apply all the
 resources in the class together. We declared our example module by using
 the `include` keyword:
 
@@ -84,22 +80,10 @@ include CLASS_NAME
 ```
 
 
-You may recall from [Lab
-7,]
-[*Mastering modules*], that we used Hiera\'s automatic
-parameter lookup mechanism to supply parameters to classes. We\'ll find
-out more about this shortly, but first, how do we write a class that
-accepts parameters?
 
 
 ### Declaring parameters to classes
 
-
-If all a class does is group together related
-resources, that\'s still useful, but a class
-becomes much more powerful if we can use **parameters**.
-Parameters are just like resource attributes: they let you pass data to
-the class to change how it\'s applied.
 
 The following example shows how to define a class that takes parameters.
 It\'s a simplified version of the `pbg_ntp` class we developed
@@ -126,14 +110,6 @@ class definition. This specifies the parameters that the class accepts:
 String $version = 'installed',
 ```
 
-
-`String` tells Puppet that we expect this value to be a
-String, and it will raise an error if we try to pass it anything else,
-such as an Integer. `$version` is the name of the parameter.
-Finally, the `'installed'` part specifies a **default
-value** for the parameter. If someone declares this class
-without supplying the `pbg_ntp_params::version` parameter,
-Puppet will fill it in automatically using this default value.
 
 If you don\'t supply a default value for a parameter, that makes the
 parameter **mandatory**, so Puppet will not let you declare
@@ -203,20 +179,14 @@ Let\'s look closely at the parameter list:
 
 The first parameter is of `Boolean` type and named
 `$start_at_boot`. There\'s no default value, so this parameter
-is mandatory. Mandatory parameters must be declared first, before any
-optional parameters (that is, parameters with a default value).
+is mandatory.
 
 The `$version` parameter we saw in the previous example, but
 now it\'s a `String[1]` instead of a `String`.
 What\'s the difference? A `String[1]` is a String with at
-least one character. This means that you can\'t pass the empty string to
-such a parameter, for example. It\'s a good idea to specify a minimum
-length for String parameters, if appropriate, to catch the case where an
-empty string is accidentally passed to the class.
+least one character. 
 
-The final parameter, `$service_state` is of a new type,
-`Enum`, which we haven\'t come across before. With an **Enum
-parameter**, we can specify exactly the list of allowed values
+The final parameter, `$service_state` is of type `Enum`. With an **Enum parameter**, we can specify exactly the list of allowed values
 it can take.
 
 If your class expects a String parameter which can only take one of a
@@ -277,151 +247,8 @@ You should always specify types for your class
 parameters, as it makes it easier to catch errors where the wrong
 parameters or values are being supplied to the class. If you\'re using a
 String parameter, for example, if possible, make it an Enum parameter
-with an exact list of the values your class accepts. If you can\'t
-restrict it to a set of allowed values, specify a minimum length with
-`String[x]`. (If you need to specify a maximum length too, the syntax is `String[min, max]`.)
+with an exact list of the values your class accepts.
 
-
-
-
-### Available data types
-
-
-So far in this lab, we\'ve encountered the data
-types String, Enum, and Boolean. Here are the others:
-
-
-- Integer (whole numbers)
-
-- Float (floating-point numbers, which have optional decimal
-    fractions)
-
-- Numeric (matches either integers or floats)
-
-- Array
-
-- Hash
-
-- Regexp
-
-- Undef (matches a variable or parameter which hasn\'t been assigned a
-    value)
-
-- Type (data type of literal values which represent Puppet data types,
-    such as String, Integer, and Array)
-
-
-There are also [*abstract*] data types, which are more
-general:
-
-
-- Optional (matches a value which may be undefined, or not supplied)
-
-- Pattern (matches Strings which conform to a specified regular
-    expression)
-
-- Scalar (matches Numeric, String, Boolean, or Regexp values, but not
-    Array, Hash, or Undef)
-
-- Data (matches Scalar values, but also Array, Hash, and Undef)
-
-- Collection (matches Array or Hash)
-
-- Variant (matches one of a specified list of data types)
-
-- Any (matches any data type)
-
-
-In general, you should use as specific a data type as possible. For
-example, if you know that a parameter will always be an integer number,
-use `Integer`. If it needs to accept floating-point values as
-well, use `Numeric`. If it could be a String as well as a
-Number, use `Scalar`.
-
-
-### Content type parameters
-
-
-Types which represent a collection of values, such
-as `Array` and `Hash` (or their parent type,
-`Collection`) can also take a parameter indicating the type of
-values they contain. For example, `Array[Integer]` matches an
-array of Integer values.
-
-If you declare a content type parameter to a collection, then all the
-values in that collection must match the declared type. If you don\'t
-specify a content type, the default is `Data`, which matches
-(almost) any type of value. The content type parameter can itself take
-parameters: `Array[Integer[1]]` declares an array of positive
-Integers.
-
-Hash takes two content type parameters, the first indicating the data
-type of its keys, the second the data type of its values.
-`Hash[String, Integer]` declares a hash whose keys are
-Strings, each of which is associated with an Integer value (this would
-match, for example, the hash `{'eggs' => 61}`).
-
-
-### Range parameters
-
-
-Most types can also accept parameters in square
-brackets, which make the type declaration more specific. For example,
-we\'ve already seen that `String` can take a pair of
-parameters indicating the minimum and maximum length of the string.
-
-Most types can take **range** ] 
-**parameters**: `Integer[0]` matches any Integer
-greater than or equal to zero, while `Float[1.0, 2.0]` matches
-any Float between 1.0 and 2.0 inclusive.
-
-If either range parameter is the special value `default`, the
-default minimum or maximum value for the type will be used. For example,
-`Integer[default, 100]` matches any Integer less than or equal
-to 100.
-
-For arrays and hashes, the range parameters specify the minimum and
-maximum number of elements or keys: `Array[Any, 16]` specifies
-an array of no less than 16 elements of `Any` type.
-`Hash[Any, Any, 5, 5]` specifies a hash containing exactly
-five key-value pairs.
-
-You can specify both range and content type parameters at once:
-`Array[String, 1, 10]` matches an array of between one and ten
-strings. `Hash[String, Hash, 1]` specifies a hash with String
-keys and Hash values, containing at least one key-value pair with String
-keys and values of type Hash.
-
-
-### Flexible data types
-
-
-If you don\'t know exactly what type the values may
-be, you can use one of Puppet\'s more flexible **abstract
-types**, such as `Variant`, which specifies a list
-of allowed types. For example, `Variant[String, Integer]`
-allows its value to be either a String or an Integer.
-
-Similarly, `Array[Variant[Enum['true', 'false'], Boolean]]`
-declares an array of values which can be either the String values
-`'true'` or `'false'` or the Boolean values
-`true` and `false`.
-
-The `Optional` type is very useful when a value may be
-undefined. For example, `Optional[String]` specifies a String
-parameter which may or may not be passed to the class. Normally, if a
-parameter is declared without a default value, Puppet will give an error
-when it is not supplied. If it is declared `Optional`,
-however, it may be omitted, or set to `Undef` (meaning that
-the identifier is defined, but has no value).
-
-The `Pattern` type allows you to specify a regular expression.
-All Strings matching that regular expression will be allowed values for
-the parameter. For example, `Pattern[/a/]` will match any
-String which contains the lowercase letter a. In fact, you can specify
-as many regular expressions as you like.
-`Pattern[/a/, /[0-9]/]` matches any String which contains the
-letter `a`, or any string which contains a digit.
 
 
 
@@ -554,33 +381,6 @@ be in a file named after the type in the
 
 
 
-Managing classes with Hiera
----------------------------------------------
-
-
-In [Lab
-3],
-[*Managing your Puppet code with Git*], we saw how to set up
-your Puppet repo on multiple nodes and auto-apply
-the manifest using a cron job and the
-`run-puppet` script. The `run-puppet` script runs
-the following commands:
-
-``` 
-cd /etc/puppetlabs/code/environments/production && git pull/opt/puppetlabs/bin/puppet apply manifests/
-```
-
-
-You can see that everything in the `manifests/` directory will
-be applied on every node. Clearly, Puppet is much more useful when we
-can apply different manifests on each node; some nodes will be web
-servers, others database servers, and so on. In fact, we would like to
-include some classes on all nodes, for general administration, such as
-managing user accounts, and other classes only on specific nodes. So how
-do we do that?
-
-
-
 
 ### Using include with lookup()
 
@@ -685,9 +485,7 @@ include(lookup('classes'), Array[String], 'unique')
 ```
 
 
-Which classes will be applied? You may recall from [Lab
-6,]
-[*Managing data with Hiera*] that the `unique`
+Which classes will be applied? You may recall from Lab 6, that the `unique`
 merge strategy finds all values for the given key throughout the
 hierarchy, merges them together, and returns them as a flattened array,
 with duplicates removed. So the result of this `lookup()` call
@@ -696,18 +494,6 @@ will be the following array:
 ``` 
 [apache, postgresql, tomcat, my_app]
 ```
-
-
-This is the complete list of classes that Puppet will apply to the node.
-Of course, you can add classes at any other level of the hierarchy, if
-you need to, but you will probably find the common and per-node levels
-to be the most useful for including classes.
-
-Naturally, even though some nodes may include the same classes as
-others, they may need different configuration values for the classes.
-You can use Hiera in the same way to supply different parameters for the
-included classes, as described in the [*Automatic parameter lookup from
-Hiera data*] section earlier in this lab.
 
 
 
@@ -766,29 +552,6 @@ you keep all your role classes in a single module, then they will all be
 named `role::something`, depending on the role they implement.
 
 
-#### Note
-
-It\'s important to note that role classes are not special to Puppet in
-any way. They\'re just ordinary classes; we call them role classes only
-to remind ourselves that they are for expressing the roles assigned to a
-particular node.
-
-
-The value of `classes` in Hiera is now reduced to just the
-following:
-
-``` 
-classes:
-- role::app_server
-```
-
-
-Looking at the Hiera data, it\'s now very easy to see what the node\'s
-job is---what its [*role*] is---and all app servers now just
-need to include `role::app_server`. When or if the list of
-classes required for app servers changes, you
-don\'t need to find and update the Hiera `classes` value for every app server; you just need to edit the
-`role::app_server` class.
 
 
 ### Profiles

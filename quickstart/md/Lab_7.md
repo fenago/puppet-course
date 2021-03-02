@@ -273,14 +273,15 @@ Follow these steps to apply the manifest:
 Verify that virtualhost is created: `ls -ltr /etc/apache2/sites-enabled/`
 
 
-#### Apache Port 
-Run following command to start apache server:
+#### Apache Status
+
+Run following command to get apache server status:
 
 ```
-apachectl start
+service apache2 status
 ```
 
-<span style="color:red;">Note: You will get and error because port 80 is already in use for the lab environment. We will change the port in the next step.</span>
+<span style="color:red;">Note: You might get an error because port 80 is already in use for the lab environment. We will change the port in the next step.</span>
 
 
 #### Change Apache Port
@@ -288,7 +289,7 @@ apachectl start
 Let's change the default Apache port. Open `/etc/apache2/ports.conf` in vscode and update `80` with port `81`. Save and close the file.
 
 ```
-apachectl start
+service apache2 start
 ```
 
 
@@ -299,7 +300,7 @@ apachectl start
 You should see a picture of a happy cat:
 
 
-![](./images/8880_07_02.jpg)
+![](./images/8880_07_02.png)
 
 
 Let\'s go through the manifest and see how it works in detail.
@@ -354,14 +355,6 @@ Let\'s go through the manifest and see how it works in detail.
 
 
 ### Using puppet/archive
-
-
-While installing software from packages is a common
-task, you\'ll also occasionally need to install software from archive
-files, such as a tarball (a `.tar.gz` file) or ZIP file. The
-`puppet/archive` module is a great help for this, as it
-provides an easy way to download archive files from the Internet, and it
-can also unpack them for you.
 
 In the following example, we\'ll use the `puppet/archive`
 module to download and unpack the latest version of the popular
@@ -464,11 +457,6 @@ Error: Evaluation Error: Error while evaluating a Resource Statement, Duplicate 
 ```
 
 
-If both of your classes really require the package, then you have a
-problem. You could create a class which simply declares the package, and
-then include that in both classes, but that is a lot of overhead for a
-single package. Worse, if the duplicate declaration is in a third-party
-module, it may not be possible, or advisable, to change that code.
 
 What we need is a way to declare a package which will not cause a
 conflict if that package is also declared somewhere else. The standard
@@ -514,13 +502,6 @@ place, Puppet will give an error message and refuse to run. If the
 package is declared by
 `ensure_packages()`, however, Puppet will run successfully.
 
-Since it provides a safe way to install packages without resource
-conflicts, you should always use `ensure_packages()` instead
-of the built-in `package` resource. It is certainly essential
-if you\'re writing modules for public release, but I recommend you use
-it in all your code. We\'ll use it to manage
-packages throughout the rest of this course.
-
 
 ### Modifying files in place with file\_line
 
@@ -545,7 +526,7 @@ file_line { 'set ulimits':
 ```
 
 
-If there is a possibility that some other Puppet class or application
+If there is aibility that some other Puppet class or application
 may need to modify the target file, use `file_line` instead of
 managing the file directly. This ensures that your class won\'t conflict
 with any other attempts to control the file.
@@ -766,16 +747,17 @@ others that we\'ve installed from Puppet Forge, then we should create a
 new Git repo just for our module. Then we can add its details to our
 Puppetfile and have `r10k` install it for us.
 
-If you\'ve already worked through [Lab
-3],
-[*Managing your Puppet code with Git*], you\'ll have created
-a GitHub account. If not, go to that lab and follow the instructions
-in the [*Creating a GitHub account and project*] section
-before continuing:
+
+All the code and files for this module are available in the GitHub repo
+at the following URL:
+
+<https://github.com/fenago/pbg_ntp>
 
 
-1.  Log in to your GitHub account and click on the **Start a
-    project** button.
+**Note:** You will need to create github for this task or create an empty repository locally by running `git init` command ( git push command will not work). 
+
+ 
+1.  Log in to your GitHub account and click on the **Start a project** button.
 
 2.  On the **Create a new repository** screen, enter a
     suitable name for your repo (I\'m using `pbg_ntp` for the
@@ -813,14 +795,6 @@ complex modules have many subdirectories, the only ones we will be
 concerned with in this example are manifests and files. In this section,
 we\'ll create the necessary subdirectories, write the code to manage
 NTP, and add a config file which the code will install.
-
-
-#### Note
-
-All the code and files for this module are available in the GitHub repo
-at the following URL:
-
-<https://github.com/fenago/pbg_ntp>
 
 
 
@@ -929,7 +903,7 @@ Create the file `metadata.json` with the following contents
 {
   "name": "pbg_ntp",
   "version": "0.1.1",
-  "author": "John Arundel",
+  "author": "Puppet QuickStart",
   "summary": "Example module to manage NTP",
   "license": "Apache-2.0",
   "source": "https://github.com/fenago/pbg_ntp.git",
@@ -975,13 +949,6 @@ your module can support, the better, so if possible, test your module on
 other operating systems and list them in the metadata once you know they
 work.
 
-
-#### Note
-
-For full details on module metadata and how to use it, see the Puppet
-documentation:
-
-<https://docs.puppet.com/puppet/latest/reference/modules_metadata.html>
 
 
 It\'s important to get the metadata for your module
@@ -1084,14 +1051,6 @@ your module, we can use it in a manifest:
 ``` 
 puppet apply --environment=pbg -e 'include pbg_ntp'
 ```
-
-
-If you\'re using the lab environment or a recent version of Ubuntu, your
-server will most likely be running NTP already, so the only change
-you\'ll see Puppet apply will be the `ntp.conf` file.
-Nonetheless, it confirms that your module works.
-
-
 
 
 
