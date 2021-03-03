@@ -146,7 +146,7 @@ with the following command:
 
 ![](./images/cert4.png)
 
-Note that about connection will fail because when need to accept connection request from agent on the master node. At this point, the Puppet agent is installed and configured. Now, you can proceed to the next step.
+Note that about connection will fail because we have to accept connection request from agent on the master node. At this point, the Puppet agent is installed and configured. Now, you can proceed to the next step.
 
 
 Sign Puppet Agent Certificate
@@ -195,22 +195,35 @@ Update the following lines:
 
 ```
 [main]
-certname = "update-lab-environment-hostname"
-server = "update-lab-environment-hostname"
+certname = update-lab-environment-hostname
+server = update-lab-environment-hostname
 ```
+
 
 ![](./images/cert2.png)
    
 
-Run folowing command in terminal 1 test the Puppet master and agent communication:
+Edit the /etc/hosts configuration file:
+
+```
+echo "127.0.0.1 update-lab-environment-hostname" >> /etc/hosts
+
+cat  /etc/hosts
+```
+
+
+![](./images/cert5.png)
+   
+
+
+Run folowing command in terminal 2 test the Puppet master and agent communication:
 
 ```
 puppet agent -t --waitforcert 500000
 ```
 
 
-
-Run following commands in terminal 2 to sign the certificate:
+Run following commands in terminal 1 to sign the certificate(if required):
 
 ```
 puppet ca list
@@ -222,7 +235,7 @@ puppet ca sign "your-cert-name"
 
 ### Note:
 
-Now, Puppet master can able to communicate and control the agent node.
+Now, Puppet master will be able to communicate and control the agent node.
 
 On the Puppet agent node, test the Puppet master and agent communication
 with the following command:
