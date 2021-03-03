@@ -31,7 +31,9 @@ Puppet 5 QuickStart is a practical guide that gets you up and running with the v
 7. Mastering modules
 8. Classes, roles, and profiles
 9. Managing files with templates
-10. Managing your Puppet code with Git
+10. Puppet Master and Agent architecture 
+11. Managing your Puppet code with Git
+
 
 ### About
 
