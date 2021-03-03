@@ -3,7 +3,7 @@
 
 
 
-Lab 10. Managing your Puppet code with Git
+Lab 11. Managing your Puppet code with Git
 ------------------------------------------------------
 
 

@@ -110,8 +110,7 @@ wget https://apt.puppetlabs.com/puppet5-release-xenial.deb
 dpkg -i puppet5-release-xenial.deb
 ```
 
-Next, update the repository and install the Puppet agent by running the
-following command:Advertisement
+Next, update the repository and install the Puppet agent by running the following command:
 
 ```
 apt-get update -y
@@ -145,7 +144,9 @@ with the following command:
 /opt/puppetlabs/bin/puppet agent --test
 ```
 
-Note that about connection will fail because when need to accept connect request from agent on the master node. At this point, the Puppet agent is installed and configured. Now, you can proceed to the next step.
+![](./images/cert4.png)
+
+Note that about connection will fail because when need to accept connection request from agent on the master node. At this point, the Puppet agent is installed and configured. Now, you can proceed to the next step.
 
 
 Sign Puppet Agent Certificate
@@ -158,14 +159,14 @@ On the Puppet master node, run the following command to list all
 certificate:
 
 ```
-/opt/puppetlabs/bin/puppetserver ca list
+/opt/puppetlabs/bin/puppet ca list
 ```
 
 Now, sign the certificate with the following command:
 
 
 ```
-/opt/puppetlabs/bin/puppetserver ca sign puppetclient
+/opt/puppetlabs/bin/puppet ca sign puppetclient
 ```
 
 
@@ -212,9 +213,9 @@ puppet agent -t --waitforcert 500000
 Run following commands in terminal 2 to sign the certificate:
 
 ```
-puppetserver ca list
+puppet ca list
 
-puppetserver ca sign "your-cert-name"
+puppet ca sign "your-cert-name"
 ```
 
 
