@@ -6,8 +6,8 @@
 Lab 10. Puppet Master and Agent 
 --------------------------------
 
-In this lab, we will install Puppet server and agent on Ubuntu 20.04 server.
-
+In this lab, we will install Puppet server and agent on Ubuntu 20.04 server. We will setup both master and 
+agent on the same node in this lab. Setup can be done on multiple machines using same steps.
 
 
 Getting Started
@@ -255,11 +255,49 @@ If everything is fine, you should get the following output:
     Notice: Applied catalog in 0.02 seconds
 
 
+### `puppet apply` vs `puppet agent -t`
 
-Task: Create New File
+**Specifying the manifest for Puppet apply**
+
+The puppet apply command uses the manifest you pass to it as an argument on the command line:
+
+`puppet apply /etc/puppetlabs/code/environments/production/manifests/example.pp`
+
+You can pass Puppet apply either a single .pp file or a directory of .pp files. Puppet apply uses the manifest you pass it, not an environment's manifest.
+
+**Specifying the manifest for Puppet master**
+
+Puppet master uses the main manifest set by the current node's environment, whether that manifest is a single file or a directory of .pp files.
+
+By default, the main manifest for an environment is `<ENVIRONMENTS DIRECTORY>/<ENVIRONMENT>/manifests`, for example /etc/puppetlabs/code/environments/production/manifests. You can configure the manifest per-environment, and you can also configure the default for all environments.
+
+
+To check which manifest your Puppet master uses for a given environment, run:
+
+```
+puppet config print manifest --section master --environment <ENVIRONMENT>
+```
+
+You can also run following command to print central manifest location that master uses:
+
+```
+puppet master --configprint manifest
+```
+
+<span style="color:red;">Note: </span> Use `puppet agent -t` when you want to run manifest from master node and apply changes to agent node and run `puppet apply` command when you have put the manifest onto the machine itself.
+
+
+**Manifest directory behavior**
+
+When the main manifest is a directory, Puppet parses every .pp file in the directory in alphabetical order and evaluates the combined manifest. It descends into all subdirectories of the manifest directory and loads files in depth-first order. For example, if the manifest directory contains a directory named 01, and a file named 02.pp, it parses the files in 01 before it parses 02.pp.
+
+Puppet treats the directory as one manifest, so, for example, a variable assigned in the file 01_all_nodes.pp is accessible in node_web01.pp.
+
+
+Task 1: Create New File (puppet apply -t)
 -----------------------
 
-Create new file '/tmp/agent.txt' by writing puppet manifest and apply to agent node:
+Create new file '/tmp/apply.txt' by writing puppet manifest and apply to agent node:
 
 
 **Hint:**
@@ -272,8 +310,19 @@ node 'hostname' {
 ```
 
 ![](./images/cert1.png)
-  
 
+
+Task 2: Create New File (puppet agent -t)
+-----------------------
+
+Create new file '/tmp/agent.txt' by writing puppet manifest and apply to agent node:
+
+
+**Hint:** Create agent.pp file in `/etc/puppetlabs/code/environments/production/manifests` directory and run puppet agent command.
+
+Verify that manifest was applied by master on agent node and file that has been created: `cat /tmp/agent.txt`
+
+  
 Conclusion
 ----------
 

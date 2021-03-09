@@ -1,6 +1,6 @@
 <img align="right" src="./images/logo.png">
 
-<h2><span style="color:red;"></span>Puppet 5 QuickStart</h2>
+<h2><span style="color:red;">Puppet 5 QuickStart</span></h2>
 
 ### Description
 
@@ -9,7 +9,7 @@ Puppet 5 QuickStart is a practical guide that gets you up and running with the v
 **Key Features**
 
 - Develop skills to run Puppet 5 without hiccups
-- Take full advantage of powerful new features of Puppet including loops, data types, Hiera integration, and container management
+- Take full advantage of powerful new features of Puppet including loops, data types and Hiera integration
 
 **What You Will Learn**
 
@@ -39,6 +39,6 @@ Puppet 5 QuickStart is a practical guide that gets you up and running with the v
 
 Puppet 5 QuickStart gets you up and running with the very latest features of Puppet 5. Go from beginner to confident Puppet user with a series of clear, practical examples to help you manage every aspect of your server setup.
 
-Whether you're a developer, a system administrator, or you are simply curious about Puppet, you'll learn Puppet skills that you can put into practice right away. With practical steps giving you the key concepts you need, this course teaches you how to install packages and config files, create users, set up scheduled jobs, provision cloud instances, build containers, and so much more.
+Whether you're a developer, a system administrator, or you are simply curious about Puppet, you'll learn Puppet skills that you can put into practice right away. With practical steps giving you the key concepts you need, this course teaches you how to install packages and config files, create users, set up scheduled jobs and so much more.
 
 Every example in this course deals with something real and practical that you're likely to need in your work, and you'll see the complete Puppet code that makes it happen, along with step-by-step instructions for what to type and what output you’ll see.
