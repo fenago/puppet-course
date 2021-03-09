@@ -322,6 +322,8 @@ Create new file '/tmp/agent.txt' by writing puppet manifest and apply to agent n
 
 Verify that manifest was applied by master on agent node and file that has been created: `cat /tmp/agent.txt`
 
+![](./images/certagent.png)
+
   
 Conclusion
 ----------
