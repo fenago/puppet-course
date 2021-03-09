@@ -57,7 +57,7 @@ node dbserver {
   mysql::db { 'drupal':
     host     => 'localhost',
     user     => 'drupal',
-    password => 'Cookbook',
+    password => 'fenago',
     sql      => '/root/drupal.sql',
     require  => File['/root/drupal.sql']
   }
@@ -85,7 +85,7 @@ node dbserver {
 node shipyard {
   class {'docker': }
   docker::image {'phusion/baseimage': }
-  docker::run {'cookbook':
+  docker::run {'fenago':
     image   => 'alpine',
     expose  => '8080',
     ports   => '8080',

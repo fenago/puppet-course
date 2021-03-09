@@ -9,7 +9,7 @@ class apache {
   $index = @(INDEX)
     <html>
       <body>
-        <h1><a href='cookbook.html'>Cookbook! </a></h1>
+        <h1><a href='fenago.html'>Fenago! </a></h1>
       </body>
     </html>
     | INDEX
@@ -17,14 +17,14 @@ class apache {
     content => $index,
   }
 
-  $cookbook = @(COOKBOOK)
+  $fenago = @(FENAGO)
     <html>
       <body>
         <h2>PacktPub</h2>
       </body>
     </html>
-    | COOKBOOK
-  file {'/var/www/html/cookbook.html':
-    content => $cookbook
+    | FENAGO
+  file {'/var/www/html/fenago.html':
+    content => $fenago
   }
 }

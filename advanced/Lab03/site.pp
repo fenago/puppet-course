@@ -23,20 +23,20 @@ class yums {
 node 'packt_server' {
 }
 
-node 'cookbook' {
+node 'fenago' {
   tag('tagging')
   class {'tag_test': }
   class {'another_class': }
 
-  if tagged('cookbook') {
-    notify { 'tagged cookbook': }
+  if tagged('fenago') {
+    notify { 'tagged fenago': }
   }
   if tagged('packt_server') {
     notify { 'tagged packt_server': }
   }
 }
 
-#node cookbook {
+#node fenago {
 #  class {'first_class': }
 #  class {'second_class': }
 #  include admin::stages

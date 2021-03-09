@@ -64,20 +64,20 @@ node 'node2' {
   include user::sysadmins
   include user::developers
 }
-#node 'cookbook' inherits 'packt_server' {
+#node 'fenago' inherits 'packt_server' {
 #  tag('tagging')
 #  class {'tag_test': }
 #  class {'another_class': }
 #
-#  if tagged('cookbook') {
-#    notify { 'tagged cookbook': }
+#  if tagged('fenago') {
+#    notify { 'tagged fenago': }
 #  }
 #  if tagged('packt_server') {
 #    notify { 'tagged packt_server': }
 #  }
 #}
 
-# node cookbook {
+# node fenago {
   #include base
   #class {'first_class': }
   #class {'second_class': }
@@ -112,7 +112,7 @@ schedule { 'outside-office-hours':
   range  => ['17:00-23:59','00:00-09:00'],
   repeat => 1,
 }
-#node 'cookbook' {
+#node 'fenago' {
   #  notify { 'Doing some maintenance':
   #  schedule => 'outside-office-hours',
   #}
@@ -160,23 +160,23 @@ schedule { 'outside-office-hours':
 # class { 'heartbeat::vip':
 #   ip1   => '192.168.122.132',
 #   ip2   => '192.168.122.133',
-#   node1 => 'cookbook.example.com',
-#   node2 => 'cookbook2.example.com',
+#   node1 => 'fenago.example.com',
+#   node2 => 'fenago2.example.com',
 #   vip   => '192.168.122.200/24',
 # }
 #
 
-node cookbook2 {
+node fenago2 {
   class { 'heartbeat::vip':
     ip1   => '192.168.122.132',
     ip2   => '192.168.122.133',
-    node1 => 'cookbook.example.com',
-    node2 => 'cookbook2.example.com',
+    node1 => 'fenago.example.com',
+    node2 => 'fenago2.example.com',
     vip   => '192.168.122.200/24',
   }
 }
 
-#node cookbook {
+#node fenago {
 #  cron { 'run-backup':
 #    ensure  => present,
 #    command => '/usr/local/bin/backup',
@@ -249,7 +249,7 @@ node dbserver {
   mysql::db { 'drupal':
     host    => 'localhost',
     user    => 'drupal',
-    password    => 'Cookbook',
+    password    => 'fenago',
     sql     => '/root/drupal.sql',
     require => File['/root/drupal.sql']
   }
@@ -276,27 +276,27 @@ node dbserver {
 #    tag => "srv_home" }
 #  notify {"bleah": }
 #}
-#node cookbook {
+#node fenago {
 #  Mount <<| tag == "srv_home" |>> {
 #    name   => '/mnt',
 #  }
 #}
-#node cookbook {
+#node fenago {
 #  notify {"$::hello": }
 #}
 node master {
   class {'haproxy::master':
-    app => 'cookbook'
+    app => 'fenago'
   }
 }
 node slave1,slave2 {
   class {'haproxy::slave':
-    app => 'cookbook'
+    app => 'fenago'
   }
 }
 node default {
 }
-node cookbook {
+node fenago {
   #  gitrepo { 'https://github.com/puppetlabs/puppetlabs-git':
   #  ensure => present,
   #  path   => '/tmp/puppet',

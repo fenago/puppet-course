@@ -7,14 +7,14 @@ package {'apache2':
   ensure => 'installed',
 }
 
-$cookbook = @(COOKBOOK)
+$fenago = @(FENAGO)
   <VirtualHost *:80>
-    Servername cookbook
-    DocumentRoot /var/www/cookbook
+    Servername fenago
+    DocumentRoot /var/www/fenago
   </VirtualHost>
-  | COOKBOOK
-file {'/etc/apache2/conf.d/cookbook.conf':
-  content => $cookbook,
+  | FENAGO
+file {'/etc/apache2/conf.d/fenago.conf':
+  content => $fenago,
   require => Package['apache2'],
   notify  => Service['apache2'],
 }
@@ -27,11 +27,11 @@ $index = @(INDEX)
   </html>
   | INDEX
 
-file {'/var/www/cookbook':
+file {'/var/www/fenago':
   ensure  => directory,
   require => Package['apache2'],
 }
-file {'/var/www/cookbook/index.html':
+file {'/var/www/fenago/index.html':
   content => $index,
-  require => File['/var/www/cookbook'],
+  require => File['/var/www/fenago'],
 }
