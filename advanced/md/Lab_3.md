@@ -1,7 +1,7 @@
 <img align="right" src="./logo.png">
 
 
-Lab 7. Managing Applications
+Lab 3. Managing Applications
 -----------------------------------------
 
 
@@ -124,22 +124,6 @@ Notice: Installing -- do not interrupt ...
     come with a `README.md` or `README` file to show
     you how to do this.
 
-
-
-### How it works\...
-
-
-You can search for modules that match the
-package or software you\'re interested in with the
-`puppet module search` command. To install a specific module,
-use `puppet module install`. You can add the `-i`
-option to tell Puppet where to find your module directory. You can
-browse the site to see what\'s available at
-[http://forge.puppet.com](http://forge.puppet.com/){.ulink}. More
-information on supported modules is available
-at <https://forge.puppet.com/supported>. The current list of supported
-modules is available at
-[https://forge.puppetlabs.com/modules?endorsements=supported](https://forge.puppet.com/modules?endorsements=supported+partner){.ulink}.
 
 
 ### There\'s more\...

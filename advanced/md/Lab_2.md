@@ -1,7 +1,7 @@
 <img align="right" src="./logo.png">
 
 
-Lab. Writing Better Manifests
+Lab 2. Writing Better Manifests
 --------------------------------------------
 
 
@@ -610,11 +610,7 @@ place, making future maintenance and refactoring much easier.
 What\'s `<| tag == 'firewall-snippet' |> syntax`? This is
 called a resource collector, and it\'s a way of specifying a group of
 resources by searching for some piece of data about them; in this case,
-the value of a tag. You can find out more about resource collectors and
-the `<| |>` operator (sometimes known as the spaceship
-operator) on the Puppet Labs website:
-[http://docs.puppetlabs.com/puppet/3/reference/
-lang\_collectors.html.](https://puppet.com/docs/puppet/5.0/lang_collectors.html){.ulink}
+the value of a tag.
 
 What does `~>` mean? This is a chaining arrow with
 notification. The resource(s) on the left must come before the
@@ -849,10 +845,8 @@ Well-organized Puppet manifests are easy to
 read; the purpose of a module should be
 evident in its name. The purpose of a node should be defined in a single
 class. This single class should include all classes that are required to
-perform that purpose. Craig Dunn wrote a post about such a
-classification system, which he dubbed \"roles and profiles\"
-([http://www.
-craigdunn.org/2012/05/239/](http://www.%20craigdunn.org/2012/05/239/){.ulink}).
+perform that purpose.
+
 In this model, roles are the single purpose of a node; a node may only
 have one role, a role may contain more than one profile, and a profile
 contains all the resources related to a single service. In this example,
@@ -1078,9 +1072,6 @@ The following types are available in Puppet5:
 - Default (the default of a case statement, for example)
 
 
-More information on types is available on the
-Puppet website
-at [https://puppet.com/docs/puppet/latest/lang\_data\_type.html](https://puppet.com/docs/puppet/5.3/lang_data_type.html){.ulink}.
 
 In addition to these data types, there are
 several abstract data types built upon the code data types. The abstract
@@ -1112,11 +1103,6 @@ variable as follows:
 $pkgs = ['ssh','gcc']
 assert_type(Variant[Array[String],String],$pkgs)
 ```
-
-
-For more information on abstract data types,
-see the Puppet website
-at [https://puppet.com/docs/puppet/latest/lang\_data\_abstract.html](https://puppet.com/docs/puppet/5.3/lang_data_abstract.html){.ulink}.
 
 
 

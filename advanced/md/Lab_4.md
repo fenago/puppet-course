@@ -1,6 +1,6 @@
 <img align="right" src="./logo.png">
 
-Lab 10. Monitoring, Reporting, and Troubleshooting
+Lab 4. Monitoring, Reporting, and Troubleshooting
 ---------------------------------------------------------------
 
 
