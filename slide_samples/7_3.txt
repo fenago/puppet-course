@@ -1,0 +1,13 @@
+sudo puppet apply --environment=pbg /examples/module_mysql.pp
+Notice: Compiled catalog for ubuntu-xenial in environment pbg in 0.89 seconds
+Notice: /Stage[main]/Mysql::Server::Config/File[/etc/mysql]/ensure: created
+Notice: /Stage[main]/Mysql::Server::Config/File[/etc/mysql/conf.d]/ensure: created
+Notice: /Stage[main]/Mysql::Server::Config/File[mysql-config-file]/ensure: defined content as '{md5}44e7aa974ab98260d7d013a2087f1c77'
+Notice: /Stage[main]/Mysql::Server::Install/Package[mysql-server]/ensure: created
+Notice: /Stage[main]/Mysql::Server::Root_password/Mysql_user[root@localhost]/password_hash: password_hash changed '' to '*F4AF2E5D85456A908E0F552F0366375B06267295'
+Notice: /Stage[main]/Mysql::Server::Root_password/File[/root/.my.cnf]/ensure: defined content as '{md5}4d59f37fc8a385c9c50f8bb3286b7c85'
+Notice: /Stage[main]/Mysql::Client::Install/Package[mysql_client]/ensure: created
+Notice: /Stage[main]/Main/Mysql::Db[cat_pictures]/Mysql_database[cat_pictures]/ensure: created
+Notice: /Stage[main]/Main/Mysql::Db[cat_pictures]/Mysql_user[greebo@localhost]/ensure: created
+Notice: /Stage[main]/Main/Mysql::Db[cat_pictures]/Mysql_grant[greebo@localhost/cat_pictures.*]/ensure: created
+Notice: Applied catalog in 79.85 seconds

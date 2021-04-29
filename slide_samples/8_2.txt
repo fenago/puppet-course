@@ -1,0 +1,33 @@
+# Manage user and SSH key together
+define user_with_key(
+  Enum[
+    'ssh-dss',
+    'dsa',
+    'ssh-rsa',
+    'rsa',
+    'ecdsa-sha2-nistp256',
+    'ecdsa-sha2-nistp384',
+    'ecdsa-sha2-nistp521',
+    'ssh-ed25519',
+    'ed25519'
+  ] $key_type,
+  String $key,
+) {
+  user { $title:
+    ensure     => present,
+    managehome => true,
+  }
+
+  file { "/home/${title}/.ssh":
+    ensure => directory,
+    owner  => $title,
+    group  => $title,
+    mode   => '0700',
+  }
+
+  ssh_authorized_key { $title:
+    user => $title,
+    type => $key_type,
+    key  => $key,
+  }
+}

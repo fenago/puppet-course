@@ -1,0 +1,9 @@
+sudo puppet apply --environment=pbg /examples/pry_install.pp
+sudo puppet apply --environment=pbg /examples/pry.pp
+...
+[1] pry(#<Puppet::Parser::Scope>)> catalog
+=> #<Puppet::Resource::Catalog:0x00000001bbcf78
+...
+ @resource_table={["Stage", "main"]=>Stage[main]{}, ["Class", "Settings"]=>Class[Settings]{}, ["Class", "main"]=>Class[main]{}},
+ @resources=[["Stage", "main"], ["Class", "Settings"], ["Class", "main"]],
+...

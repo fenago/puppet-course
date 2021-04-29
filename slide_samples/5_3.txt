@@ -1,0 +1,23 @@
+facter os
+{
+  architecture => "amd64",
+  distro => {
+    codename => "xenial",
+    description => "Ubuntu 16.04 LTS",
+    id => "Ubuntu",
+    release => {
+      full => "16.04",
+      major => "16.04"
+    }
+  },
+  family => "Debian",
+  hardware => "x86_64",
+  name => "Ubuntu",
+  release => {
+    full => "16.04",
+    major => "16.04"
+  },
+  selinux => {
+    enabled => false
+  }
+}

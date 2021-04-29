@@ -1,0 +1,13 @@
+generate-puppetfile puppetlabs/docker_platform
+Installing modules. This may take a few minutes.
+Your Puppetfile has been generated. Copy and paste between the markers:
+=============================================
+forge 'http://forge.puppetlabs.com'
+
+# Modules discovered by generate-puppetfile
+mod 'garethr/docker', '5.3.0'
+mod 'puppetlabs/apt', '3.0.0'
+mod 'puppetlabs/docker_platform', '2.2.1'
+mod 'puppetlabs/stdlib', '4.17.1'
+mod 'stahnma/epel', '1.2.2'
+=============================================
